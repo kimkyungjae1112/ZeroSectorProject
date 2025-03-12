@@ -14,6 +14,10 @@ class ZEROSECTOR_API AZeroPlayerController : public APlayerController
 public:
 	AZeroPlayerController();
 
+public:
+	void InputModeGameOnly();
+	void InputModeGameAndUI();
+
 protected:
 	virtual void BeginPlay() override;
 };

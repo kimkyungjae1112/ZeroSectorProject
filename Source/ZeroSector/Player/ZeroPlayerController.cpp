@@ -7,10 +7,23 @@ AZeroPlayerController::AZeroPlayerController()
 {
 }
 
+void AZeroPlayerController::InputModeGameOnly()
+{
+	bShowMouseCursor = false;
+	FInputModeGameOnly GameOnly;
+	SetInputMode(GameOnly);
+}
+
+void AZeroPlayerController::InputModeGameAndUI()
+{
+	bShowMouseCursor = true;
+	FInputModeUIOnly UIOnly;
+	SetInputMode(UIOnly);
+}
+
 void AZeroPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FInputModeGameOnly GameOnly;
-	SetInputMode(GameOnly);
+	InputModeGameOnly();
 }

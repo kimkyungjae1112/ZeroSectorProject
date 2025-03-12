@@ -7,17 +7,15 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Data/ZeroInputConfig.h"
+#include "Data/ZeroPlayerCameraData.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/SphereComponent.h"
+#include "Interface/ZeroDialogueInterface.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer()
 {
-	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
-	CameraComp->SetupAttachment(GetMesh());
-	CameraComp->bUsePawnControlRotation = true;
-	CameraComp->SetRelativeLocation(FVector(0.f, 20.f, 170.f));
-	CameraComp->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
-
 	// 임시로 메쉬 지정
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
@@ -31,6 +29,22 @@ AZeroCharacterPlayer::AZeroCharacterPlayer()
 	{
 		InputConfig = InputConfigRef.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UZeroPlayerCameraData> CameraDataRef(TEXT("/Script/ZeroSector.ZeroPlayerCameraData'/Game/Data/Camera/DA_CameraData.DA_CameraData'"));
+	if (CameraDataRef.Object)
+	{
+		CameraData = CameraDataRef.Object;
+	}
+
+	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
+	CameraComp->SetupAttachment(GetMesh());
+	CameraComp->bUsePawnControlRotation = true;
+	CameraComp->SetRelativeLocation(CameraData->CommonCameraVector);
+	CameraComp->SetRelativeRotation(CameraData->CommonCameraRotator);
+
+	DialogueSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("Dialogue Sphere Component"));
+	DialogueSphereComp->SetupAttachment(RootComponent);
+	DialogueSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AZeroCharacterPlayer::BeginOverlapForDialogue);
+	DialogueSphereComp->SetSphereRadius(200.f);
 }
 
 void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -83,5 +97,45 @@ void AZeroCharacterPlayer::Look(const FInputActionValue& Value)
 
 void AZeroCharacterPlayer::DialogueInteract()
 {
-	// 대화 시스템 적용
+	if (DialogueInterface)
+	{
+		DialogueInterface->StartDialogue();
+		FOnFinishedDialogue OnFinishedDialogue;
+		OnFinishedDialogue.BindLambda([&]()
+			{
+				SetDefaultMovement();
+			});
+		DialogueInterface->SetupFinishedDialogueDelegate(OnFinishedDialogue);
+		
+		SetDialogueMovement();
+	}
+}
+
+void AZeroCharacterPlayer::SetDefaultMovement()
+{
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	CameraComp->SetRelativeLocation(CameraData->CommonCameraVector);
+	CameraComp->SetRelativeRotation(CameraData->CommonCameraRotator);
+}
+
+void AZeroCharacterPlayer::SetDialogueMovement()
+{
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	CameraComp->SetRelativeLocation(CameraData->DialogueCameraVector);
+	CameraComp->SetRelativeRotation(CameraData->DialogueCameraRotator);
+}
+
+void AZeroCharacterPlayer::BeginOverlapForDialogue(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor != this)
+	{
+		for (UActorComponent* ActorComp : OtherActor->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
+		{
+			// 개선 방향
+				// 1. 모든 ActorComp의 소유 액터들의 거리를 계산해서 가장 짧은 액터의 인터페이스를 가져올 수 있도록 수정
+				// 2. 각도를 계산해서 아주 작은 각도 내에 들어와 있는 액터의 인터페이스를 가져올 수 있도록 수정
+				// 3. SingleLineTrace를 사용해서 특정 액터의 인터페이스를 가져올 수 있도록 수정 (Tick 사용)
+			DialogueInterface = Cast<IZeroDialogueInterface>(ActorComp);
+		}
+	}
 }
