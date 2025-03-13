@@ -13,9 +13,12 @@
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 #include "Interface/ZeroDialogueInterface.h"
+#include "ZeroSector.h"
 
-AZeroCharacterPlayer::AZeroCharacterPlayer()
+AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	// 임시로 메쉬 지정
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
@@ -40,11 +43,13 @@ AZeroCharacterPlayer::AZeroCharacterPlayer()
 	CameraComp->bUsePawnControlRotation = true;
 	CameraComp->SetRelativeLocation(CameraData->CommonCameraVector);
 	CameraComp->SetRelativeRotation(CameraData->CommonCameraRotator);
+}
 
-	DialogueSphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("Dialogue Sphere Component"));
-	DialogueSphereComp->SetupAttachment(RootComponent);
-	DialogueSphereComp->OnComponentBeginOverlap.AddDynamic(this, &AZeroCharacterPlayer::BeginOverlapForDialogue);
-	DialogueSphereComp->SetSphereRadius(200.f);
+void AZeroCharacterPlayer::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	InteractBeam();
 }
 
 void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -125,17 +130,33 @@ void AZeroCharacterPlayer::SetDialogueMovement()
 	CameraComp->SetRelativeRotation(CameraData->DialogueCameraRotator);
 }
 
-void AZeroCharacterPlayer::BeginOverlapForDialogue(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AZeroCharacterPlayer::InteractBeam()
 {
-	if (OtherActor && OtherActor != this)
+	FVector EyeVectorStart;
+	FRotator EyeRotatorStart;
+	GetController()->GetPlayerViewPoint(EyeVectorStart, EyeRotatorStart);
+
+	FVector EyeVectorEnd = EyeVectorStart + EyeRotatorStart.Vector() * DetectDistance;
+	FHitResult HitResult;
+	FCollisionQueryParams Param(NAME_None, false, this);
+	FColor Color(FColor::Red);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, EyeVectorStart, EyeVectorEnd, ECC_GameTraceChannel1, Param);
+	if (bHit)
 	{
-		for (UActorComponent* ActorComp : OtherActor->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
+		Color = FColor::Green;
+		for (UActorComponent* ActorComp : HitResult.GetActor()->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
 		{
-			// 개선 방향
-				// 1. 모든 ActorComp의 소유 액터들의 거리를 계산해서 가장 짧은 액터의 인터페이스를 가져올 수 있도록 수정
-				// 2. 각도를 계산해서 아주 작은 각도 내에 들어와 있는 액터의 인터페이스를 가져올 수 있도록 수정
-				// 3. SingleLineTrace를 사용해서 특정 액터의 인터페이스를 가져올 수 있도록 수정 (Tick 사용)
 			DialogueInterface = Cast<IZeroDialogueInterface>(ActorComp);
+			DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
+			return;
 		}
+
+		/* 여기에서 단서 관련 이벤트 처리 */
+		/* 예시) 헤더파일에 Proviso 액터 포인터 선언 
+				 단서는 Actor 클래스를 상속받아서 구현하면 될듯
+		*/
+		Proviso = HitResult.GetActor();
 	}
+	DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 }

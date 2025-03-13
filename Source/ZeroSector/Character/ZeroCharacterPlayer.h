@@ -11,7 +11,6 @@ class IZeroDialogueInterface;
 class APlayerController;
 class UZeroInputConfig;
 class UCameraComponent;
-class USphereComponent;
 class UZeroPlayerCameraData;
 
 /* 
@@ -26,6 +25,8 @@ class ZEROSECTOR_API AZeroCharacterPlayer : public AZeroCharacterBase
 	
 public:
 	AZeroCharacterPlayer();
+
+	virtual void Tick(float DeltaSeconds) override;
 
 	/* APawn Overriding */
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -50,6 +51,9 @@ private:
 	void SetDialogueMovement();
 
 
+	/* 시선 앞의 물체 탐색 함수 */
+	void InteractBeam();
+
 /* 카메라 */
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
@@ -58,19 +62,21 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UZeroPlayerCameraData> CameraData;
 
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	float DetectDistance;
+
 /* 대화 섹션 */
 private:
-	UFUNCTION()
-	void BeginOverlapForDialogue(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UPROPERTY(VisibleAnywhere, Category = "Collision")
-	TObjectPtr<USphereComponent> DialogueSphereComp;
-
 	IZeroDialogueInterface* DialogueInterface;
 
 /* Input */
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Input Data")
 	TObjectPtr<UZeroInputConfig> InputConfig;
+
+/* 단서 데이터 */
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Proviso")
+	TObjectPtr<AActor> Proviso;
 
 };

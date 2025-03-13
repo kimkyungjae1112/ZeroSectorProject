@@ -14,7 +14,7 @@ void AZeroPlayerController::InputModeGameOnly()
 	SetInputMode(GameOnly);
 }
 
-void AZeroPlayerController::InputModeGameAndUI()
+void AZeroPlayerController::InputModeUIOnly()
 {
 	bShowMouseCursor = true;
 	FInputModeUIOnly UIOnly;

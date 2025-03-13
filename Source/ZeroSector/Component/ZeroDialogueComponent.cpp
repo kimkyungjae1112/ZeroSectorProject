@@ -26,23 +26,27 @@ UZeroDialogueComponent::UZeroDialogueComponent()
 
 void UZeroDialogueComponent::StartDialogue()
 {
+    if (bIsTalking) InProgressDialogue();
+
     RotationToPlayer();
 
-	DialogueTable = UZeroSingleton::Get().GetDialogueTable(0);
     ZE_LOG(LogZeroSector, Warning, TEXT("Dialogue Loaded: %s"), *DialogueTable.Dialogue.ToString());
-	DialogueWidgetPtr = CreateWidget<UZeroDialogueWidget>(GetWorld(), DialogueWidgetClass);
+    bIsTalking = true;
+    DialogueWidgetPtr = CreateWidget<UZeroDialogueWidget>(GetWorld(), DialogueWidgetClass);
 	DialogueWidgetPtr->AddToViewport();
 	DialogueWidgetPtr->SetDialogueText(ActorName, DialogueTable.Dialogue);
 
     if (DialogueTable.bIsOpenOption)
     {
-        InputModeGameAndUI();
+        InputModeUIOnly();
         for (const auto& DialogueOptionTable : DialogueTable.OptionDialogues)
         {
             DialogueOptionSpawn(DialogueOptionTable);
         }
         return;
     }
+
+    DialogueDataInit();
 }
 
 void UZeroDialogueComponent::SetupFinishedDialogueDelegate(const FOnFinishedDialogue& InOnFinishedDialogue)
@@ -54,7 +58,7 @@ void UZeroDialogueComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+    DialogueTable = UZeroSingleton::Get().GetDialogueTable(0);
 }
 
 void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTable)
@@ -107,13 +111,33 @@ void UZeroDialogueComponent::InputModeGameOnly()
     }
 }
 
-void UZeroDialogueComponent::InputModeGameAndUI()
+void UZeroDialogueComponent::InputModeUIOnly()
 {
     AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
     if (PC)
     {
-        PC->InputModeGameAndUI();
+        PC->InputModeUIOnly();
     }
+}
+
+void UZeroDialogueComponent::InProgressDialogue()
+{
+    DialogueWidgetPtr->GetScrollBox()->ClearChildren();
+    DialogueWidgetPtr->UpdateDialogue(DialogueTable.Dialogue);
+       
+    if (DialogueTable.bIsEnd)
+    {
+        FTimerHandle Timer;
+        GetWorld()->GetTimerManager().SetTimer(Timer, [&]()
+            {
+                DialogueWidgetPtr->RemoveFromParent();
+                OnFinishedDialogue.ExecuteIfBound();
+                InputModeGameOnly();
+            }, 3.f, false);
+        DialogueTable = UZeroSingleton::Get().GetDialogueTable(0);
+    }
+
+    DialogueDataInit();
 }
 
 void UZeroDialogueComponent::DialogueOptionSpawn(const FZeroDialogueOptionDataTable& InDialogueOptionTable)
