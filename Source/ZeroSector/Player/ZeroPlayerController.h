@@ -16,7 +16,7 @@ public:
 
 public:
 	void InputModeGameOnly();
-	void InputModeGameAndUI();
+	void InputModeUIOnly();
 
 protected:
 	virtual void BeginPlay() override;

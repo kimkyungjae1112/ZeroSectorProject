@@ -40,7 +40,11 @@ private:
 /* Input Mode */
 private:
 	void InputModeGameOnly();
-	void InputModeGameAndUI();
+	void InputModeUIOnly();
+
+/* 대화 중일 때 호출되는 함수 */
+private:
+	void InProgressDialogue();
 
 /* UI */
 private:
@@ -74,6 +78,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	bool bIsEnd;
+
+	UPROPERTY(VisibleAnywhere)
+	bool bIsTalking;
 		
 	FOnFinishedDialogue OnFinishedDialogue;
 };
