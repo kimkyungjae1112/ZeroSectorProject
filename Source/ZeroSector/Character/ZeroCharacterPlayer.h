@@ -62,6 +62,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UZeroPlayerCameraData> CameraData;
 
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	float DetectDistance;
+
 /* 대화 섹션 */
 private:
 	IZeroDialogueInterface* DialogueInterface;

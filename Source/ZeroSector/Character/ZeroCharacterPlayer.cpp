@@ -15,7 +15,7 @@
 #include "Interface/ZeroDialogueInterface.h"
 #include "ZeroSector.h"
 
-AZeroCharacterPlayer::AZeroCharacterPlayer()
+AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -136,9 +136,7 @@ void AZeroCharacterPlayer::InteractBeam()
 	FRotator EyeRotatorStart;
 	GetController()->GetPlayerViewPoint(EyeVectorStart, EyeRotatorStart);
 
-	const float SightDistance = 800.f;
-	FVector EyeVectorEnd = EyeVectorStart + EyeRotatorStart.Vector() * SightDistance;
-
+	FVector EyeVectorEnd = EyeVectorStart + EyeRotatorStart.Vector() * DetectDistance;
 	FHitResult HitResult;
 	FCollisionQueryParams Param(NAME_None, false, this);
 	FColor Color(FColor::Red);
