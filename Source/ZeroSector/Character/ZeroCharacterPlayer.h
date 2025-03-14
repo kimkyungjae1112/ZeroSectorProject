@@ -12,6 +12,7 @@ class APlayerController;
 class UZeroInputConfig;
 class UCameraComponent;
 class UZeroPlayerCameraData;
+class AZeroWeaponBase;
 
 /* 
 	Component 변수 선언할 때 Comp로 줄이기
@@ -45,6 +46,8 @@ private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void DialogueInteract();
+	void Fire();
+	void Aiming();
 
 	/* DialogueInteract() 를 이루는 함수 */
 	void SetDefaultMovement();
@@ -78,5 +81,24 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Proviso")
 	TObjectPtr<AActor> Proviso;
+
+/* 무기 */
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	TObjectPtr<AZeroWeaponBase> Weapon;
+
+
+/* UI */
+private:
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<class UZeroOperationWidget> OperationWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UZeroOperationWidget> OperationWidgetPtr;
+
+
+/* 작전창 UI를 띄울 테스트 함수 */
+	void OperationUITest();
+	void ClickNextButton();
 
 };
