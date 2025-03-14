@@ -4,13 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interface/ZeroWeaponInterface.h"
 #include "ZeroWeaponBase.generated.h"
 
 UCLASS()
 class ZEROSECTOR_API AZeroWeaponBase 
 	: public AActor
-	, public IZeroWeaponInterface
 {
 	GENERATED_BODY()
 	
@@ -18,6 +16,7 @@ public:
 	AZeroWeaponBase();
 
 	virtual void Fire();
+	virtual void Aiming();
 
 protected:
 	virtual void BeginPlay() override;

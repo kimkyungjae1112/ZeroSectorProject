@@ -122,10 +122,14 @@ void AZeroCharacterPlayer::DialogueInteract()
 
 void AZeroCharacterPlayer::Fire()
 {
+	Weapon->Fire();
+	// 무기 기능 구현은 애니메이션 및 애셋 생기면 구현하기
 }
 
-void AZeroCharacterPlayer::Aming()
+void AZeroCharacterPlayer::Aiming()
 {
+	Weapon->Aiming();
+	// 무기 기능 구현은 애니메이션 및 애셋 생기면 구현하기
 }
 
 void AZeroCharacterPlayer::SetDefaultMovement()

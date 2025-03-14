@@ -12,3 +12,9 @@ void AZeroWeaponPistol::Fire()
 	Super::Fire();
 
 }
+
+void AZeroWeaponPistol::Aiming()
+{
+	Super::Aiming();
+
+}

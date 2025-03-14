@@ -10,7 +10,12 @@ AZeroWeaponBase::AZeroWeaponBase()
 
 void AZeroWeaponBase::Fire()
 {
-	//Fire
+	//Fire 관련 기능 구현
+}
+
+void AZeroWeaponBase::Aiming()
+{
+	//Aiming 관련 기능 구현
 }
 
 void AZeroWeaponBase::BeginPlay()

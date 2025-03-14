@@ -47,7 +47,7 @@ private:
 	void Look(const FInputActionValue& Value);
 	void DialogueInteract();
 	void Fire();
-	void Aming();
+	void Aiming();
 
 	/* DialogueInteract() 를 이루는 함수 */
 	void SetDefaultMovement();
@@ -87,13 +87,18 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<AZeroWeaponBase> Weapon;
 
-/* 작전창 UI를 띄울 테스트 함수 */
-	void OperationUITest();
-	void ClickNextButton();
 
+/* UI */
+private:
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<class UZeroOperationWidget> OperationWidgetClass;
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TObjectPtr<UZeroOperationWidget> OperationWidgetPtr;
+
+
+/* 작전창 UI를 띄울 테스트 함수 */
+	void OperationUITest();
+	void ClickNextButton();
+
 };
