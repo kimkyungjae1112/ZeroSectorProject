@@ -8,11 +8,15 @@
 
 struct FInputActionValue;
 class IZeroDialogueInterface;
-class APlayerController;
 class UZeroInputConfig;
 class UCameraComponent;
 class UZeroPlayerCameraData;
+class UZeroFadeInAndOutWidget;
+class UZeroOperationWidget;
 class AZeroWeaponBase;
+class AZeroOperationBoard;
+class APlayerController;
+
 
 /* 
 	Component 변수 선언할 때 Comp로 줄이기
@@ -46,6 +50,7 @@ private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void DialogueInteract();
+	void OperationBoardInteract();
 	void Fire();
 	void Aiming();
 
@@ -87,15 +92,24 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<AZeroWeaponBase> Weapon;
 
-
 /* UI */
 private:
 	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<class UZeroOperationWidget> OperationWidgetClass;
+	TSubclassOf<UZeroOperationWidget> OperationWidgetClass;
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TObjectPtr<UZeroOperationWidget> OperationWidgetPtr;
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UZeroFadeInAndOutWidget> FadeInAndOutWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UZeroFadeInAndOutWidget> FadeInAndOutWidgetPtr;
+
+/* 작전판 */
+private:
+	UPROPERTY(VisibleAnywhere, Category = "OperationBoard")
+	TObjectPtr<AZeroOperationBoard> OperationBoard;
 
 /* 작전창 UI를 띄울 테스트 함수 */
 	void OperationUITest();

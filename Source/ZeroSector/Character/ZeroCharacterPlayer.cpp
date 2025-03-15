@@ -13,9 +13,11 @@
 #include "Components/SphereComponent.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "UI/ZeroOperationWidget.h"
+#include "UI/ZeroFadeInAndOutWidget.h"
 #include "Player/ZeroPlayerController.h"
 #include "Weapon/ZeroWeaponRifle.h"
 #include "Weapon/ZeroWeaponShotgun.h"
+#include "Gimmick/ZeroOperationBoard.h"
 #include "ZeroSector.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
@@ -64,6 +66,7 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Move, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Move);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Look, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Look);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::DialogueInteract);
+	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationBoardInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_OperationTest, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationUITest);
 }
 
@@ -120,6 +123,14 @@ void AZeroCharacterPlayer::DialogueInteract()
 	}
 }
 
+void AZeroCharacterPlayer::OperationBoardInteract()
+{
+	if (OperationBoard)
+	{
+		OperationUITest();
+	}
+}
+
 void AZeroCharacterPlayer::Fire()
 {
 	Weapon->Fire();
@@ -167,12 +178,14 @@ void AZeroCharacterPlayer::InteractBeam()
 			DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 			return;
 		}
-
+		DialogueInterface = nullptr;
 		/* 여기에서 단서 관련 이벤트 처리 */
 		/* 예시) 헤더파일에 Proviso 액터 포인터 선언 
 				 단서는 Actor 클래스를 상속받아서 구현하면 될듯
 		*/
-		Proviso = HitResult.GetActor();
+		//Proviso = HitResult.GetActor();
+
+		OperationBoard = Cast<AZeroOperationBoard>(HitResult.GetActor());
 	}
 	DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 }
@@ -188,7 +201,7 @@ void AZeroCharacterPlayer::OperationUITest()
 	OperationWidgetPtr = CreateWidget<UZeroOperationWidget>(GetPlayerController(), OperationWidgetClass);
 	if (OperationWidgetPtr)
 	{
-		OperationWidgetPtr->AddToViewport();
+		OperationWidgetPtr->AddToViewport(1);
 		FOnClickNextButton OnClickNextButton;
 		OnClickNextButton.BindLambda([&]()
 			{
@@ -213,14 +226,17 @@ void AZeroCharacterPlayer::ClickNextButton()
 	case EWeaponType::EZeroRifle:
 		Weapon = GetWorld()->SpawnActor<AZeroWeaponRifle>(AZeroWeaponRifle::StaticClass());
 		if (Weapon) ZE_LOG(LogZeroSector, Display, TEXT("Weapon Name : %s"), *Weapon->GetActorNameOrLabel());
-		return;
+		break;
 	case EWeaponType::EZeroShotgun:
 		Weapon = GetWorld()->SpawnActor<AZeroWeaponShotgun>(AZeroWeaponShotgun::StaticClass());
 		if (Weapon) ZE_LOG(LogZeroSector, Display, TEXT("Weapon Name : %s"), *Weapon->GetActorNameOrLabel());
-		return;
+		break;
 	default:
 		ZE_LOG(LogZeroSector, Error, TEXT("무기 안들어옴"));
-		return;
+		break;
 	}
 
+	FadeInAndOutWidgetPtr = CreateWidget<UZeroFadeInAndOutWidget>(GetPlayerController(), FadeInAndOutWidgetClass);
+	FadeInAndOutWidgetPtr->AddToViewport();
+	FadeInAndOutWidgetPtr->FadeInPlay();
 }
