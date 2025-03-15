@@ -55,6 +55,9 @@ public:
 	/* APawn Overriding */
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	/* IGenericTeamAgentInterface Implement */
+	virtual FGenericTeamId GetGenericTeamId() const override;
+
 protected:
 	virtual void BeginPlay() override;
 

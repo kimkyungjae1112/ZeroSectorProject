@@ -52,6 +52,8 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 
 	ChangeInputMap.Add(EDaySequence::EAfternoon, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputAfternoonMode)));
 	ChangeInputMap.Add(EDaySequence::ENight, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputNightMode)));
+
+	TeamId = FGenericTeamId(0);
 }
 
 void AZeroCharacterPlayer::Tick(float DeltaSeconds)
@@ -75,6 +77,11 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Fire, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Fire);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Aiming);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::UnAiming);
+}
+
+FGenericTeamId AZeroCharacterPlayer::GetGenericTeamId() const
+{
+	return TeamId;
 }
 
 void AZeroCharacterPlayer::BeginPlay()
