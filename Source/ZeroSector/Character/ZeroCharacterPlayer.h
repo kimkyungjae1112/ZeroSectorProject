@@ -22,6 +22,26 @@ class AZeroGimmick;
 	CameraComponent -> CameraComp
 */
 
+DECLARE_DELEGATE(FChangeInput)
+
+UENUM()
+enum class EDaySequence : uint8
+{
+	EAfternoon,
+	ENight
+};
+
+USTRUCT()
+struct FChangeInputWrapper
+{
+	GENERATED_BODY()
+
+	FChangeInputWrapper() {}
+	FChangeInputWrapper(const FChangeInput& InChangeInput) : ChangeInput(InChangeInput) {}
+
+	FChangeInput ChangeInput;
+};
+
 UCLASS()
 class ZEROSECTOR_API AZeroCharacterPlayer : public AZeroCharacterBase
 {
@@ -50,6 +70,7 @@ private:
 	void Look(const FInputActionValue& Value);
 	void Fire();
 	void Aiming();
+	void UnAiming();
 
 	/* DialogueInteract() 를 이루는 함수 */
 	void SetDefaultMovement();
@@ -81,7 +102,14 @@ private:
 
 /* Input */
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Input Data")
+	void SetInputByDaySequence(EDaySequence DaySequence);
+	void SetInputAfternoonMode();
+	void SetInputNightMode();
+
+	UPROPERTY(VisibleAnywhere, Category = "Input")
+	TMap<EDaySequence, FChangeInputWrapper> ChangeInputMap;
+
+	UPROPERTY(VisibleAnywhere, Category = "Input")
 	TObjectPtr<UZeroInputConfig> InputConfig;
 
 /* 기믹 */
@@ -93,6 +121,8 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<AZeroWeaponBase> Weapon;
+
+	bool bIsAiming = false;
 
 /* UI */
 private:
