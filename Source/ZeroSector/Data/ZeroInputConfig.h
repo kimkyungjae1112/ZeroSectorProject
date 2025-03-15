@@ -18,6 +18,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Mapping Context")
 	TObjectPtr<UInputMappingContext> IMC_Day;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Mapping Context")
+	TObjectPtr<UInputMappingContext> IMC_Night;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
 	TObjectPtr<UInputAction> IA_Move;
 
@@ -27,4 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
 	TObjectPtr<UInputAction> IA_Interact;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
+	TObjectPtr<UInputAction> IA_Fire;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
+	TObjectPtr<UInputAction> IA_Aiming;
 };

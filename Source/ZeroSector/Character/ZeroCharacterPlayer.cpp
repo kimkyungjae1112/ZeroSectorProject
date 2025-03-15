@@ -49,6 +49,9 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	CameraComp->bUsePawnControlRotation = true;
 	CameraComp->SetRelativeLocation(CameraData->CommonCameraVector);
 	CameraComp->SetRelativeRotation(CameraData->CommonCameraRotator);
+
+	ChangeInputMap.Add(EDaySequence::EAfternoon, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputAfternoonMode)));
+	ChangeInputMap.Add(EDaySequence::ENight, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputNightMode)));
 }
 
 void AZeroCharacterPlayer::Tick(float DeltaSeconds)
@@ -69,16 +72,16 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::DialogueInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationBoardInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ProvisoInteract);
+	EnhancedInputComponent->BindAction(InputConfig->IA_Fire, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Fire);
+	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Aiming);
+	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::UnAiming);
 }
 
 void AZeroCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
-	{
-		Subsystem->AddMappingContext(InputConfig->IMC_Day, 0);
-	}
+	SetInputAfternoonMode();
 }
 
 APlayerController* AZeroCharacterPlayer::GetPlayerController() const
@@ -116,8 +119,12 @@ void AZeroCharacterPlayer::Fire()
 
 void AZeroCharacterPlayer::Aiming()
 {
-	Weapon->Aiming();
-	// 무기 기능 구현은 애니메이션 및 애셋 생기면 구현하기
+	bIsAiming = true;
+}
+
+void AZeroCharacterPlayer::UnAiming()
+{
+	bIsAiming = false;
 }
 
 void AZeroCharacterPlayer::SetDefaultMovement()
@@ -213,6 +220,31 @@ void AZeroCharacterPlayer::OperationBoardInteract()
 	}
 }
 
+void AZeroCharacterPlayer::SetInputByDaySequence(EDaySequence DaySequence)
+{
+	ChangeInputMap[DaySequence].ChangeInput.ExecuteIfBound();
+}
+
+void AZeroCharacterPlayer::SetInputAfternoonMode()
+{
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
+	{
+		Subsystem->ClearAllMappings();
+		Subsystem->AddMappingContext(InputConfig->IMC_Day, 0);
+		ZE_LOG(LogZeroSector, Display, TEXT("Afternoon InputMode"));
+	}
+}
+
+void AZeroCharacterPlayer::SetInputNightMode()
+{
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
+	{
+		Subsystem->ClearAllMappings();
+		Subsystem->AddMappingContext(InputConfig->IMC_Night, 0);
+		ZE_LOG(LogZeroSector, Display, TEXT("Night InputMode"));
+	}
+}
+
 void AZeroCharacterPlayer::OperationUITest()
 {
 	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetPlayerController());
@@ -258,8 +290,11 @@ void AZeroCharacterPlayer::ClickNextButton()
 		ZE_LOG(LogZeroSector, Error, TEXT("무기 안들어옴"));
 		break;
 	}
+	Weapon->SetOwner(this);
 
 	FadeInAndOutWidgetPtr = CreateWidget<UZeroFadeInAndOutWidget>(GetPlayerController(), FadeInAndOutWidgetClass);
 	FadeInAndOutWidgetPtr->AddToViewport();
 	FadeInAndOutWidgetPtr->FadeInPlay();
+
+	SetInputByDaySequence(EDaySequence::ENight);
 }
