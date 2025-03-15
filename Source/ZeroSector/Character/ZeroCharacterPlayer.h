@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/ZeroCharacterBase.h"
+#include "Game/ProvisoActor.h"
 #include "ZeroCharacterPlayer.generated.h"
 
 struct FInputActionValue;
@@ -56,6 +57,8 @@ private:
 
 	/* 시선 앞의 물체 탐색 함수 */
 	void InteractBeam();
+	void ProvisoInteract();
+	// void ShowInteractionUI(bool bShow);
 
 /* 카메라 */
 private:
@@ -80,13 +83,12 @@ private:
 /* 단서 데이터 */
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Proviso")
-	TObjectPtr<AActor> Proviso;
+	AProvisoActor* DetectedProviso;
 
 /* 무기 */
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<AZeroWeaponBase> Weapon;
-
 
 /* UI */
 private:

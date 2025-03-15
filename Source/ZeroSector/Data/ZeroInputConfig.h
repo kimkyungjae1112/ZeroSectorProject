@@ -29,4 +29,5 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
 	TObjectPtr<UInputAction> IA_OperationTest;
+
 };

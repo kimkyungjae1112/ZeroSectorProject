@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
+#include "Game/ProvisoActor.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "UI/ZeroOperationWidget.h"
 #include "Player/ZeroPlayerController.h"
@@ -64,6 +65,7 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Move, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Move);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Look, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Look);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::DialogueInteract);
+	EnhancedInputComponent->BindAction(InputConfig->IA_ProvisoInteract, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ProvisoInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_OperationTest, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationUITest);
 }
 
@@ -146,6 +148,19 @@ void AZeroCharacterPlayer::SetDialogueMovement()
 	CameraComp->SetRelativeRotation(CameraData->DialogueCameraRotator);
 }
 
+
+
+void AZeroCharacterPlayer::ProvisoInteract()
+{
+
+	if (Proviso)
+	{
+		UE_LOG(LogTemp, Log, TEXT("단서 획득: %s"), *Proviso->GetName());
+		Proviso->Destroy();  
+		Proviso = nullptr; 
+	}
+}
+
 void AZeroCharacterPlayer::InteractBeam()
 {
 	FVector EyeVectorStart;
@@ -161,6 +176,14 @@ void AZeroCharacterPlayer::InteractBeam()
 	if (bHit)
 	{
 		Color = FColor::Green;
+		AActor* HitActor = HitResult.GetActor();
+
+		if (!HitActor)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("라인 트레이스가 Actor를 감지하지 못함."));
+			return;
+		}
+
 		for (UActorComponent* ActorComp : HitResult.GetActor()->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
 		{
 			DialogueInterface = Cast<IZeroDialogueInterface>(ActorComp);
@@ -172,9 +195,26 @@ void AZeroCharacterPlayer::InteractBeam()
 		/* 예시) 헤더파일에 Proviso 액터 포인터 선언 
 				 단서는 Actor 클래스를 상속받아서 구현하면 될듯
 		*/
-		Proviso = HitResult.GetActor();
+		AProvisoActor* HitProviso = Cast<AProvisoActor>(HitActor);
+		if (HitProviso)
+		{
+			if (!HitProviso->IsValidLowLevelFast())
+			{
+				// UE_LOG(LogTemp, Error, TEXT("AProvisoActor가 유효하지 않음!"));
+				return;
+			}
+
+			Proviso = HitProviso;
+			// ShowInteractionUI(true);
+			// UE_LOG(LogTemp, Log, TEXT("단서 감지됨: %s"), *Proviso->GetName());
+			DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
+			return;
+		}
+		
 	}
 	DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
+	// ShowInteractionUI(false);
+	Proviso = nullptr;
 }
 
 void AZeroCharacterPlayer::OperationUITest()
