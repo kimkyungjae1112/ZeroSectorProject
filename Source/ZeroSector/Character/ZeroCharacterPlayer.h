@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Character/ZeroCharacterBase.h"
-#include "Game/ProvisoActor.h"
 #include "ZeroCharacterPlayer.generated.h"
 
 struct FInputActionValue;
@@ -17,7 +16,7 @@ class UZeroOperationWidget;
 class AZeroWeaponBase;
 class AZeroOperationBoard;
 class APlayerController;
-
+class AZeroGimmick;
 
 /* 
 	Component 변수 선언할 때 Comp로 줄이기
@@ -50,8 +49,6 @@ private:
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-	void DialogueInteract();
-	void OperationBoardInteract();
 	void Fire();
 	void Aiming();
 
@@ -62,8 +59,11 @@ private:
 
 	/* 시선 앞의 물체 탐색 함수 */
 	void InteractBeam();
+
+	/* 상호작용 함수들 */
+	void DialogueInteract();
 	void ProvisoInteract();
-	// void ShowInteractionUI(bool bShow);
+	void OperationBoardInteract();
 
 /* 카메라 */
 private:
@@ -85,10 +85,10 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Input Data")
 	TObjectPtr<UZeroInputConfig> InputConfig;
 
-/* 단서 데이터 */
+/* 기믹 */
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Proviso")
-	TObjectPtr<AProvisoActor> DetectedProviso;
+	UPROPERTY(VisibleAnywhere, Category = "Gimmick")
+	TObjectPtr<AZeroGimmick> InteractedGimmick;
 
 /* 무기 */
 private:

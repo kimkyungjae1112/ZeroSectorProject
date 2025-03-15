@@ -11,7 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
-#include "Game/ProvisoActor.h"
+#include "Gimmick/ZeroProvisoActor.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "UI/ZeroOperationWidget.h"
 #include "UI/ZeroFadeInAndOutWidget.h"
@@ -68,7 +68,7 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Look, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Look);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::DialogueInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationBoardInteract);
-	EnhancedInputComponent->BindAction(InputConfig->IA_OperationTest, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationUITest);
+	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ProvisoInteract);
 }
 
 void AZeroCharacterPlayer::BeginPlay()
@@ -77,7 +77,7 @@ void AZeroCharacterPlayer::BeginPlay()
 
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
 	{
-		Subsystem->AddMappingContext(InputConfig->IMC_Default, 0);
+		Subsystem->AddMappingContext(InputConfig->IMC_Day, 0);
 	}
 }
 
@@ -108,30 +108,6 @@ void AZeroCharacterPlayer::Look(const FInputActionValue& Value)
 	AddControllerYawInput(InputValue.X);
 }
 
-void AZeroCharacterPlayer::DialogueInteract()
-{
-	if (DialogueInterface)
-	{
-		DialogueInterface->StartDialogue();
-		FOnFinishedDialogue OnFinishedDialogue;
-		OnFinishedDialogue.BindLambda([&]()
-			{
-				SetDefaultMovement();
-			});
-		DialogueInterface->SetupFinishedDialogueDelegate(OnFinishedDialogue);
-		
-		SetDialogueMovement();
-	}
-}
-
-void AZeroCharacterPlayer::OperationBoardInteract()
-{
-	if (OperationBoard)
-	{
-		OperationUITest();
-	}
-}
-
 void AZeroCharacterPlayer::Fire()
 {
 	Weapon->Fire();
@@ -158,19 +134,6 @@ void AZeroCharacterPlayer::SetDialogueMovement()
 	CameraComp->SetRelativeRotation(CameraData->DialogueCameraRotator);
 }
 
-
-
-void AZeroCharacterPlayer::ProvisoInteract()
-{
-
-	if (DetectedProviso)
-	{
-		UE_LOG(LogTemp, Log, TEXT("단서 획득: %s"), *DetectedProviso->GetName());
-		DetectedProviso->Destroy();
-		DetectedProviso = nullptr;
-	}
-}
-
 void AZeroCharacterPlayer::InteractBeam()
 {
 	FVector EyeVectorStart;
@@ -188,12 +151,6 @@ void AZeroCharacterPlayer::InteractBeam()
 		Color = FColor::Green;
 		AActor* HitActor = HitResult.GetActor();
 
-		if (!HitActor)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("라인 트레이스가 Actor를 감지하지 못함."));
-			return;
-		}
-
 		for (UActorComponent* ActorComp : HitResult.GetActor()->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
 		{
 			DialogueInterface = Cast<IZeroDialogueInterface>(ActorComp);
@@ -201,28 +158,59 @@ void AZeroCharacterPlayer::InteractBeam()
 			return;
 		}
 
-		DetectedProviso = Cast<AProvisoActor>(HitActor);
-		if (DetectedProviso)
+		/* 
+			AZeroGimmick 을 베이스 클래스로 상호작용 할 수 있는 물품들을 클래스 작성
+			이들을 Tag로 분류하고 다형성을 이용해서 포인터에 저장
+		*/
+		if (HitActor->ActorHasTag(TEXT("Proviso")))
 		{
-			if (!DetectedProviso->IsValidLowLevelFast())
-			{
-				// UE_LOG(LogTemp, Error, TEXT("AProvisoActor가 유효하지 않음!"));
-				return;
-			}
-
-			// ShowInteractionUI(true);
-			// UE_LOG(LogTemp, Log, TEXT("단서 감지됨: %s"), *Proviso->GetName());
-			DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
-			return;
+			InteractedGimmick = Cast<AZeroProvisoActor>(HitActor);
 		}
-		
-		DialogueInterface = nullptr;
-
-		OperationBoard = Cast<AZeroOperationBoard>(HitResult.GetActor());
+		else if (HitActor->ActorHasTag(TEXT("OperationBoard")))
+		{
+			InteractedGimmick = Cast<AZeroOperationBoard>(HitActor);
+		}
 	}
+	else
+	{
+		DialogueInterface = nullptr;
+		InteractedGimmick = nullptr;
+	}
+
 	DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
-	// ShowInteractionUI(false);
-	DetectedProviso = nullptr;
+}
+
+void AZeroCharacterPlayer::DialogueInteract()
+{
+	if (DialogueInterface)
+	{
+		DialogueInterface->StartDialogue();
+		FOnFinishedDialogue OnFinishedDialogue;
+		OnFinishedDialogue.BindLambda([&]()
+			{
+				SetDefaultMovement();
+			});
+		DialogueInterface->SetupFinishedDialogueDelegate(OnFinishedDialogue);
+
+		SetDialogueMovement();
+	}
+}
+
+void AZeroCharacterPlayer::ProvisoInteract()
+{
+	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")))
+	{
+		ZE_LOG(LogZeroSector, Display, TEXT("Proviso 감지"));
+		//여기에 UI 띄우기 및 단서 로직 작성
+	}
+}
+
+void AZeroCharacterPlayer::OperationBoardInteract()
+{
+	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("OperationBoard")))
+	{
+		OperationUITest();
+	}
 }
 
 void AZeroCharacterPlayer::OperationUITest()
@@ -236,7 +224,7 @@ void AZeroCharacterPlayer::OperationUITest()
 	OperationWidgetPtr = CreateWidget<UZeroOperationWidget>(GetPlayerController(), OperationWidgetClass);
 	if (OperationWidgetPtr)
 	{
-		OperationWidgetPtr->AddToViewport(1);
+		OperationWidgetPtr->AddToViewport();
 		FOnClickNextButton OnClickNextButton;
 		OnClickNextButton.BindLambda([&]()
 			{

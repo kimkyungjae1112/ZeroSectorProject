@@ -4,15 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Gimmick/ZeroGimmick.h"
-#include "ZeroOperationBoard.generated.h"
+#include "ZeroProvisoActor.generated.h"
 
 UCLASS()
-class ZEROSECTOR_API AZeroOperationBoard : public AZeroGimmick
+class ZEROSECTOR_API AZeroProvisoActor : public AZeroGimmick
 {
 	GENERATED_BODY()
 	
 public:	
-	AZeroOperationBoard();
+	AZeroProvisoActor();
+
 
 protected:
 	virtual void BeginPlay() override;

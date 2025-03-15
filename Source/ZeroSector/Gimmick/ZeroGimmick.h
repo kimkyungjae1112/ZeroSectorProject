@@ -4,17 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ProvisoActor.generated.h"
+#include "ZeroGimmick.generated.h"
 
 UCLASS()
-class ZEROSECTOR_API AProvisoActor : public AActor
+class ZEROSECTOR_API AZeroGimmick : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AProvisoActor();
-
+	AZeroGimmick();
 
 protected:
 	// Called when the game starts or when spawned
