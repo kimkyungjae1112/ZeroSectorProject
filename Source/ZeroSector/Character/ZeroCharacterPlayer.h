@@ -14,7 +14,6 @@ class UZeroPlayerCameraData;
 class UZeroFadeInAndOutWidget;
 class UZeroOperationWidget;
 class AZeroWeaponBase;
-class AZeroOperationBoard;
 class APlayerController;
 class AZeroGimmick;
 
@@ -109,10 +108,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TObjectPtr<UZeroFadeInAndOutWidget> FadeInAndOutWidgetPtr;
 
-/* 작전판 */
-private:
-	UPROPERTY(VisibleAnywhere, Category = "OperationBoard")
-	TObjectPtr<AZeroOperationBoard> OperationBoard;
 
 /* 작전창 UI를 띄울 테스트 함수 */
 	void OperationUITest();
