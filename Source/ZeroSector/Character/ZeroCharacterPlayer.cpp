@@ -65,7 +65,6 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Move, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Move);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Look, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Look);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::DialogueInteract);
-	EnhancedInputComponent->BindAction(InputConfig->IA_ProvisoInteract, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ProvisoInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_OperationTest, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationUITest);
 }
 
@@ -153,11 +152,11 @@ void AZeroCharacterPlayer::SetDialogueMovement()
 void AZeroCharacterPlayer::ProvisoInteract()
 {
 
-	if (Proviso)
+	if (DetectedProviso)
 	{
-		UE_LOG(LogTemp, Log, TEXT("단서 획득: %s"), *Proviso->GetName());
-		Proviso->Destroy();  
-		Proviso = nullptr; 
+		UE_LOG(LogTemp, Log, TEXT("단서 획득: %s"), *DetectedProviso->GetName());
+		DetectedProviso->Destroy();
+		DetectedProviso = nullptr;
 	}
 }
 
@@ -191,20 +190,15 @@ void AZeroCharacterPlayer::InteractBeam()
 			return;
 		}
 
-		/* 여기에서 단서 관련 이벤트 처리 */
-		/* 예시) 헤더파일에 Proviso 액터 포인터 선언 
-				 단서는 Actor 클래스를 상속받아서 구현하면 될듯
-		*/
-		AProvisoActor* HitProviso = Cast<AProvisoActor>(HitActor);
-		if (HitProviso)
+		DetectedProviso = Cast<AProvisoActor>(HitActor);
+		if (DetectedProviso)
 		{
-			if (!HitProviso->IsValidLowLevelFast())
+			if (!DetectedProviso->IsValidLowLevelFast())
 			{
 				// UE_LOG(LogTemp, Error, TEXT("AProvisoActor가 유효하지 않음!"));
 				return;
 			}
 
-			Proviso = HitProviso;
 			// ShowInteractionUI(true);
 			// UE_LOG(LogTemp, Log, TEXT("단서 감지됨: %s"), *Proviso->GetName());
 			DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
@@ -214,7 +208,7 @@ void AZeroCharacterPlayer::InteractBeam()
 	}
 	DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 	// ShowInteractionUI(false);
-	Proviso = nullptr;
+	DetectedProviso = nullptr;
 }
 
 void AZeroCharacterPlayer::OperationUITest()

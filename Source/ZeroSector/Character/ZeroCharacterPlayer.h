@@ -83,7 +83,7 @@ private:
 /* 단서 데이터 */
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Proviso")
-	AProvisoActor* DetectedProviso;
+	TObjectPtr<AProvisoActor> DetectedProviso;
 
 /* 무기 */
 private:
