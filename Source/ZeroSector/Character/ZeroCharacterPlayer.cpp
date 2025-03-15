@@ -8,12 +8,15 @@
 #include "EnhancedInputSubsystems.h"
 #include "Data/ZeroInputConfig.h"
 #include "Data/ZeroPlayerCameraData.h"
-#include "GameFramework/PlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 #include "Game/ProvisoActor.h"
 #include "Interface/ZeroDialogueInterface.h"
+#include "UI/ZeroOperationWidget.h"
+#include "Player/ZeroPlayerController.h"
+#include "Weapon/ZeroWeaponRifle.h"
+#include "Weapon/ZeroWeaponShotgun.h"
 #include "ZeroSector.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
@@ -63,6 +66,7 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Look, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Look);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::DialogueInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_ProvisoInteract, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ProvisoInteract);
+	EnhancedInputComponent->BindAction(InputConfig->IA_OperationTest, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationUITest);
 }
 
 void AZeroCharacterPlayer::BeginPlay()
@@ -116,6 +120,18 @@ void AZeroCharacterPlayer::DialogueInteract()
 		
 		SetDialogueMovement();
 	}
+}
+
+void AZeroCharacterPlayer::Fire()
+{
+	Weapon->Fire();
+	// 무기 기능 구현은 애니메이션 및 애셋 생기면 구현하기
+}
+
+void AZeroCharacterPlayer::Aiming()
+{
+	Weapon->Aiming();
+	// 무기 기능 구현은 애니메이션 및 애셋 생기면 구현하기
 }
 
 void AZeroCharacterPlayer::SetDefaultMovement()
@@ -199,4 +215,52 @@ void AZeroCharacterPlayer::InteractBeam()
 	DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 	// ShowInteractionUI(false);
 	Proviso = nullptr;
+}
+
+void AZeroCharacterPlayer::OperationUITest()
+{
+	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetPlayerController());
+	if (PC)
+	{
+		PC->InputModeUIOnly();
+	}
+
+	OperationWidgetPtr = CreateWidget<UZeroOperationWidget>(GetPlayerController(), OperationWidgetClass);
+	if (OperationWidgetPtr)
+	{
+		OperationWidgetPtr->AddToViewport();
+		FOnClickNextButton OnClickNextButton;
+		OnClickNextButton.BindLambda([&]()
+			{
+				ClickNextButton();
+			});
+		OperationWidgetPtr->SetDelegateClickNextButton(OnClickNextButton);
+	}
+}
+
+void AZeroCharacterPlayer::ClickNextButton()
+{
+	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetPlayerController());
+	if (PC)
+	{
+		PC->InputModeGameOnly();
+	}
+
+	OperationWidgetPtr->RemoveFromParent();
+
+	switch (OperationWidgetPtr->GetWeaponType())
+	{
+	case EWeaponType::EZeroRifle:
+		Weapon = GetWorld()->SpawnActor<AZeroWeaponRifle>(AZeroWeaponRifle::StaticClass());
+		if (Weapon) ZE_LOG(LogZeroSector, Display, TEXT("Weapon Name : %s"), *Weapon->GetActorNameOrLabel());
+		return;
+	case EWeaponType::EZeroShotgun:
+		Weapon = GetWorld()->SpawnActor<AZeroWeaponShotgun>(AZeroWeaponShotgun::StaticClass());
+		if (Weapon) ZE_LOG(LogZeroSector, Display, TEXT("Weapon Name : %s"), *Weapon->GetActorNameOrLabel());
+		return;
+	default:
+		ZE_LOG(LogZeroSector, Error, TEXT("무기 안들어옴"));
+		return;
+	}
+
 }
