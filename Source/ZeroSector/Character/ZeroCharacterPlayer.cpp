@@ -14,6 +14,8 @@
 #include "Interface/ZeroDialogueInterface.h"
 #include "UI/ZeroOperationWidget.h"
 #include "UI/ZeroFadeInAndOutWidget.h"
+#include "UI/ZeroProvisoWidget.h"
+#include "UI/ZeroGetProvisoWidget.h"
 #include "Player/ZeroPlayerController.h"
 #include "Weapon/ZeroWeaponRifle.h"
 #include "Weapon/ZeroWeaponShotgun.h"
@@ -179,6 +181,21 @@ void AZeroCharacterPlayer::InteractBeam()
 		if (HitActor->ActorHasTag(TEXT("Proviso")))
 		{
 			InteractedGimmick = Cast<AZeroProvisoActor>(HitActor);
+
+			
+			if (!ProvisoWidgetInstance)
+			{
+				if (ProvisoWidgetClass)
+				{
+					ProvisoWidgetInstance = CreateWidget<UZeroProvisoWidget>(GetWorld(), ProvisoWidgetClass);
+				}
+			}
+
+			if (ProvisoWidgetInstance)
+			{
+				ProvisoWidgetInstance->ShowWidget();
+			}
+			
 		}
 		else if (HitActor->ActorHasTag(TEXT("OperationBoard")))
 		{
@@ -189,6 +206,10 @@ void AZeroCharacterPlayer::InteractBeam()
 	{
 		DialogueInterface = nullptr;
 		InteractedGimmick = nullptr;
+		if (ProvisoWidgetInstance) 
+		{
+			ProvisoWidgetInstance->HideWidget();
+		}
 	}
 
 	DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
@@ -215,7 +236,15 @@ void AZeroCharacterPlayer::ProvisoInteract()
 	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")))
 	{
 		ZE_LOG(LogZeroSector, Display, TEXT("Proviso 감지"));
-		//여기에 UI 띄우기 및 단서 로직 작성
+		
+	}
+
+	GetProvisoWidgetInstance = CreateWidget<UZeroGetProvisoWidget>(GetWorld(), GetProvisoWidgetClass);
+
+	if (GetProvisoWidgetInstance)
+	{
+		GetProvisoWidgetInstance->ShowWidget(); 
+		ZE_LOG(LogZeroSector, Display, TEXT("GetProvisoWidget UI 표시됨"));
 	}
 }
 
