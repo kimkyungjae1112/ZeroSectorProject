@@ -11,6 +11,14 @@ class UBlackboardData;
 class UBehaviorTree;
 class UAIPerceptionComponent;
 
+UENUM()
+enum class EAIPerceptionSense : uint8
+{
+	EPS_None = 0,
+	EPS_Sight,
+	EPS_Damage
+};
+
 UCLASS()
 class ZEROSECTOR_API AZeroAIControllerBase : public AAIController
 {
