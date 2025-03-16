@@ -8,6 +8,11 @@ AZeroCharacterBase::AZeroCharacterBase()
 
 }
 
+FGenericTeamId AZeroCharacterBase::GetGenericTeamId() const
+{
+	return FGenericTeamId();
+}
+
 void AZeroCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
