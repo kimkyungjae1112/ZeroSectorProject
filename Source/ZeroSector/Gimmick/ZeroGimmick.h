@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ZeroGimmick.generated.h"
 
-UCLASS()
+UCLASS(abstract)
 class ZEROSECTOR_API AZeroGimmick : public AActor
 {
 	GENERATED_BODY()

@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ZeroWeaponBase.generated.h"
 
-UCLASS()
+UCLASS(abstract)
 class ZEROSECTOR_API AZeroWeaponBase 
 	: public AActor
 {
@@ -21,9 +21,15 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Stat")
+	float MaxRange;
+
+
 private:
-
-
+	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
+	AController* GetOwnerController() const;
 	/* 
 		SoundComp
 		ParticleComp

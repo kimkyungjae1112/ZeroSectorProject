@@ -6,7 +6,7 @@
 #include "Character/ZeroCharacterBase.h"
 #include "ZeroCharacterAIBase.generated.h"
 
-UCLASS()
+UCLASS(abstract)
 class ZEROSECTOR_API AZeroCharacterAIBase : public AZeroCharacterBase
 {
 	GENERATED_BODY()

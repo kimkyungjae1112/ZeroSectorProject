@@ -10,7 +10,7 @@
 #include "Data/ZeroPlayerCameraData.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/SphereComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "UI/ZeroOperationWidget.h"
 #include "UI/ZeroFadeInAndOutWidget.h"
@@ -45,6 +45,8 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	{
 		CameraData = CameraDataRef.Object;
 	}
+
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	CameraComp->SetupAttachment(GetMesh());
@@ -123,7 +125,7 @@ void AZeroCharacterPlayer::Look(const FInputActionValue& Value)
 void AZeroCharacterPlayer::Fire()
 {
 	Weapon->Fire();
-	// 무기 기능 구현은 애니메이션 및 애셋 생기면 구현하기
+	ZE_LOG(LogZeroSector, Display, TEXT("Fire"));
 }
 
 void AZeroCharacterPlayer::Aiming()
@@ -170,7 +172,7 @@ void AZeroCharacterPlayer::InteractBeam()
 		for (UActorComponent* ActorComp : HitResult.GetActor()->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
 		{
 			DialogueInterface = Cast<IZeroDialogueInterface>(ActorComp);
-			DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
+			//DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 			return;
 		}
 
@@ -212,7 +214,7 @@ void AZeroCharacterPlayer::InteractBeam()
 		}
 	}
 
-	DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
+	//DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 }
 
 void AZeroCharacterPlayer::DialogueInteract()
