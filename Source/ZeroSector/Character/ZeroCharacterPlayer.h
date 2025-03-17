@@ -13,9 +13,12 @@ class UCameraComponent;
 class UZeroPlayerCameraData;
 class UZeroFadeInAndOutWidget;
 class UZeroOperationWidget;
+class UZeroProvisoWidget;
+class UZeroGetProvisoWidget;
 class AZeroGimmick;
 class AZeroWeaponBase;
 class APlayerController;
+
 
 /* 
 	Component 변수 선언할 때 Comp로 줄이기
@@ -120,6 +123,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Gimmick")
 	TObjectPtr<AZeroGimmick> InteractedGimmick;
 
+	UZeroProvisoWidget* ProvisoWidgetInstance; 
+	UZeroGetProvisoWidget* GetProvisoWidgetInstance;
+
 /* 무기 */
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
@@ -141,9 +147,16 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TObjectPtr<UZeroFadeInAndOutWidget> FadeInAndOutWidgetPtr;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UZeroProvisoWidget> ProvisoWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UZeroGetProvisoWidget> GetProvisoWidgetClass;
+
 
 /* 작전창 UI를 띄울 테스트 함수 */
 	void OperationUITest();
 	void ClickNextButton();
-
+	
+	
 };
