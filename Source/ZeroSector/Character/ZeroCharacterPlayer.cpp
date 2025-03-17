@@ -208,7 +208,7 @@ void AZeroCharacterPlayer::InteractBeam()
 		InteractedGimmick = nullptr;
 		if (ProvisoWidgetInstance) 
 		{
-			ProvisoWidgetInstance->HideWidget();
+			ProvisoWidgetInstance->RemoveFromParent();
 		}
 	}
 

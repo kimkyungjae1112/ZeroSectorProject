@@ -16,12 +16,9 @@ class ZEROSECTOR_API UZeroProvisoWidget : public UUserWidget
 	
 public:
 
-    UFUNCTION(BlueprintCallable, Category = "UI")
+    UFUNCTION(Category = "UI")
     void ShowWidget();
 
-
-    UFUNCTION(BlueprintCallable, Category = "UI")
-    void HideWidget();
 	
 };
 

@@ -148,10 +148,10 @@ private:
 	TObjectPtr<UZeroFadeInAndOutWidget> FadeInAndOutWidgetPtr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> ProvisoWidgetClass;
+	TSubclassOf<UZeroProvisoWidget> ProvisoWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> GetProvisoWidgetClass;
+	TSubclassOf<UZeroGetProvisoWidget> GetProvisoWidgetClass;
 
 
 /* 작전창 UI를 띄울 테스트 함수 */

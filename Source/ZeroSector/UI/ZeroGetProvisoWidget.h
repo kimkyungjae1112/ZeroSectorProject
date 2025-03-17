@@ -15,11 +15,9 @@ class ZEROSECTOR_API UZeroGetProvisoWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-    UFUNCTION(BlueprintCallable, Category = "UI")
+    UFUNCTION(Category = "UI")
     void ShowWidget();
 
-    UFUNCTION(BlueprintCallable, Category = "UI")
-    void HideWidget();
 
 private:
     FTimerHandle WidgetTimerHandle;

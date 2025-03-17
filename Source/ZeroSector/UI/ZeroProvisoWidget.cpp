@@ -10,8 +10,3 @@ void UZeroProvisoWidget::ShowWidget()
         AddToViewport();
     }
 }
-
-void UZeroProvisoWidget::HideWidget()
-{
-    RemoveFromParent();  
-}

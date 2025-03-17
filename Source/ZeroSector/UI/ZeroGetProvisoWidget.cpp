@@ -6,12 +6,7 @@
 void UZeroGetProvisoWidget::ShowWidget()
 {
     AddToViewport();
-
-
-    GetWorld()->GetTimerManager().SetTimer(WidgetTimerHandle, this, &UZeroGetProvisoWidget::HideWidget, 3.0f, false);
+    GetWorld()->GetTimerManager().SetTimer(WidgetTimerHandle, this, &UZeroGetProvisoWidget::RemoveFromParent, 3.0f, false);
 }
 
-void UZeroGetProvisoWidget::HideWidget()
-{
-    RemoveFromParent();
-}
+
