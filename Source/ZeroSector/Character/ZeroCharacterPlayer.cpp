@@ -233,14 +233,9 @@ void AZeroCharacterPlayer::DialogueInteract()
 
 void AZeroCharacterPlayer::ProvisoInteract()
 {
-	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")))
-	{
-		ZE_LOG(LogZeroSector, Display, TEXT("Proviso 감지"));
-		
-	}
+	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")) == false) return;
 
-	GetProvisoWidgetInstance = CreateWidget<UZeroGetProvisoWidget>(GetWorld(), GetProvisoWidgetClass);
-
+	UZeroGetProvisoWidget* GetProvisoWidgetInstance = CreateWidget<UZeroGetProvisoWidget>(GetWorld(), GetProvisoWidgetClass);
 	if (GetProvisoWidgetInstance)
 	{
 		GetProvisoWidgetInstance->ShowWidget(); 

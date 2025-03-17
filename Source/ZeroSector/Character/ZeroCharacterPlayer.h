@@ -123,9 +123,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Gimmick")
 	TObjectPtr<AZeroGimmick> InteractedGimmick;
 
-	UZeroProvisoWidget* ProvisoWidgetInstance; 
-	UZeroGetProvisoWidget* GetProvisoWidgetInstance;
-
+	
 /* 무기 */
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
@@ -150,9 +148,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UZeroProvisoWidget> ProvisoWidgetClass;
 
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UZeroProvisoWidget> ProvisoWidgetInstance;
+
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UZeroGetProvisoWidget> GetProvisoWidgetClass;
-
+	
 
 /* 작전창 UI를 띄울 테스트 함수 */
 	void OperationUITest();
