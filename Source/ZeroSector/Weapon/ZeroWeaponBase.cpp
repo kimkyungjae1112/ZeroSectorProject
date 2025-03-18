@@ -7,11 +7,21 @@
 
 AZeroWeaponBase::AZeroWeaponBase()
 {
+	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun Mesh Component"));
+	RootComponent = MeshComp;
 
+	FireRate = 0.2f;
 }
 
 void AZeroWeaponBase::Fire()
 {
+	if (bIsFire) return;
+	bIsFire = true;
+
+	FTimerHandle FireRateTimer;
+	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AZeroWeaponBase::StopFire, FireRate, false);
+
+	ZE_LOG(LogZeroSector, Display, TEXT("총 발사"));
 	FHitResult HitResult;
 	FVector ShotDirection;
 	bool Hit = GunTrace(HitResult, ShotDirection);
@@ -20,9 +30,9 @@ void AZeroWeaponBase::Fire()
 		AActor* HitActor = HitResult.GetActor();
 		if (HitActor)
 		{
-			FPointDamageEvent DamageEvent(100.f /* Damage */, HitResult, ShotDirection, nullptr);
+			FPointDamageEvent DamageEvent(Damage, HitResult, ShotDirection, nullptr);
 			AController* OwnerController = GetOwnerController();
-			HitActor->TakeDamage(100.f /* Damage */, DamageEvent, OwnerController, this);
+			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
 			ZE_LOG(LogZeroSector, Display, TEXT("Actor Name : %s"), *HitActor->GetActorNameOrLabel());
 		}
 	}
@@ -61,6 +71,11 @@ AController* AZeroWeaponBase::GetOwnerController() const
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn) return OwnerPawn->GetController();
 	return nullptr;
+}
+
+void AZeroWeaponBase::StopFire()
+{
+	bIsFire = false;
 }
 
 

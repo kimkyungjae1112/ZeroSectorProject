@@ -5,6 +5,11 @@
 
 AZeroWeaponRifle::AZeroWeaponRifle()
 {
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Weapons/Rifle/Mesh/SK_Rifle.SK_Rifle'"));
+	if (MeshRef.Object)
+	{
+		MeshComp->SetSkeletalMesh(MeshRef.Object);
+	}
 }
 
 void AZeroWeaponRifle::Fire()

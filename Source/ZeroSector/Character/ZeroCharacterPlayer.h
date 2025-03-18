@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/ZeroCharacterBase.h"
+#include "Weapon/ZeroWeaponType.h"
 #include "ZeroCharacterPlayer.generated.h"
 
 struct FInputActionValue;
@@ -77,6 +78,7 @@ private:
 	void Fire();
 	void Aiming();
 	void UnAiming();
+	void ChangeWeapon();
 
 	/* DialogueInteract() 를 이루는 함수 */
 	void SetDefaultMovement();
@@ -127,7 +129,16 @@ private:
 /* 무기 */
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TObjectPtr<AZeroWeaponBase> Weapon;
+	TMap<EWeaponType, AZeroWeaponBase*> Weapons;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	TObjectPtr<USkeletalMeshComponent> RifleMeshComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	TObjectPtr<USkeletalMeshComponent> PistolMeshComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	EWeaponType CurrentWeaponType;
 
 	bool bIsAiming = false;
 

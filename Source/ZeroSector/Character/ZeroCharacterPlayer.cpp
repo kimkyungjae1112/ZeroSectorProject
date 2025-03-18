@@ -19,6 +19,7 @@
 #include "Player/ZeroPlayerController.h"
 #include "Weapon/ZeroWeaponRifle.h"
 #include "Weapon/ZeroWeaponShotgun.h"
+#include "Weapon/ZeroWeaponPistol.h"
 #include "Gimmick/ZeroProvisoActor.h"
 #include "Gimmick/ZeroOperationBoard.h"
 #include "ZeroSector.h"
@@ -26,15 +27,7 @@
 AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	// 임시로 메쉬 지정
-	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
-	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
-	if (BodyMeshRef.Object)
-	{
-		GetMesh()->SetSkeletalMesh(BodyMeshRef.Object);
-	}
+	
 	static ConstructorHelpers::FObjectFinder<UZeroInputConfig> InputConfigRef(TEXT("/Script/ZeroSector.ZeroInputConfig'/Game/Data/Input/DataAsset/DA_InputConfig.DA_InputConfig'"));
 	if (InputConfigRef.Object)
 	{
@@ -45,6 +38,19 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	{
 		CameraData = CameraDataRef.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Heroes/Mannequin/Meshes/SKM_Manny.SKM_Manny'"));
+	if (BodyMeshRef.Object)
+	{
+		GetMesh()->SetSkeletalMesh(BodyMeshRef.Object);
+	}
+	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
+	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+
+	RifleMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Rifle Mesh Component"));
+	RifleMeshComp->SetupAttachment(GetMesh(), TEXT("weapon_rifle"));
+
+	PistolMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pistol Mesh Component"));
+	PistolMeshComp ->SetupAttachment(GetMesh(), TEXT("weapon_Pistol"));
 
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 
@@ -57,6 +63,7 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	ChangeInputMap.Add(EDaySequence::EAfternoon, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputAfternoonMode)));
 	ChangeInputMap.Add(EDaySequence::ENight, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputNightMode)));
 
+	CurrentWeaponType = EWeaponType::EPistol;
 	TeamId = FGenericTeamId(0);
 }
 
@@ -78,9 +85,10 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::DialogueInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationBoardInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ProvisoInteract);
-	EnhancedInputComponent->BindAction(InputConfig->IA_Fire, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Fire);
+	EnhancedInputComponent->BindAction(InputConfig->IA_Fire, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Fire);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Aiming);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::UnAiming);
+	EnhancedInputComponent->BindAction(InputConfig->IA_ChangeWeapon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ChangeWeapon);
 }
 
 FGenericTeamId AZeroCharacterPlayer::GetGenericTeamId() const
@@ -124,7 +132,7 @@ void AZeroCharacterPlayer::Look(const FInputActionValue& Value)
 
 void AZeroCharacterPlayer::Fire()
 {
-	Weapon->Fire();
+	Weapons[CurrentWeaponType]->Fire();
 	ZE_LOG(LogZeroSector, Display, TEXT("Fire"));
 }
 
@@ -136,6 +144,11 @@ void AZeroCharacterPlayer::Aiming()
 void AZeroCharacterPlayer::UnAiming()
 {
 	bIsAiming = false;
+}
+
+void AZeroCharacterPlayer::ChangeWeapon()
+{
+
 }
 
 void AZeroCharacterPlayer::SetDefaultMovement()
@@ -311,19 +324,23 @@ void AZeroCharacterPlayer::ClickNextButton()
 
 	switch (OperationWidgetPtr->GetWeaponType())
 	{
-	case EWeaponType::EZeroRifle:
-		Weapon = GetWorld()->SpawnActor<AZeroWeaponRifle>(AZeroWeaponRifle::StaticClass());
-		if (Weapon) ZE_LOG(LogZeroSector, Display, TEXT("Weapon Name : %s"), *Weapon->GetActorNameOrLabel());
+	case EWeaponType::ERifle:
+		Weapons.Add(EWeaponType::ERifle, GetWorld()->SpawnActor<AZeroWeaponRifle>(AZeroWeaponRifle::StaticClass()));
+		Weapons.Add(EWeaponType::EPistol, GetWorld()->SpawnActor<AZeroWeaponPistol>(AZeroWeaponPistol::StaticClass()));
 		break;
-	case EWeaponType::EZeroShotgun:
-		Weapon = GetWorld()->SpawnActor<AZeroWeaponShotgun>(AZeroWeaponShotgun::StaticClass());
-		if (Weapon) ZE_LOG(LogZeroSector, Display, TEXT("Weapon Name : %s"), *Weapon->GetActorNameOrLabel());
+	case EWeaponType::EShotgun:
+		Weapons.Add(EWeaponType::EShotgun, GetWorld()->SpawnActor<AZeroWeaponShotgun>(AZeroWeaponShotgun::StaticClass()));
+		Weapons.Add(EWeaponType::EPistol, GetWorld()->SpawnActor<AZeroWeaponPistol>(AZeroWeaponPistol::StaticClass()));
 		break;
 	default:
 		ZE_LOG(LogZeroSector, Error, TEXT("무기 안들어옴"));
 		break;
 	}
-	Weapon->SetOwner(this);
+
+	for (const auto& Weapon : Weapons)
+	{
+		Weapon.Value->SetOwner(this);
+	}
 
 	FadeInAndOutWidgetPtr = CreateWidget<UZeroFadeInAndOutWidget>(GetPlayerController(), FadeInAndOutWidgetClass);
 	FadeInAndOutWidgetPtr->AddToViewport();
