@@ -7,9 +7,6 @@
 
 AZeroWeaponBase::AZeroWeaponBase()
 {
-	MeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun Mesh Component"));
-	RootComponent = MeshComp;
-
 	FireRate = 0.2f;
 }
 

@@ -7,7 +7,8 @@
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-	EPistol = 0,
+	ENone = 0,
+	EPistol,
 	ERifle,
 	EShotgun
 };

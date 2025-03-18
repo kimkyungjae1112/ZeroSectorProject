@@ -38,7 +38,7 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	{
 		CameraData = CameraDataRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Heroes/Mannequin/Meshes/SKM_Manny.SKM_Manny'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
 	if (BodyMeshRef.Object)
 	{
 		GetMesh()->SetSkeletalMesh(BodyMeshRef.Object);
@@ -148,7 +148,16 @@ void AZeroCharacterPlayer::UnAiming()
 
 void AZeroCharacterPlayer::ChangeWeapon()
 {
-
+	if (ChoicedWeapon == EWeaponType::ERifle)
+	{
+		if (CurrentWeaponType == EWeaponType::EPistol) SetRifle();
+		else SetPistol();
+	}
+	else if (ChoicedWeapon == EWeaponType::EShotgun)
+	{
+		if (CurrentWeaponType == EWeaponType::EPistol) SetShotgun();
+		else SetPistol();
+	}
 }
 
 void AZeroCharacterPlayer::SetDefaultMovement()
@@ -291,6 +300,27 @@ void AZeroCharacterPlayer::SetInputNightMode()
 	}
 }
 
+void AZeroCharacterPlayer::SetRifle()
+{
+	CurrentWeaponType = EWeaponType::ERifle;
+	RifleMeshComp->SetSkeletalMesh(RifleMesh);
+	PistolMeshComp->SetSkeletalMesh(nullptr);
+}
+
+void AZeroCharacterPlayer::SetPistol()
+{
+	CurrentWeaponType = EWeaponType::EPistol;
+	PistolMeshComp->SetSkeletalMesh(PistolMesh);
+	RifleMeshComp->SetSkeletalMesh(nullptr);
+}
+
+void AZeroCharacterPlayer::SetShotgun()
+{
+	CurrentWeaponType = EWeaponType::EShotgun;
+	RifleMeshComp->SetSkeletalMesh(ShotgunMesh);
+	PistolMeshComp->SetSkeletalMesh(nullptr);
+}
+
 void AZeroCharacterPlayer::OperationUITest()
 {
 	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetPlayerController());
@@ -327,10 +357,12 @@ void AZeroCharacterPlayer::ClickNextButton()
 	case EWeaponType::ERifle:
 		Weapons.Add(EWeaponType::ERifle, GetWorld()->SpawnActor<AZeroWeaponRifle>(AZeroWeaponRifle::StaticClass()));
 		Weapons.Add(EWeaponType::EPistol, GetWorld()->SpawnActor<AZeroWeaponPistol>(AZeroWeaponPistol::StaticClass()));
+		ChoicedWeapon = EWeaponType::ERifle;
 		break;
 	case EWeaponType::EShotgun:
 		Weapons.Add(EWeaponType::EShotgun, GetWorld()->SpawnActor<AZeroWeaponShotgun>(AZeroWeaponShotgun::StaticClass()));
 		Weapons.Add(EWeaponType::EPistol, GetWorld()->SpawnActor<AZeroWeaponPistol>(AZeroWeaponPistol::StaticClass()));
+		ChoicedWeapon = EWeaponType::EShotgun;
 		break;
 	default:
 		ZE_LOG(LogZeroSector, Error, TEXT("무기 안들어옴"));
@@ -347,4 +379,5 @@ void AZeroCharacterPlayer::ClickNextButton()
 	FadeInAndOutWidgetPtr->FadeInPlay();
 
 	SetInputByDaySequence(EDaySequence::ENight);
+	SetPistol();
 }

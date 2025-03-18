@@ -128,6 +128,13 @@ private:
 	
 /* 무기 */
 private:
+	void SetRifle();
+	void SetPistol();
+	void SetShotgun();
+
+	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))
+	FORCEINLINE EWeaponType GetWeaponType() const { return CurrentWeaponType; }
+
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TMap<EWeaponType, AZeroWeaponBase*> Weapons;
 
@@ -137,9 +144,19 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<USkeletalMeshComponent> PistolMeshComp;
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TObjectPtr<USkeletalMesh> RifleMesh;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TObjectPtr<USkeletalMesh> PistolMesh;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TObjectPtr<USkeletalMesh> ShotgunMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	EWeaponType CurrentWeaponType;
 
+	EWeaponType ChoicedWeapon;
 	bool bIsAiming = false;
 
 /* UI */

@@ -30,9 +30,6 @@ protected:
 
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Mesh")
-	TObjectPtr<USkeletalMeshComponent> MeshComp;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Stat")
 	float MaxRange;
 
