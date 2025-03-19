@@ -4,18 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Weapon/ZeroWeaponType.h"
 #include "ZeroOperationWidget.generated.h"
 
 class UButton;
 
 DECLARE_DELEGATE(FOnClickNextButton)
-
-UENUM()
-enum class EWeaponType : uint8
-{
-	EZeroRifle = 0,
-	EZeroShotgun
-};
 
 UCLASS()
 class ZEROSECTOR_API UZeroOperationWidget : public UUserWidget

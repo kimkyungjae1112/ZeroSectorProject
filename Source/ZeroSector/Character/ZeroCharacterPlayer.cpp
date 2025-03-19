@@ -10,7 +10,7 @@
 #include "Data/ZeroPlayerCameraData.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/SphereComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "UI/ZeroOperationWidget.h"
 #include "UI/ZeroFadeInAndOutWidget.h"
@@ -19,6 +19,7 @@
 #include "Player/ZeroPlayerController.h"
 #include "Weapon/ZeroWeaponRifle.h"
 #include "Weapon/ZeroWeaponShotgun.h"
+#include "Weapon/ZeroWeaponPistol.h"
 #include "Gimmick/ZeroProvisoActor.h"
 #include "Gimmick/ZeroOperationBoard.h"
 #include "ZeroSector.h"
@@ -26,15 +27,7 @@
 AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	// 임시로 메쉬 지정
-	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
-	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
-	if (BodyMeshRef.Object)
-	{
-		GetMesh()->SetSkeletalMesh(BodyMeshRef.Object);
-	}
+	
 	static ConstructorHelpers::FObjectFinder<UZeroInputConfig> InputConfigRef(TEXT("/Script/ZeroSector.ZeroInputConfig'/Game/Data/Input/DataAsset/DA_InputConfig.DA_InputConfig'"));
 	if (InputConfigRef.Object)
 	{
@@ -45,6 +38,21 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	{
 		CameraData = CameraDataRef.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
+	if (BodyMeshRef.Object)
+	{
+		GetMesh()->SetSkeletalMesh(BodyMeshRef.Object);
+	}
+	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
+	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+
+	RifleMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Rifle Mesh Component"));
+	RifleMeshComp->SetupAttachment(GetMesh(), TEXT("weapon_rifle"));
+
+	PistolMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pistol Mesh Component"));
+	PistolMeshComp ->SetupAttachment(GetMesh(), TEXT("weapon_Pistol"));
+
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	CameraComp->SetupAttachment(GetMesh());
@@ -55,6 +63,7 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	ChangeInputMap.Add(EDaySequence::EAfternoon, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputAfternoonMode)));
 	ChangeInputMap.Add(EDaySequence::ENight, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputNightMode)));
 
+	CurrentWeaponType = EWeaponType::EPistol;
 	TeamId = FGenericTeamId(0);
 }
 
@@ -76,9 +85,10 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::DialogueInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationBoardInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ProvisoInteract);
-	EnhancedInputComponent->BindAction(InputConfig->IA_Fire, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Fire);
+	EnhancedInputComponent->BindAction(InputConfig->IA_Fire, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Fire);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Aiming);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::UnAiming);
+	EnhancedInputComponent->BindAction(InputConfig->IA_ChangeWeapon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ChangeWeapon);
 }
 
 FGenericTeamId AZeroCharacterPlayer::GetGenericTeamId() const
@@ -122,8 +132,8 @@ void AZeroCharacterPlayer::Look(const FInputActionValue& Value)
 
 void AZeroCharacterPlayer::Fire()
 {
-	Weapon->Fire();
-	// 무기 기능 구현은 애니메이션 및 애셋 생기면 구현하기
+	Weapons[CurrentWeaponType]->Fire();
+	ZE_LOG(LogZeroSector, Display, TEXT("Fire"));
 }
 
 void AZeroCharacterPlayer::Aiming()
@@ -136,18 +146,79 @@ void AZeroCharacterPlayer::UnAiming()
 	bIsAiming = false;
 }
 
-void AZeroCharacterPlayer::SetDefaultMovement()
+void AZeroCharacterPlayer::ChangeWeapon()
 {
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	CameraComp->SetRelativeLocation(CameraData->CommonCameraVector);
-	CameraComp->SetRelativeRotation(CameraData->CommonCameraRotator);
+	if (ChoicedWeapon == EWeaponType::ERifle)
+	{
+		if (CurrentWeaponType == EWeaponType::EPistol) SetRifle();
+		else SetPistol();
+	}
+	else if (ChoicedWeapon == EWeaponType::EShotgun)
+	{
+		if (CurrentWeaponType == EWeaponType::EPistol) SetShotgun();
+		else SetPistol();
+	}
 }
 
-void AZeroCharacterPlayer::SetDialogueMovement()
+void AZeroCharacterPlayer::DialogueInteract()
 {
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-	CameraComp->SetRelativeLocation(CameraData->DialogueCameraVector);
-	CameraComp->SetRelativeRotation(CameraData->DialogueCameraRotator);
+	if (DialogueInterface)
+	{
+		DialogueInterface->StartDialogue();
+		FOnFinishedDialogue OnFinishedDialogue;
+		OnFinishedDialogue.BindLambda([&]()
+			{
+				SetDefaultMovement();
+			});
+		DialogueInterface->SetupFinishedDialogueDelegate(OnFinishedDialogue);
+
+		SetDialogueMovement();
+	}
+}
+
+void AZeroCharacterPlayer::ProvisoInteract()
+{
+	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")) == false) return;
+
+	UZeroGetProvisoWidget* GetProvisoWidgetInstance = CreateWidget<UZeroGetProvisoWidget>(GetWorld(), GetProvisoWidgetClass);
+	if (GetProvisoWidgetInstance)
+	{
+		GetProvisoWidgetInstance->ShowWidget();
+		ZE_LOG(LogZeroSector, Display, TEXT("GetProvisoWidget UI 표시됨"));
+	}
+}
+
+void AZeroCharacterPlayer::OperationBoardInteract()
+{
+	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("OperationBoard")))
+	{
+		OperationUITest();
+	}
+}
+
+void AZeroCharacterPlayer::SetInputByDaySequence(EDaySequence DaySequence)
+{
+	ChangeInputMap[DaySequence].ChangeInput.ExecuteIfBound();
+}
+
+void AZeroCharacterPlayer::SetInputAfternoonMode()
+{
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
+	{
+		Subsystem->ClearAllMappings();
+		Subsystem->AddMappingContext(InputConfig->IMC_Day, 0);
+		ZE_LOG(LogZeroSector, Display, TEXT("Afternoon InputMode"));
+	}
+}
+
+void AZeroCharacterPlayer::SetInputNightMode()
+{
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
+	{
+		Subsystem->ClearAllMappings();
+		Subsystem->AddMappingContext(InputConfig->IMC_Night, 0);
+		ZE_LOG(LogZeroSector, Display, TEXT("Night InputMode"));
+	}
 }
 
 void AZeroCharacterPlayer::InteractBeam()
@@ -170,7 +241,7 @@ void AZeroCharacterPlayer::InteractBeam()
 		for (UActorComponent* ActorComp : HitResult.GetActor()->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
 		{
 			DialogueInterface = Cast<IZeroDialogueInterface>(ActorComp);
-			DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
+			//DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 			return;
 		}
 
@@ -212,68 +283,42 @@ void AZeroCharacterPlayer::InteractBeam()
 		}
 	}
 
-	DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
+	//DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 }
 
-void AZeroCharacterPlayer::DialogueInteract()
+void AZeroCharacterPlayer::SetDefaultMovement()
 {
-	if (DialogueInterface)
-	{
-		DialogueInterface->StartDialogue();
-		FOnFinishedDialogue OnFinishedDialogue;
-		OnFinishedDialogue.BindLambda([&]()
-			{
-				SetDefaultMovement();
-			});
-		DialogueInterface->SetupFinishedDialogueDelegate(OnFinishedDialogue);
-
-		SetDialogueMovement();
-	}
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	CameraComp->SetRelativeLocation(CameraData->CommonCameraVector);
+	CameraComp->SetRelativeRotation(CameraData->CommonCameraRotator);
 }
 
-void AZeroCharacterPlayer::ProvisoInteract()
+void AZeroCharacterPlayer::SetDialogueMovement()
 {
-	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")) == false) return;
-
-	UZeroGetProvisoWidget* GetProvisoWidgetInstance = CreateWidget<UZeroGetProvisoWidget>(GetWorld(), GetProvisoWidgetClass);
-	if (GetProvisoWidgetInstance)
-	{
-		GetProvisoWidgetInstance->ShowWidget(); 
-		ZE_LOG(LogZeroSector, Display, TEXT("GetProvisoWidget UI 표시됨"));
-	}
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	CameraComp->SetRelativeLocation(CameraData->DialogueCameraVector);
+	CameraComp->SetRelativeRotation(CameraData->DialogueCameraRotator);
 }
 
-void AZeroCharacterPlayer::OperationBoardInteract()
+void AZeroCharacterPlayer::SetRifle()
 {
-	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("OperationBoard")))
-	{
-		OperationUITest();
-	}
+	CurrentWeaponType = EWeaponType::ERifle;
+	RifleMeshComp->SetSkeletalMesh(RifleMesh);
+	PistolMeshComp->SetSkeletalMesh(nullptr);
 }
 
-void AZeroCharacterPlayer::SetInputByDaySequence(EDaySequence DaySequence)
+void AZeroCharacterPlayer::SetPistol()
 {
-	ChangeInputMap[DaySequence].ChangeInput.ExecuteIfBound();
+	CurrentWeaponType = EWeaponType::EPistol;
+	PistolMeshComp->SetSkeletalMesh(PistolMesh);
+	RifleMeshComp->SetSkeletalMesh(nullptr);
 }
 
-void AZeroCharacterPlayer::SetInputAfternoonMode()
+void AZeroCharacterPlayer::SetShotgun()
 {
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
-	{
-		Subsystem->ClearAllMappings();
-		Subsystem->AddMappingContext(InputConfig->IMC_Day, 0);
-		ZE_LOG(LogZeroSector, Display, TEXT("Afternoon InputMode"));
-	}
-}
-
-void AZeroCharacterPlayer::SetInputNightMode()
-{
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
-	{
-		Subsystem->ClearAllMappings();
-		Subsystem->AddMappingContext(InputConfig->IMC_Night, 0);
-		ZE_LOG(LogZeroSector, Display, TEXT("Night InputMode"));
-	}
+	CurrentWeaponType = EWeaponType::EShotgun;
+	RifleMeshComp->SetSkeletalMesh(ShotgunMesh);
+	PistolMeshComp->SetSkeletalMesh(nullptr);
 }
 
 void AZeroCharacterPlayer::OperationUITest()
@@ -309,23 +354,30 @@ void AZeroCharacterPlayer::ClickNextButton()
 
 	switch (OperationWidgetPtr->GetWeaponType())
 	{
-	case EWeaponType::EZeroRifle:
-		Weapon = GetWorld()->SpawnActor<AZeroWeaponRifle>(AZeroWeaponRifle::StaticClass());
-		if (Weapon) ZE_LOG(LogZeroSector, Display, TEXT("Weapon Name : %s"), *Weapon->GetActorNameOrLabel());
+	case EWeaponType::ERifle:
+		Weapons.Add(EWeaponType::ERifle, GetWorld()->SpawnActor<AZeroWeaponRifle>(AZeroWeaponRifle::StaticClass()));
+		Weapons.Add(EWeaponType::EPistol, GetWorld()->SpawnActor<AZeroWeaponPistol>(AZeroWeaponPistol::StaticClass()));
+		ChoicedWeapon = EWeaponType::ERifle;
 		break;
-	case EWeaponType::EZeroShotgun:
-		Weapon = GetWorld()->SpawnActor<AZeroWeaponShotgun>(AZeroWeaponShotgun::StaticClass());
-		if (Weapon) ZE_LOG(LogZeroSector, Display, TEXT("Weapon Name : %s"), *Weapon->GetActorNameOrLabel());
+	case EWeaponType::EShotgun:
+		Weapons.Add(EWeaponType::EShotgun, GetWorld()->SpawnActor<AZeroWeaponShotgun>(AZeroWeaponShotgun::StaticClass()));
+		Weapons.Add(EWeaponType::EPistol, GetWorld()->SpawnActor<AZeroWeaponPistol>(AZeroWeaponPistol::StaticClass()));
+		ChoicedWeapon = EWeaponType::EShotgun;
 		break;
 	default:
 		ZE_LOG(LogZeroSector, Error, TEXT("무기 안들어옴"));
 		break;
 	}
-	Weapon->SetOwner(this);
+
+	for (const auto& Weapon : Weapons)
+	{
+		Weapon.Value->SetOwner(this);
+	}
 
 	FadeInAndOutWidgetPtr = CreateWidget<UZeroFadeInAndOutWidget>(GetPlayerController(), FadeInAndOutWidgetClass);
 	FadeInAndOutWidgetPtr->AddToViewport();
 	FadeInAndOutWidgetPtr->FadeInPlay();
 
 	SetInputByDaySequence(EDaySequence::ENight);
+	SetPistol();
 }

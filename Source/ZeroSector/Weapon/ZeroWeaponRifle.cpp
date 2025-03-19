@@ -5,6 +5,7 @@
 
 AZeroWeaponRifle::AZeroWeaponRifle()
 {
+
 }
 
 void AZeroWeaponRifle::Fire()

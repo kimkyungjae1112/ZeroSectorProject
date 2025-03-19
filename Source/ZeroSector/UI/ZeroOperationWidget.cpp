@@ -27,14 +27,14 @@ void UZeroOperationWidget::NativeConstruct()
 
 void UZeroOperationWidget::ClickRifleButton()
 {
-	CurrentWeaponType = EWeaponType::EZeroRifle;
+	CurrentWeaponType = EWeaponType::ERifle;
 	RifleButton->SetBackgroundColor(FLinearColor::Green);
 	ShotgunButton->SetBackgroundColor(FLinearColor::White);
 }
 
 void UZeroOperationWidget::ClickShotgunButton()
 {
-	CurrentWeaponType = EWeaponType::EZeroShotgun;
+	CurrentWeaponType = EWeaponType::EShotgun;
 	RifleButton->SetBackgroundColor(FLinearColor::White);
 	ShotgunButton->SetBackgroundColor(FLinearColor::Green);
 }

@@ -2,9 +2,12 @@
 
 
 #include "Character/ZeroCharacterAIZombieTest.h"
+#include "Components/CapsuleComponent.h"
 
 AZeroCharacterAIZombieTest::AZeroCharacterAIZombieTest()
 {
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Zombie"));
+
 	TeamId = FGenericTeamId(1);
 }
 
