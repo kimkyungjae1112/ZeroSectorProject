@@ -70,8 +70,7 @@ protected:
 private:
 	APlayerController* GetPlayerController() const;
 
-
-/* 어빌리티 함수들 */
+/* Input 바인딩 함수 */
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -80,35 +79,11 @@ private:
 	void UnAiming();
 	void ChangeWeapon();
 
-	/* DialogueInteract() 를 이루는 함수 */
-	void SetDefaultMovement();
-	void SetDialogueMovement();
-
-
-	/* 시선 앞의 물체 탐색 함수 */
-	void InteractBeam();
-
-	/* 상호작용 함수들 */
 	void DialogueInteract();
 	void ProvisoInteract();
 	void OperationBoardInteract();
 
-/* 카메라 */
-private:
-	UPROPERTY(VisibleAnywhere, Category = "Camera")
-	TObjectPtr<UCameraComponent> CameraComp;
-
-	UPROPERTY(VisibleAnywhere, Category = "Camera")
-	TObjectPtr<UZeroPlayerCameraData> CameraData;
-
-	UPROPERTY(EditAnywhere, Category = "Camera")
-	float DetectDistance;
-
-/* 대화 섹션 */
-private:
-	IZeroDialogueInterface* DialogueInterface;
-
-/* Input */
+/* Input 데이터 및 변경 */
 private:
 	void SetInputByDaySequence(EDaySequence DaySequence);
 	void SetInputAfternoonMode();
@@ -119,6 +94,20 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Input")
 	TObjectPtr<UZeroInputConfig> InputConfig;
+
+/* 상호작용 */
+	void InteractBeam();
+
+	UPROPERTY(EditAnywhere, Category = "Interact")
+	float DetectDistance;
+
+/* 대화 섹션 */
+private:
+	void SetDefaultMovement();
+	void SetDialogueMovement();
+
+	IZeroDialogueInterface* DialogueInterface;
+
 
 /* 기믹 */
 private:
@@ -159,6 +148,15 @@ private:
 	EWeaponType ChoicedWeapon;
 	bool bIsAiming = false;
 
+/* 카메라 */
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	TObjectPtr<UCameraComponent> CameraComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	TObjectPtr<UZeroPlayerCameraData> CameraData;
+
+	
 /* UI */
 private:
 	UPROPERTY(EditAnywhere, Category = "UI")

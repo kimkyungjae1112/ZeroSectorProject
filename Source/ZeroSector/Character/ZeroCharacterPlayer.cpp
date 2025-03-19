@@ -160,18 +160,65 @@ void AZeroCharacterPlayer::ChangeWeapon()
 	}
 }
 
-void AZeroCharacterPlayer::SetDefaultMovement()
+void AZeroCharacterPlayer::DialogueInteract()
 {
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
-	CameraComp->SetRelativeLocation(CameraData->CommonCameraVector);
-	CameraComp->SetRelativeRotation(CameraData->CommonCameraRotator);
+	if (DialogueInterface)
+	{
+		DialogueInterface->StartDialogue();
+		FOnFinishedDialogue OnFinishedDialogue;
+		OnFinishedDialogue.BindLambda([&]()
+			{
+				SetDefaultMovement();
+			});
+		DialogueInterface->SetupFinishedDialogueDelegate(OnFinishedDialogue);
+
+		SetDialogueMovement();
+	}
 }
 
-void AZeroCharacterPlayer::SetDialogueMovement()
+void AZeroCharacterPlayer::ProvisoInteract()
 {
-	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
-	CameraComp->SetRelativeLocation(CameraData->DialogueCameraVector);
-	CameraComp->SetRelativeRotation(CameraData->DialogueCameraRotator);
+	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")) == false) return;
+
+	UZeroGetProvisoWidget* GetProvisoWidgetInstance = CreateWidget<UZeroGetProvisoWidget>(GetWorld(), GetProvisoWidgetClass);
+	if (GetProvisoWidgetInstance)
+	{
+		GetProvisoWidgetInstance->ShowWidget();
+		ZE_LOG(LogZeroSector, Display, TEXT("GetProvisoWidget UI 표시됨"));
+	}
+}
+
+void AZeroCharacterPlayer::OperationBoardInteract()
+{
+	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("OperationBoard")))
+	{
+		OperationUITest();
+	}
+}
+
+void AZeroCharacterPlayer::SetInputByDaySequence(EDaySequence DaySequence)
+{
+	ChangeInputMap[DaySequence].ChangeInput.ExecuteIfBound();
+}
+
+void AZeroCharacterPlayer::SetInputAfternoonMode()
+{
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
+	{
+		Subsystem->ClearAllMappings();
+		Subsystem->AddMappingContext(InputConfig->IMC_Day, 0);
+		ZE_LOG(LogZeroSector, Display, TEXT("Afternoon InputMode"));
+	}
+}
+
+void AZeroCharacterPlayer::SetInputNightMode()
+{
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
+	{
+		Subsystem->ClearAllMappings();
+		Subsystem->AddMappingContext(InputConfig->IMC_Night, 0);
+		ZE_LOG(LogZeroSector, Display, TEXT("Night InputMode"));
+	}
 }
 
 void AZeroCharacterPlayer::InteractBeam()
@@ -239,65 +286,18 @@ void AZeroCharacterPlayer::InteractBeam()
 	//DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 }
 
-void AZeroCharacterPlayer::DialogueInteract()
+void AZeroCharacterPlayer::SetDefaultMovement()
 {
-	if (DialogueInterface)
-	{
-		DialogueInterface->StartDialogue();
-		FOnFinishedDialogue OnFinishedDialogue;
-		OnFinishedDialogue.BindLambda([&]()
-			{
-				SetDefaultMovement();
-			});
-		DialogueInterface->SetupFinishedDialogueDelegate(OnFinishedDialogue);
-
-		SetDialogueMovement();
-	}
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	CameraComp->SetRelativeLocation(CameraData->CommonCameraVector);
+	CameraComp->SetRelativeRotation(CameraData->CommonCameraRotator);
 }
 
-void AZeroCharacterPlayer::ProvisoInteract()
+void AZeroCharacterPlayer::SetDialogueMovement()
 {
-	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")) == false) return;
-
-	UZeroGetProvisoWidget* GetProvisoWidgetInstance = CreateWidget<UZeroGetProvisoWidget>(GetWorld(), GetProvisoWidgetClass);
-	if (GetProvisoWidgetInstance)
-	{
-		GetProvisoWidgetInstance->ShowWidget(); 
-		ZE_LOG(LogZeroSector, Display, TEXT("GetProvisoWidget UI 표시됨"));
-	}
-}
-
-void AZeroCharacterPlayer::OperationBoardInteract()
-{
-	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("OperationBoard")))
-	{
-		OperationUITest();
-	}
-}
-
-void AZeroCharacterPlayer::SetInputByDaySequence(EDaySequence DaySequence)
-{
-	ChangeInputMap[DaySequence].ChangeInput.ExecuteIfBound();
-}
-
-void AZeroCharacterPlayer::SetInputAfternoonMode()
-{
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
-	{
-		Subsystem->ClearAllMappings();
-		Subsystem->AddMappingContext(InputConfig->IMC_Day, 0);
-		ZE_LOG(LogZeroSector, Display, TEXT("Afternoon InputMode"));
-	}
-}
-
-void AZeroCharacterPlayer::SetInputNightMode()
-{
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
-	{
-		Subsystem->ClearAllMappings();
-		Subsystem->AddMappingContext(InputConfig->IMC_Night, 0);
-		ZE_LOG(LogZeroSector, Display, TEXT("Night InputMode"));
-	}
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+	CameraComp->SetRelativeLocation(CameraData->DialogueCameraVector);
+	CameraComp->SetRelativeRotation(CameraData->DialogueCameraRotator);
 }
 
 void AZeroCharacterPlayer::SetRifle()
