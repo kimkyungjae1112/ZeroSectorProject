@@ -20,6 +20,46 @@ UZeroSingleton::UZeroSingleton()
 			}
 		);
 	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> ProvisoDataTableRef(TEXT("/Game/Data/Proviso/ProvisoDataTable.ProvisoDataTable"));
+	if (ProvisoDataTableRef.Succeeded())
+	{
+		const UDataTable* ProvisoDataTable = ProvisoDataTableRef.Object;
+
+
+		TArray<uint8*> ValueArray;
+		ProvisoDataTable->GetRowMap().GenerateValueArray(ValueArray);
+
+		for (uint8* Value : ValueArray)
+		{
+			if (Value)
+			{
+				FZeroProvisoDataTable* Data = reinterpret_cast<FZeroProvisoDataTable*>(Value);
+			}
+		}
+
+		Algo::Transform(ValueArray, ProvisoDataList,
+			[](uint8* Value)
+			{
+				return *reinterpret_cast<FZeroProvisoDataTable*>(Value);
+			}
+		);
+
+	}
+
+}
+
+void UZeroSingleton::AddCollectedProviso(const FZeroProvisoDataTable& ProvisoData)
+{
+	if (!CollectedProvisos.Contains(ProvisoData))
+	{
+		CollectedProvisos.Add(ProvisoData);
+	}
+}
+
+TArray<FZeroProvisoDataTable> UZeroSingleton::GetCollectedProvisos() const
+{
+	return CollectedProvisos;
 }
 
 UZeroSingleton& UZeroSingleton::Get()

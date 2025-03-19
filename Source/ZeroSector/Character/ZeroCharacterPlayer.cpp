@@ -13,6 +13,9 @@
 #include "Player/ZeroPlayerController.h"
 #include "Gimmick/ZeroProvisoActor.h"
 #include "Gimmick/ZeroOperationBoard.h"
+#include "UI/ZeroNoteWidget.h"
+#include "Data/ZeroProvisoDataTable.h"
+#include "Data/ZeroSingleton.h"
 #include "ZeroSector.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
@@ -80,6 +83,7 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Aiming);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::UnAiming);
 	EnhancedInputComponent->BindAction(InputConfig->IA_ChangeWeapon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ChangeWeapon);
+	EnhancedInputComponent->BindAction(InputConfig->IA_ToggleNote, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ToggleNote);
 }
 
 FGenericTeamId AZeroCharacterPlayer::GetGenericTeamId() const
@@ -92,6 +96,7 @@ void AZeroCharacterPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	SetInputAfternoonMode();
+	NoteWidgetInstance = CreateWidget<UZeroNoteWidget>(GetWorld(), NoteWidgetClass);
 }
 
 APlayerController* AZeroCharacterPlayer::GetPlayerController() const
@@ -180,8 +185,23 @@ void AZeroCharacterPlayer::ProvisoInteract()
 	if (GetProvisoWidgetInstance)
 	{
 		GetProvisoWidgetInstance->ShowWidget();
-		ZE_LOG(LogZeroSector, Display, TEXT("GetProvisoWidget UI 표시됨"));
 	}
+
+	FZeroProvisoDataTable ProvisoData = UZeroSingleton::Get().GetProvisoData(ProvisoNum);
+
+	if (!ProvisoData.ProvisoName.IsNone())
+	{
+		UZeroSingleton::Get().AddCollectedProviso(ProvisoData);
+
+		GetProvisoWidgetInstance->SetProvisoInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
+
+		if (NoteWidgetInstance)
+		{
+			NoteWidgetInstance->SetNoteInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
+		}		
+	}
+
+	ProvisoNum = 1;
 }
 
 void AZeroCharacterPlayer::OperationBoardInteract()
@@ -373,4 +393,19 @@ void AZeroCharacterPlayer::ClickNextButton()
 
 	SetInputByDaySequence(EDaySequence::ENight);
 	SetPistol();
+}
+
+void AZeroCharacterPlayer::ToggleNote()
+{
+
+	if (bIsNoteToggle)
+	{
+		NoteWidgetInstance->RemoveFromParent();
+		bIsNoteToggle = false;
+	}
+	else
+	{
+		NoteWidgetInstance->AddToViewport();
+		bIsNoteToggle = true;
+	}
 }
