@@ -71,6 +71,11 @@ private:
 	APlayerController* GetPlayerController() const;
 	AZeroPlayerController* GetZeroPlayerController() const;
 
+/* 1인칭 손 */
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Mesh")
+	TObjectPtr<USkeletalMeshComponent> ArmMeshComp;
+
 /* Input 바인딩 함수 */
 private:
 	void Move(const FInputActionValue& Value);
@@ -163,6 +168,10 @@ private:
 	
 /* UI */
 private:
+	void OperationWidgetDisplay();
+	void OperationNextButtonClick();
+	void FadeInAndOutDisplay();
+
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UZeroOperationWidget> OperationWidgetClass;
 
@@ -183,11 +192,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UZeroGetProvisoWidget> GetProvisoWidgetClass;
-	
 
-/* 작전창 UI를 띄울 테스트 함수 */
-	void OperationUITest();
-	void ClickNextButton();
 	
 /* Test Code */
 	void NightToAfternoon();

@@ -29,27 +29,32 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	{
 		CameraData = CameraDataRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
-	if (BodyMeshRef.Object)
-	{
-		GetMesh()->SetSkeletalMesh(BodyMeshRef.Object);
-	}
+	
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-
-	MainWeaponMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Rifle Mesh Component"));
-	MainWeaponMeshComp->SetupAttachment(GetMesh(), TEXT("weapon_rifle"));
-
-	PistolMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pistol Mesh Component"));
-	PistolMeshComp ->SetupAttachment(GetMesh(), TEXT("weapon_Pistol"));
-
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
-	CameraComp->SetupAttachment(GetMesh());
+	CameraComp->SetupAttachment(RootComponent);
 	CameraComp->bUsePawnControlRotation = true;
 	CameraComp->SetRelativeLocation(CameraData->CommonCameraVector);
 	CameraComp->SetRelativeRotation(CameraData->CommonCameraRotator);
+
+	ArmMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arm Mesh Component"));
+	ArmMeshComp->SetupAttachment(CameraComp);
+	ArmMeshComp->SetRelativeLocation(FVector(-10.f, 0.f, -160.f));
+	ArmMeshComp->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> ArmMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/FirstPersonArms/FirstCharacter/Mesh/SK_Mannequin_Arms.SK_Mannequin_Arms'"));
+	if (ArmMeshRef.Object)
+	{
+		ArmMeshComp->SetSkeletalMesh(ArmMeshRef.Object);
+	}
+
+	MainWeaponMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Rifle Mesh Component"));
+	MainWeaponMeshComp->SetupAttachment(ArmMeshComp, TEXT("weapon_main"));
+
+	PistolMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pistol Mesh Component"));
+	PistolMeshComp->SetupAttachment(ArmMeshComp, TEXT("weapon_pistol"));
 
 	ChangeInputMap.Add(EDaySequence::EAfternoon, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputAfternoonMode)));
 	ChangeInputMap.Add(EDaySequence::ENight, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputNightMode)));
@@ -189,7 +194,7 @@ void AZeroCharacterPlayer::OperationBoardInteract()
 {
 	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("OperationBoard")))
 	{
-		OperationUITest();
+		OperationWidgetDisplay();
 	}
 }
 
@@ -330,7 +335,7 @@ void AZeroCharacterPlayer::SetShotgun()
 	PistolMeshComp->SetSkeletalMesh(nullptr);
 }
 
-void AZeroCharacterPlayer::OperationUITest()
+void AZeroCharacterPlayer::OperationWidgetDisplay()
 {
 	GetZeroPlayerController()->InputModeUIOnly();
 	
@@ -341,13 +346,13 @@ void AZeroCharacterPlayer::OperationUITest()
 		FOnClickNextButton OnClickNextButton;
 		OnClickNextButton.BindLambda([&]()
 			{
-				ClickNextButton();
+				OperationNextButtonClick();
 			});
 		OperationWidgetPtr->SetDelegateClickNextButton(OnClickNextButton);
 	}
 }
 
-void AZeroCharacterPlayer::ClickNextButton()
+void AZeroCharacterPlayer::OperationNextButtonClick()
 {
 	GetZeroPlayerController()->InputModeGameOnly();
 
@@ -375,22 +380,23 @@ void AZeroCharacterPlayer::ClickNextButton()
 		Weapon.Value->SetOwner(this);
 	}
 
-	FadeInAndOutWidgetPtr = CreateWidget<UZeroFadeInAndOutWidget>(GetPlayerController(), FadeInAndOutWidgetClass);
-	FadeInAndOutWidgetPtr->AddToViewport();
-	FadeInAndOutWidgetPtr->FadeInPlay();
-	FadeInAndOutWidgetPtr = nullptr;
+	FadeInAndOutDisplay();
 
 	SetInputByDaySequence(EDaySequence::ENight);
 	SetPistol();
 }
 
-void AZeroCharacterPlayer::NightToAfternoon()
+void AZeroCharacterPlayer::FadeInAndOutDisplay()
 {
-	ZE_LOG(LogZeroSector, Display, TEXT("Tab 클릭"));
 	FadeInAndOutWidgetPtr = CreateWidget<UZeroFadeInAndOutWidget>(GetPlayerController(), FadeInAndOutWidgetClass);
 	FadeInAndOutWidgetPtr->AddToViewport();
 	FadeInAndOutWidgetPtr->FadeInPlay();
 	FadeInAndOutWidgetPtr = nullptr;
+}
+
+void AZeroCharacterPlayer::NightToAfternoon()
+{
+	FadeInAndOutDisplay();
 
 	SetInputByDaySequence(EDaySequence::EAfternoon);
 	SetNoWeapon();
