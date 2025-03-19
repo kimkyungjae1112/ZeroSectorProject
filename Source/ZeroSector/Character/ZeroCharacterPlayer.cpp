@@ -37,8 +37,8 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
-	RifleMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Rifle Mesh Component"));
-	RifleMeshComp->SetupAttachment(GetMesh(), TEXT("weapon_rifle"));
+	MainWeaponMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Rifle Mesh Component"));
+	MainWeaponMeshComp->SetupAttachment(GetMesh(), TEXT("weapon_rifle"));
 
 	PistolMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pistol Mesh Component"));
 	PistolMeshComp ->SetupAttachment(GetMesh(), TEXT("weapon_Pistol"));
@@ -54,7 +54,7 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	ChangeInputMap.Add(EDaySequence::EAfternoon, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputAfternoonMode)));
 	ChangeInputMap.Add(EDaySequence::ENight, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputNightMode)));
 
-	CurrentWeaponType = EWeaponType::EPistol;
+	CurrentWeaponType = EWeaponType::ENone;
 	TeamId = FGenericTeamId(0);
 }
 
@@ -80,6 +80,7 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Aiming);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::UnAiming);
 	EnhancedInputComponent->BindAction(InputConfig->IA_ChangeWeapon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ChangeWeapon);
+	EnhancedInputComponent->BindAction(InputConfig->IA_NightToAfternoon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::NightToAfternoon);
 }
 
 FGenericTeamId AZeroCharacterPlayer::GetGenericTeamId() const
@@ -301,10 +302,17 @@ void AZeroCharacterPlayer::SetDialogueMovement()
 	CameraComp->SetRelativeRotation(CameraData->DialogueCameraRotator);
 }
 
+void AZeroCharacterPlayer::SetNoWeapon()
+{
+	CurrentWeaponType = EWeaponType::ENone;
+	MainWeaponMeshComp->SetSkeletalMesh(nullptr);
+	PistolMeshComp->SetSkeletalMesh(nullptr);
+}
+
 void AZeroCharacterPlayer::SetRifle()
 {
 	CurrentWeaponType = EWeaponType::ERifle;
-	RifleMeshComp->SetSkeletalMesh(RifleMesh);
+	MainWeaponMeshComp->SetSkeletalMesh(RifleMesh);
 	PistolMeshComp->SetSkeletalMesh(nullptr);
 }
 
@@ -312,13 +320,13 @@ void AZeroCharacterPlayer::SetPistol()
 {
 	CurrentWeaponType = EWeaponType::EPistol;
 	PistolMeshComp->SetSkeletalMesh(PistolMesh);
-	RifleMeshComp->SetSkeletalMesh(nullptr);
+	MainWeaponMeshComp->SetSkeletalMesh(nullptr);
 }
 
 void AZeroCharacterPlayer::SetShotgun()
 {
 	CurrentWeaponType = EWeaponType::EShotgun;
-	RifleMeshComp->SetSkeletalMesh(ShotgunMesh);
+	MainWeaponMeshComp->SetSkeletalMesh(ShotgunMesh);
 	PistolMeshComp->SetSkeletalMesh(nullptr);
 }
 
@@ -370,7 +378,20 @@ void AZeroCharacterPlayer::ClickNextButton()
 	FadeInAndOutWidgetPtr = CreateWidget<UZeroFadeInAndOutWidget>(GetPlayerController(), FadeInAndOutWidgetClass);
 	FadeInAndOutWidgetPtr->AddToViewport();
 	FadeInAndOutWidgetPtr->FadeInPlay();
+	FadeInAndOutWidgetPtr = nullptr;
 
 	SetInputByDaySequence(EDaySequence::ENight);
 	SetPistol();
+}
+
+void AZeroCharacterPlayer::NightToAfternoon()
+{
+	ZE_LOG(LogZeroSector, Display, TEXT("Tab 클릭"));
+	FadeInAndOutWidgetPtr = CreateWidget<UZeroFadeInAndOutWidget>(GetPlayerController(), FadeInAndOutWidgetClass);
+	FadeInAndOutWidgetPtr->AddToViewport();
+	FadeInAndOutWidgetPtr->FadeInPlay();
+	FadeInAndOutWidgetPtr = nullptr;
+
+	SetInputByDaySequence(EDaySequence::EAfternoon);
+	SetNoWeapon();
 }

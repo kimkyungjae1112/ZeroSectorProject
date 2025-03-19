@@ -14,11 +14,11 @@ class ZEROSECTOR_API AZeroDaySequence : public ASunMoonDaySequenceActor
 public:
 	AZeroDaySequence(const FObjectInitializer& Init);
 
-	virtual void Tick(float DeltaTime) override;
-
 protected:
 	virtual void BeginPlay() override;
 
 public:
-	void DayToNightfall();
+	void AfternoonToNightfall();
+	void NightfallToAfternoon();
+	bool IsNight();
 };

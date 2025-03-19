@@ -120,6 +120,7 @@ private:
 	
 /* 무기 */
 private:
+	void SetNoWeapon();
 	void SetRifle();
 	void SetPistol();
 	void SetShotgun();
@@ -131,7 +132,7 @@ private:
 	TMap<EWeaponType, AZeroWeaponBase*> Weapons;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TObjectPtr<USkeletalMeshComponent> RifleMeshComp;
+	TObjectPtr<USkeletalMeshComponent> MainWeaponMeshComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<USkeletalMeshComponent> PistolMeshComp;
@@ -188,5 +189,6 @@ private:
 	void OperationUITest();
 	void ClickNextButton();
 	
-	
+/* Test Code */
+	void NightToAfternoon();
 };
