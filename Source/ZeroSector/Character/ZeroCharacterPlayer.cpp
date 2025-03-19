@@ -2,24 +2,15 @@
 
 
 #include "Character/ZeroCharacterPlayer.h"
-#include "InputActionValue.h"
-#include "InputMappingContext.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "Data/ZeroInputConfig.h"
-#include "Data/ZeroPlayerCameraData.h"
+#include "ZeroHeader/ZeroInputHeader.h"
+#include "ZeroHeader/ZeroUIHeader.h"
+#include "ZeroHeader/ZeroWeaponHeader.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Data/ZeroPlayerCameraData.h"
 #include "Interface/ZeroDialogueInterface.h"
-#include "UI/ZeroOperationWidget.h"
-#include "UI/ZeroFadeInAndOutWidget.h"
-#include "UI/ZeroProvisoWidget.h"
-#include "UI/ZeroGetProvisoWidget.h"
 #include "Player/ZeroPlayerController.h"
-#include "Weapon/ZeroWeaponRifle.h"
-#include "Weapon/ZeroWeaponShotgun.h"
-#include "Weapon/ZeroWeaponPistol.h"
 #include "Gimmick/ZeroProvisoActor.h"
 #include "Gimmick/ZeroOperationBoard.h"
 #include "ZeroSector.h"
@@ -106,6 +97,11 @@ void AZeroCharacterPlayer::BeginPlay()
 APlayerController* AZeroCharacterPlayer::GetPlayerController() const
 {
 	return CastChecked<APlayerController>(GetController());
+}
+
+AZeroPlayerController* AZeroCharacterPlayer::GetZeroPlayerController() const
+{
+	return CastChecked<AZeroPlayerController>(GetController());
 }
 
 void AZeroCharacterPlayer::Move(const FInputActionValue& Value)
@@ -230,43 +226,33 @@ void AZeroCharacterPlayer::InteractBeam()
 	FVector EyeVectorEnd = EyeVectorStart + EyeRotatorStart.Vector() * DetectDistance;
 	FHitResult HitResult;
 	FCollisionQueryParams Param(NAME_None, false, this);
-	FColor Color(FColor::Red);
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, EyeVectorStart, EyeVectorEnd, ECC_GameTraceChannel1, Param);
-	if (bHit)
+	InteractProcess(HitResult, bHit);
+}
+
+void AZeroCharacterPlayer::InteractProcess(const FHitResult& InHitResult, bool bIsHit)
+{
+	FColor Color(FColor::Red);
+	if (bIsHit)
 	{
 		Color = FColor::Green;
-		AActor* HitActor = HitResult.GetActor();
+		AActor* HitActor = InHitResult.GetActor();
 
-		for (UActorComponent* ActorComp : HitResult.GetActor()->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
+		for (UActorComponent* ActorComp : InHitResult.GetActor()->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
 		{
 			DialogueInterface = Cast<IZeroDialogueInterface>(ActorComp);
 			//DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 			return;
 		}
 
-		/* 
+		/*
 			AZeroGimmick 을 베이스 클래스로 상호작용 할 수 있는 물품들을 클래스 작성
 			이들을 Tag로 분류하고 다형성을 이용해서 포인터에 저장
 		*/
 		if (HitActor->ActorHasTag(TEXT("Proviso")))
 		{
-			InteractedGimmick = Cast<AZeroProvisoActor>(HitActor);
-
-			
-			if (!ProvisoWidgetInstance)
-			{
-				if (ProvisoWidgetClass)
-				{
-					ProvisoWidgetInstance = CreateWidget<UZeroProvisoWidget>(GetWorld(), ProvisoWidgetClass);
-				}
-			}
-
-			if (ProvisoWidgetInstance)
-			{
-				ProvisoWidgetInstance->ShowWidget();
-			}
-			
+			InteractBeamReachedProviso(HitActor);
 		}
 		else if (HitActor->ActorHasTag(TEXT("OperationBoard")))
 		{
@@ -277,13 +263,28 @@ void AZeroCharacterPlayer::InteractBeam()
 	{
 		DialogueInterface = nullptr;
 		InteractedGimmick = nullptr;
-		if (ProvisoWidgetInstance) 
+		if (ProvisoWidgetPtr)
 		{
-			ProvisoWidgetInstance->RemoveFromParent();
+			ProvisoWidgetPtr->RemoveFromParent();
 		}
 	}
-
 	//DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
+}
+
+void AZeroCharacterPlayer::InteractBeamReachedProviso(AActor* InHitActor)
+{
+	InteractedGimmick = Cast<AZeroProvisoActor>(InHitActor);
+	if (!ProvisoWidgetPtr)
+	{
+		if (ProvisoWidgetClass)
+		{
+			ProvisoWidgetPtr = CreateWidget<UZeroProvisoWidget>(GetWorld(), ProvisoWidgetClass);
+		}
+	}
+	if (ProvisoWidgetPtr)
+	{
+		ProvisoWidgetPtr->ShowWidget();
+	}
 }
 
 void AZeroCharacterPlayer::SetDefaultMovement()
@@ -323,12 +324,8 @@ void AZeroCharacterPlayer::SetShotgun()
 
 void AZeroCharacterPlayer::OperationUITest()
 {
-	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetPlayerController());
-	if (PC)
-	{
-		PC->InputModeUIOnly();
-	}
-
+	GetZeroPlayerController()->InputModeUIOnly();
+	
 	OperationWidgetPtr = CreateWidget<UZeroOperationWidget>(GetPlayerController(), OperationWidgetClass);
 	if (OperationWidgetPtr)
 	{
@@ -344,11 +341,7 @@ void AZeroCharacterPlayer::OperationUITest()
 
 void AZeroCharacterPlayer::ClickNextButton()
 {
-	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetPlayerController());
-	if (PC)
-	{
-		PC->InputModeGameOnly();
-	}
+	GetZeroPlayerController()->InputModeGameOnly();
 
 	OperationWidgetPtr->RemoveFromParent();
 

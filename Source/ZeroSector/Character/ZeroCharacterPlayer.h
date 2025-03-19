@@ -19,7 +19,7 @@ class UZeroGetProvisoWidget;
 class AZeroGimmick;
 class AZeroWeaponBase;
 class APlayerController;
-
+class AZeroPlayerController;
 
 /* 
 	Component 변수 선언할 때 Comp로 줄이기
@@ -69,6 +69,7 @@ protected:
 /* 포인터를 얻어오는 유틸리티 함수 */
 private:
 	APlayerController* GetPlayerController() const;
+	AZeroPlayerController* GetZeroPlayerController() const;
 
 /* Input 바인딩 함수 */
 private:
@@ -97,6 +98,8 @@ private:
 
 /* 상호작용 */
 	void InteractBeam();
+	void InteractProcess(const FHitResult& InHitResult, bool bIsHit);
+	void InteractBeamReachedProviso(AActor* InHitActor);
 
 	UPROPERTY(EditAnywhere, Category = "Interact")
 	float DetectDistance;
@@ -175,7 +178,7 @@ private:
 	TSubclassOf<UZeroProvisoWidget> ProvisoWidgetClass;
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
-	TObjectPtr<UZeroProvisoWidget> ProvisoWidgetInstance;
+	TObjectPtr<UZeroProvisoWidget> ProvisoWidgetPtr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UZeroGetProvisoWidget> GetProvisoWidgetClass;
