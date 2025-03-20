@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "Data/ZeroDialogueDataTable.h"
+#include "Data/ZeroProvisoDataTable.h"
 #include "ZeroSingleton.generated.h"
 
 UCLASS()
@@ -18,6 +19,18 @@ public:
 
 	FORCEINLINE FZeroDialogueDataTable GetDialogueTable(int32 RowIndex) const { return DialogueTables.IsValidIndex(RowIndex) ? DialogueTables[RowIndex] : FZeroDialogueDataTable(); }
 
+	FORCEINLINE FZeroProvisoDataTable GetProvisoData(int32 RowIndex) const { return ProvisoDataList.IsValidIndex(RowIndex) ? ProvisoDataList[RowIndex] : FZeroProvisoDataTable(); }
+
+	TArray<FZeroProvisoDataTable> GetCollectedProvisos() const;
+
+	void AddCollectedProviso(const FZeroProvisoDataTable& ProvisoData);
+
 private:
 	TArray<FZeroDialogueDataTable> DialogueTables;
+
+	UPROPERTY()
+	TArray<FZeroProvisoDataTable> ProvisoDataList;
+
+	UPROPERTY()
+	TArray<FZeroProvisoDataTable> CollectedProvisos;
 };

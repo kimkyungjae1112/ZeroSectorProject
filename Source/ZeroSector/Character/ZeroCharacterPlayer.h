@@ -16,6 +16,7 @@ class UZeroFadeInAndOutWidget;
 class UZeroOperationWidget;
 class UZeroProvisoWidget;
 class UZeroGetProvisoWidget;
+class UZeroNoteWidget;
 class AZeroGimmick;
 class AZeroWeaponBase;
 class APlayerController;
@@ -182,11 +183,23 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UZeroGetProvisoWidget> GetProvisoWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UZeroNoteWidget> NoteWidgetClass;
+
+	UPROPERTY()
+	UZeroNoteWidget* NoteWidgetInstance = nullptr;
+
+
 	
 
 /* 작전창 UI를 띄울 테스트 함수 */
 	void OperationUITest();
 	void ClickNextButton();
 	
-	
+/* 개인 수첩 */
+	void ToggleNote();
+	int8 bIsNoteToggle : 1;
+	int32 ProvisoNum = 0;
+
 };
