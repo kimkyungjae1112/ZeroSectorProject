@@ -72,6 +72,11 @@ private:
 	APlayerController* GetPlayerController() const;
 	AZeroPlayerController* GetZeroPlayerController() const;
 
+/* 1인칭 손 */
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Mesh")
+	TObjectPtr<USkeletalMeshComponent> ArmMeshComp;
+
 /* Input 바인딩 함수 */
 private:
 	void Move(const FInputActionValue& Value);
@@ -121,6 +126,7 @@ private:
 	
 /* 무기 */
 private:
+	void SetNoWeapon();
 	void SetRifle();
 	void SetPistol();
 	void SetShotgun();
@@ -132,7 +138,7 @@ private:
 	TMap<EWeaponType, AZeroWeaponBase*> Weapons;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TObjectPtr<USkeletalMeshComponent> RifleMeshComp;
+	TObjectPtr<USkeletalMeshComponent> MainWeaponMeshComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TObjectPtr<USkeletalMeshComponent> PistolMeshComp;
@@ -163,6 +169,10 @@ private:
 	
 /* UI */
 private:
+	void OperationWidgetDisplay();
+	void OperationNextButtonClick();
+	void FadeInAndOutDisplay();
+
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UZeroOperationWidget> OperationWidgetClass;
 
@@ -188,10 +198,11 @@ private:
 	TSubclassOf<UZeroNoteWidget> NoteWidgetClass;
 
 	UPROPERTY()
-	UZeroNoteWidget* NoteWidgetInstance = nullptr;
+  TObjectPtr<UZeroNoteWidget> NoteWidgetPtr;
+  
+/* Test Code */
+	void NightToAfternoon();
 
-
-	
 
 /* 작전창 UI를 띄울 테스트 함수 */
 	void OperationUITest();

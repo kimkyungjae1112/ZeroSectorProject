@@ -32,32 +32,37 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	{
 		CameraData = CameraDataRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BodyMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
-	if (BodyMeshRef.Object)
-	{
-		GetMesh()->SetSkeletalMesh(BodyMeshRef.Object);
-	}
+	
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
-
-	RifleMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Rifle Mesh Component"));
-	RifleMeshComp->SetupAttachment(GetMesh(), TEXT("weapon_rifle"));
-
-	PistolMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pistol Mesh Component"));
-	PistolMeshComp ->SetupAttachment(GetMesh(), TEXT("weapon_Pistol"));
-
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
-	CameraComp->SetupAttachment(GetMesh());
+	CameraComp->SetupAttachment(RootComponent);
 	CameraComp->bUsePawnControlRotation = true;
 	CameraComp->SetRelativeLocation(CameraData->CommonCameraVector);
 	CameraComp->SetRelativeRotation(CameraData->CommonCameraRotator);
 
+	ArmMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arm Mesh Component"));
+	ArmMeshComp->SetupAttachment(CameraComp);
+	ArmMeshComp->SetRelativeLocation(FVector(-10.f, 0.f, -160.f));
+	ArmMeshComp->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> ArmMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/FirstPersonArms/FirstCharacter/Mesh/SK_Mannequin_Arms.SK_Mannequin_Arms'"));
+	if (ArmMeshRef.Object)
+	{
+		ArmMeshComp->SetSkeletalMesh(ArmMeshRef.Object);
+	}
+
+	MainWeaponMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Rifle Mesh Component"));
+	MainWeaponMeshComp->SetupAttachment(ArmMeshComp, TEXT("weapon_main"));
+
+	PistolMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Pistol Mesh Component"));
+	PistolMeshComp->SetupAttachment(ArmMeshComp, TEXT("weapon_pistol"));
+
 	ChangeInputMap.Add(EDaySequence::EAfternoon, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputAfternoonMode)));
 	ChangeInputMap.Add(EDaySequence::ENight, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputNightMode)));
 
-	CurrentWeaponType = EWeaponType::EPistol;
+	CurrentWeaponType = EWeaponType::ENone;
 	TeamId = FGenericTeamId(0);
 }
 
@@ -83,6 +88,7 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Aiming);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::UnAiming);
 	EnhancedInputComponent->BindAction(InputConfig->IA_ChangeWeapon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ChangeWeapon);
+	EnhancedInputComponent->BindAction(InputConfig->IA_NightToAfternoon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::NightToAfternoon);
 	EnhancedInputComponent->BindAction(InputConfig->IA_ToggleNote, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ToggleNote);
 }
 
@@ -208,7 +214,7 @@ void AZeroCharacterPlayer::OperationBoardInteract()
 {
 	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("OperationBoard")))
 	{
-		OperationUITest();
+		OperationWidgetDisplay();
 	}
 }
 
@@ -321,10 +327,17 @@ void AZeroCharacterPlayer::SetDialogueMovement()
 	CameraComp->SetRelativeRotation(CameraData->DialogueCameraRotator);
 }
 
+void AZeroCharacterPlayer::SetNoWeapon()
+{
+	CurrentWeaponType = EWeaponType::ENone;
+	MainWeaponMeshComp->SetSkeletalMesh(nullptr);
+	PistolMeshComp->SetSkeletalMesh(nullptr);
+}
+
 void AZeroCharacterPlayer::SetRifle()
 {
 	CurrentWeaponType = EWeaponType::ERifle;
-	RifleMeshComp->SetSkeletalMesh(RifleMesh);
+	MainWeaponMeshComp->SetSkeletalMesh(RifleMesh);
 	PistolMeshComp->SetSkeletalMesh(nullptr);
 }
 
@@ -332,17 +345,17 @@ void AZeroCharacterPlayer::SetPistol()
 {
 	CurrentWeaponType = EWeaponType::EPistol;
 	PistolMeshComp->SetSkeletalMesh(PistolMesh);
-	RifleMeshComp->SetSkeletalMesh(nullptr);
+	MainWeaponMeshComp->SetSkeletalMesh(nullptr);
 }
 
 void AZeroCharacterPlayer::SetShotgun()
 {
 	CurrentWeaponType = EWeaponType::EShotgun;
-	RifleMeshComp->SetSkeletalMesh(ShotgunMesh);
+	MainWeaponMeshComp->SetSkeletalMesh(ShotgunMesh);
 	PistolMeshComp->SetSkeletalMesh(nullptr);
 }
 
-void AZeroCharacterPlayer::OperationUITest()
+void AZeroCharacterPlayer::OperationWidgetDisplay()
 {
 	GetZeroPlayerController()->InputModeUIOnly();
 	
@@ -353,13 +366,13 @@ void AZeroCharacterPlayer::OperationUITest()
 		FOnClickNextButton OnClickNextButton;
 		OnClickNextButton.BindLambda([&]()
 			{
-				ClickNextButton();
+				OperationNextButtonClick();
 			});
 		OperationWidgetPtr->SetDelegateClickNextButton(OnClickNextButton);
 	}
 }
 
-void AZeroCharacterPlayer::ClickNextButton()
+void AZeroCharacterPlayer::OperationNextButtonClick()
 {
 	GetZeroPlayerController()->InputModeGameOnly();
 
@@ -387,12 +400,26 @@ void AZeroCharacterPlayer::ClickNextButton()
 		Weapon.Value->SetOwner(this);
 	}
 
-	FadeInAndOutWidgetPtr = CreateWidget<UZeroFadeInAndOutWidget>(GetPlayerController(), FadeInAndOutWidgetClass);
-	FadeInAndOutWidgetPtr->AddToViewport();
-	FadeInAndOutWidgetPtr->FadeInPlay();
+	FadeInAndOutDisplay();
 
 	SetInputByDaySequence(EDaySequence::ENight);
 	SetPistol();
+}
+
+void AZeroCharacterPlayer::FadeInAndOutDisplay()
+{
+	FadeInAndOutWidgetPtr = CreateWidget<UZeroFadeInAndOutWidget>(GetPlayerController(), FadeInAndOutWidgetClass);
+	FadeInAndOutWidgetPtr->AddToViewport();
+	FadeInAndOutWidgetPtr->FadeInPlay();
+	FadeInAndOutWidgetPtr = nullptr;
+}
+
+void AZeroCharacterPlayer::NightToAfternoon()
+{
+	FadeInAndOutDisplay();
+
+	SetInputByDaySequence(EDaySequence::EAfternoon);
+	SetNoWeapon();
 }
 
 void AZeroCharacterPlayer::ToggleNote()

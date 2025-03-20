@@ -27,8 +27,12 @@ private:
 	UFUNCTION()
 	void FadeOutPlay();
 
+	UFUNCTION()
+	void RemoveWidget();
+
 private:
 	FWidgetAnimationDynamicEvent FadeOutEvent;
+	FWidgetAnimationDynamicEvent RemoveEvent;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	TObjectPtr<UWidgetAnimation> FadeIn;

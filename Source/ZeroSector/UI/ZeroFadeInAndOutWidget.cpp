@@ -6,10 +6,12 @@
 #include "Animation/WidgetAnimation.h"
 #include "Kismet/GameplayStatics.h"
 #include "Environment/ZeroDaySequence.h"
+#include "ZeroSector.h"
 
 UZeroFadeInAndOutWidget::UZeroFadeInAndOutWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	FadeOutEvent.BindDynamic(this, &UZeroFadeInAndOutWidget::FadeOutPlay);
+	RemoveEvent.BindDynamic(this, &UZeroFadeInAndOutWidget::RemoveWidget);
 }
 
 void UZeroFadeInAndOutWidget::NativeConstruct()
@@ -30,7 +32,23 @@ void UZeroFadeInAndOutWidget::FadeInPlay()
 void UZeroFadeInAndOutWidget::FadeOutPlay()
 {
 	PlayAnimation(FadeOut);
-
 	AZeroDaySequence* DaySequence = Cast<AZeroDaySequence>(UGameplayStatics::GetActorOfClass(GetWorld(), AZeroDaySequence::StaticClass()));
-	DaySequence->DayToNightfall();
+	if (DaySequence)
+	{
+		if (DaySequence->IsNight())
+		{
+			DaySequence->NightfallToAfternoon();
+		}
+		else
+		{
+			DaySequence->AfternoonToNightfall();
+		}
+	}
+
+	BindToAnimationFinished(FadeOut, RemoveEvent);
+}
+
+void UZeroFadeInAndOutWidget::RemoveWidget()
+{
+	RemoveFromParent();
 }

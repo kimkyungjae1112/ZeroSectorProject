@@ -2,16 +2,10 @@
 
 
 #include "Environment/ZeroDaySequence.h"
+#include "ZeroSector.h"
 
 AZeroDaySequence::AZeroDaySequence(const FObjectInitializer& Init) : Super(Init)
 {
-	PrimaryActorTick.bCanEverTick = true;
-}
-
-void AZeroDaySequence::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 void AZeroDaySequence::BeginPlay()
@@ -19,9 +13,22 @@ void AZeroDaySequence::BeginPlay()
 	Super::BeginPlay();
 
 	Pause();
+	SetTimeOfDay(12.f);
 }
 
-void AZeroDaySequence::DayToNightfall()
+void AZeroDaySequence::AfternoonToNightfall()
 {
 	SetTimeOfDay(0.f);
+	ZE_LOG(LogZeroSector, Display, TEXT("낮 -> 밤"));
+}
+
+void AZeroDaySequence::NightfallToAfternoon()
+{
+	SetTimeOfDay(12.f);
+	ZE_LOG(LogZeroSector, Display, TEXT("밤 -> 낮"));
+}
+
+bool AZeroDaySequence::IsNight()
+{
+	return 0.f + GetTimeOfDay() < 0.1f;
 }
