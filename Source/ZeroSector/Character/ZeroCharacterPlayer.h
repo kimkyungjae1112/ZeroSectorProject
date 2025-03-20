@@ -197,16 +197,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UZeroNoteWidget> NoteWidgetClass;
 
-	UPROPERTY()
-  TObjectPtr<UZeroNoteWidget> NoteWidgetPtr;
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+    TObjectPtr<UZeroNoteWidget> NoteWidgetPtr;
   
 /* Test Code */
 	void NightToAfternoon();
 
-
-/* 작전창 UI를 띄울 테스트 함수 */
-	void OperationUITest();
-	void ClickNextButton();
 	
 /* 개인 수첩 */
 	void ToggleNote();

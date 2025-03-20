@@ -22,7 +22,7 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
-	static ConstructorHelpers::FObjectFinder<UZeroInputConfig> InputConfigRef(TEXT("/Script/ZeroSector.ZeroInputConfig'/Game/Data/Input/DataAsset/DA_InputConfig.DA_InputConfig'"));
+	static ConstructorHelpers::FObjectFinder<UZeroInputConfig> InputConfigRef(TEXT("/Script/ZeroSector.ZeroInputData'/Game/Data/Input/DataAsset/DA_InputData.DA_InputData'"));
 	if (InputConfigRef.Object)
 	{
 		InputConfig = InputConfigRef.Object;
@@ -102,7 +102,7 @@ void AZeroCharacterPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	SetInputAfternoonMode();
-	NoteWidgetInstance = CreateWidget<UZeroNoteWidget>(GetWorld(), NoteWidgetClass);
+	NoteWidgetPtr = CreateWidget<UZeroNoteWidget>(GetWorld(), NoteWidgetClass);
 }
 
 APlayerController* AZeroCharacterPlayer::GetPlayerController() const
@@ -201,9 +201,9 @@ void AZeroCharacterPlayer::ProvisoInteract()
 
 		GetProvisoWidgetInstance->SetProvisoInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
 
-		if (NoteWidgetInstance)
+		if (NoteWidgetPtr)
 		{
-			NoteWidgetInstance->SetNoteInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
+			NoteWidgetPtr->SetNoteInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
 		}		
 	}
 
@@ -427,12 +427,12 @@ void AZeroCharacterPlayer::ToggleNote()
 
 	if (bIsNoteToggle)
 	{
-		NoteWidgetInstance->RemoveFromParent();
+		NoteWidgetPtr->RemoveFromParent();
 		bIsNoteToggle = false;
 	}
 	else
 	{
-		NoteWidgetInstance->AddToViewport();
+		NoteWidgetPtr->AddToViewport();
 		bIsNoteToggle = true;
 	}
 }
