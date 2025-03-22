@@ -7,6 +7,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Perception/AIPerceptionComponent.h"
 
+
 AZeroAIControllerBase::AZeroAIControllerBase()
 {
 	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBDataRef(TEXT("/Script/AIModule.BlackboardData'/Game/AI/Test/BB_ZombieTest.BB_ZombieTest'"));
@@ -28,6 +29,7 @@ void AZeroAIControllerBase::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	RunAI();
+
 }
 
 FGenericTeamId AZeroAIControllerBase::GetGenericTeamId() const
@@ -74,4 +76,3 @@ void AZeroAIControllerBase::StopAI()
 		BTComp->StopTree();
 	}
 }
-

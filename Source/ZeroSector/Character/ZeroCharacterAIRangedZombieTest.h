@@ -5,30 +5,32 @@
 #include "CoreMinimal.h"
 #include "Character/ZeroCharacterAIBase.h"
 #include "Interface/ZeroCharacterAIInterface.h"
-#include "ZeroCharacterAIZombieTest.generated.h"
+#include "ZeroCharacterAIRangedZombieTest.generated.h"
 
 UCLASS()
-class ZEROSECTOR_API AZeroCharacterAIZombieTest : public AZeroCharacterAIBase, public IZeroCharacterAIInterface
+class ZEROSECTOR_API AZeroCharacterAIRangedZombieTest : public AZeroCharacterAIBase, public IZeroCharacterAIInterface
 {
 	GENERATED_BODY()
-	
-public:
-	AZeroCharacterAIZombieTest();
 
-	/* IGenericTeamAgentInterface Implement */
+public:
+	AZeroCharacterAIRangedZombieTest();
+
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual void ApplyDamage(float Damage) override;
 
 protected:
 	virtual float GetAIAttackRange() override;
 	virtual float GetAITurnSpeed() override;
-
 	virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) override;
 	virtual void AttackByAI() override;
 
-	FAICharacterAttackFinished OnAttackFinished;
-	FTimerHandle AttackFinishTimerHandle;
+	// 공격 후 알림
 	void OnAttackFinishedInternal();
 
+	void FireProjectile();
+
+protected:
+	FAICharacterAttackFinished OnAttackFinished;
+	FTimerHandle AttackFinishTimerHandle;
 
 };
