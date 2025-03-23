@@ -5,6 +5,11 @@
 
 AZeroWeaponShotgun::AZeroWeaponShotgun()
 {
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> GunBodyMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/Weapons/Shotgun/Mesh/SKM_Shotgun.SKM_Shotgun'"));
+	if (GunBodyMeshRef.Object)
+	{
+		GunMeshComp->SetSkeletalMesh(GunBodyMeshRef.Object);
+	}
 }
 
 void AZeroWeaponShotgun::Fire()

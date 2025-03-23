@@ -42,9 +42,17 @@ public:
 	FVector Velocity;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
-	FRotator Angle;
+	FVector Angle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	FRotator ControlRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	FRotator SpineRotation;
 
 private:
+	void CalSpineRotation();
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ACharacter> Character;
 

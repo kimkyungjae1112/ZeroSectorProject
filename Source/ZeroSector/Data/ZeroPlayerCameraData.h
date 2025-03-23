@@ -23,4 +23,16 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "In Dialogue")
 	FRotator DialogueCameraRotator;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Aiming")
+	FVector UnAimingCameraVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Aiming")
+	FRotator UnAimingCameraRotator;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Aiming")
+	FVector AimingCameraVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Aiming")
+	FRotator AimingCameraRotator;
 };
