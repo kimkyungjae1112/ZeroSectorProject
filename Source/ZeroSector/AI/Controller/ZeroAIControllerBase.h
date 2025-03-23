@@ -49,4 +49,5 @@ protected:
 	TObjectPtr<UBehaviorTree> BTData;
 
 	FGenericTeamId TeamID;
+
 };

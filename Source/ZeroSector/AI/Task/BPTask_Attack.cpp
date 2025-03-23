@@ -1,0 +1,43 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "AI/Task/BPTask_Attack.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "AIController.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/Actor.h"
+#include "Interface/ZeroCharacterAIInterface.h"
+
+UBPTask_Attack::UBPTask_Attack()
+{
+	NodeName = TEXT("Attack");
+}
+
+
+EBTNodeResult::Type UBPTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
+
+	APawn* ControllingPawn = Cast<APawn>(OwnerComp.GetAIOwner()->GetPawn());
+	if (nullptr == ControllingPawn)
+	{
+		return EBTNodeResult::Failed;
+	}
+
+	IZeroCharacterAIInterface* AIPawn = Cast<IZeroCharacterAIInterface>(ControllingPawn);
+	if (nullptr == AIPawn)
+	{
+		return EBTNodeResult::Failed;
+	}
+
+	FAICharacterAttackFinished OnAttackFinished;
+	OnAttackFinished.BindLambda(
+		[&]()
+		{
+			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		}
+	);
+
+	AIPawn->SetAIAttackDelegate(OnAttackFinished);
+	AIPawn->AttackByAI();
+	return EBTNodeResult::InProgress;
+}

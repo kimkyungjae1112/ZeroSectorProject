@@ -21,6 +21,7 @@ class AZeroGimmick;
 class AZeroWeaponBase;
 class APlayerController;
 class AZeroPlayerController;
+class AZeroCharacterAIBase;
 
 /* 
 	Component 변수 선언할 때 Comp로 줄이기
@@ -209,4 +210,8 @@ private:
 	int8 bIsNoteToggle : 1;
 	int32 ProvisoNum = 0;
 
+/* 좀비 피격 테스트용*/
+	void PerformAutoAttack();
+	FTimerHandle AutoAttackTimerHandle;
+	AZeroCharacterAIBase* TestTarget = nullptr;
 };
