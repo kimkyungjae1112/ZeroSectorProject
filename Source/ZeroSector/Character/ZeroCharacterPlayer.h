@@ -10,6 +10,7 @@
 struct FInputActionValue;
 class IZeroDialogueInterface;
 class UZeroInputConfig;
+class USpringArmComponent;
 class UCameraComponent;
 class UZeroPlayerCameraData;
 class UZeroFadeInAndOutWidget;
@@ -17,6 +18,7 @@ class UZeroOperationWidget;
 class UZeroProvisoWidget;
 class UZeroGetProvisoWidget;
 class UZeroNoteWidget;
+class UZeroCrossHairWidget;
 class AZeroGimmick;
 class AZeroWeaponBase;
 class APlayerController;
@@ -73,15 +75,13 @@ private:
 	APlayerController* GetPlayerController() const;
 	AZeroPlayerController* GetZeroPlayerController() const;
 
-/* 1인칭 손 */
-private:
-	UPROPERTY(VisibleAnywhere, Category = "Mesh")
-	TObjectPtr<USkeletalMeshComponent> ArmMeshComp;
 
 /* Input 바인딩 함수 */
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
+	void Run();
+	void Walk();
 	void Fire();
 	void Aiming();
 	void UnAiming();
@@ -131,6 +131,8 @@ private:
 	void SetRifle();
 	void SetPistol();
 	void SetShotgun();
+	void SetupTransformWeapon(const FName& SocketName);
+	void ChangeWeaponMesh();
 
 	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))
 	FORCEINLINE EWeaponType GetWeaponType() const { return CurrentWeaponType; }
@@ -138,20 +140,8 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TMap<EWeaponType, AZeroWeaponBase*> Weapons;
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TObjectPtr<USkeletalMeshComponent> MainWeaponMeshComp;
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TObjectPtr<USkeletalMeshComponent> PistolMeshComp;
-
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TObjectPtr<USkeletalMesh> RifleMesh;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TObjectPtr<USkeletalMesh> PistolMesh;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TObjectPtr<USkeletalMesh> ShotgunMesh;
+	TObjectPtr<AZeroWeaponBase> CurrentWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	EWeaponType CurrentWeaponType;
@@ -161,6 +151,9 @@ private:
 
 /* 카메라 */
 private:
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	TObjectPtr<USpringArmComponent> SpringArmComp;
+
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> CameraComp;
 
@@ -173,6 +166,7 @@ private:
 	void OperationWidgetDisplay();
 	void OperationNextButtonClick();
 	void FadeInAndOutDisplay();
+	void CrossHairDisplay();
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UZeroOperationWidget> OperationWidgetClass;
@@ -200,7 +194,13 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
     TObjectPtr<UZeroNoteWidget> NoteWidgetPtr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UZeroCrossHairWidget> CrossHairWidgetClass;
   
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UZeroCrossHairWidget> CrossHairWidgetPtr;
+
 /* Test Code */
 	void NightToAfternoon();
 

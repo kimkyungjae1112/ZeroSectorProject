@@ -45,4 +45,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
 	TObjectPtr<UInputAction> IA_ToggleNote;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
+	TObjectPtr<UInputAction> IA_Run;
+
 };

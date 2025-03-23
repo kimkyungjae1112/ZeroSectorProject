@@ -5,7 +5,11 @@
 
 AZeroWeaponRifle::AZeroWeaponRifle()
 {
-
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> GunBodyMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/FreeFPS/FPS_Weapon_Bundle/Weapons/Meshes/AR4/SK_AR4.SK_AR4'"));
+	if (GunBodyMeshRef.Object)
+	{
+		GunMeshComp->SetSkeletalMesh(GunBodyMeshRef.Object);
+	}
 }
 
 void AZeroWeaponRifle::Fire()

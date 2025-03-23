@@ -7,6 +7,10 @@
 
 AZeroWeaponBase::AZeroWeaponBase()
 {
+	GunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun Mesh Component"));
+	RootComponent = GunMeshComp;
+	GunMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
+
 	FireRate = 0.2f;
 }
 
@@ -18,7 +22,6 @@ void AZeroWeaponBase::Fire()
 	FTimerHandle FireRateTimer;
 	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AZeroWeaponBase::StopFire, FireRate, false);
 
-	ZE_LOG(LogZeroSector, Display, TEXT("총 발사"));
 	FHitResult HitResult;
 	FVector ShotDirection;
 	bool Hit = GunTrace(HitResult, ShotDirection);
