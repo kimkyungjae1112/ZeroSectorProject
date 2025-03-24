@@ -3,6 +3,9 @@
 
 #include "Weapon/ZeroWeaponBase.h"
 #include "Engine/DamageEvents.h"
+#include "GameFramework/PlayerController.h"
+#include "Character/ZeroCharacterPlayer.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "ZeroSector.h"
 
 AZeroWeaponBase::AZeroWeaponBase()
@@ -10,20 +13,23 @@ AZeroWeaponBase::AZeroWeaponBase()
 	GunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun Mesh Component"));
 	RootComponent = GunMeshComp;
 	GunMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
-
-	FireRate = 0.2f;
 }
 
 void AZeroWeaponBase::Fire()
 {
-	if (bIsFire) return;
+	if (bIsFire || CurrentAmmo <= 0) return;
 	bIsFire = true;
+
+	CurrentAmmo -= 1;
+	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
 
 	FTimerHandle FireRateTimer;
 	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AZeroWeaponBase::StopFire, FireRate, false);
 
 	FHitResult HitResult;
 	FVector ShotDirection;
+	ApplyRecoil();
+
 	bool Hit = GunTrace(HitResult, ShotDirection);
 	if (Hit)
 	{
@@ -43,6 +49,12 @@ void AZeroWeaponBase::Aiming()
 	//Aiming 관련 기능 구현
 }
 
+void AZeroWeaponBase::ReloadingCurrentAmmo()
+{
+	CurrentAmmo = MaxAmmo;
+	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
+}
+
 void AZeroWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -51,19 +63,26 @@ void AZeroWeaponBase::BeginPlay()
 
 bool AZeroWeaponBase::GunTrace(FHitResult& Hit, FVector& ShotDirection)
 {
-	AController* OwnerController = GetOwnerController();
-	if (OwnerController == nullptr) return false;
+	APlayerController* PC = Cast<APlayerController>(GetOwnerController());
+	if (PC == nullptr) return false;
 
-	FVector Location;
-	FRotator Rotation;
-	OwnerController->GetPlayerViewPoint(Location, Rotation);
-	ShotDirection = -Rotation.Vector();
+	UGameViewportClient* GameViewport = GetWorld()->GetGameViewport();
+	FVector2D ViewportSize;
+	GameViewport->GetViewportSize(ViewportSize);
+	ViewportSize /= 2.f;
 
-	FVector End = Location + Rotation.Vector() * 2000.f; //MaxRange;
+	// 크로스헤어 위치를 월드 공간의 방향으로 변환
+	FVector CrosshairWorldLocation;
+	FVector CrosshairWorldDirection;
+	if (!PC->DeprojectScreenPositionToWorld(ViewportSize.X, ViewportSize.Y, CrosshairWorldLocation, CrosshairWorldDirection)) return false;
+
+	FVector Muzzle = GunMeshComp->GetSocketLocation(TEXT("muzzle_Socket"));
+	FVector MuzzleEnd = Muzzle + CrosshairWorldDirection * MaxRange;
+	ShotDirection = -MuzzleEnd;
 	FCollisionQueryParams Params(NAME_None, false, GetOwner());
-
-	DrawDebugLine(GetOwner()->GetWorld(), Location, End, FColor::Red, false, 5.f);
-	return GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECollisionChannel::ECC_GameTraceChannel3, Params);
+	
+	DrawDebugLine(GetOwner()->GetWorld(), Muzzle, MuzzleEnd, FColor::Red, false, 5.f);
+	return GetWorld()->LineTraceSingleByChannel(Hit, Muzzle, MuzzleEnd, ECollisionChannel::ECC_GameTraceChannel3, Params);
 }
 
 AController* AZeroWeaponBase::GetOwnerController() const
@@ -78,4 +97,17 @@ void AZeroWeaponBase::StopFire()
 	bIsFire = false;
 }
 
+void AZeroWeaponBase::ApplyRecoil()
+{
+	if (GetOwnerController())
+	{
+		FRotator ControlRotation = GetOwnerController()->GetControlRotation();
 
+		float RecoilPitch = FMath::RandRange(-3.f, 3.f);
+		float RecoilYaw = FMath::RandRange(-3.f, 3.f);
+		ControlRotation.Pitch += RecoilPitch;
+		ControlRotation.Yaw += RecoilYaw;
+
+		GetOwnerController()->SetControlRotation(ControlRotation);
+	}
+}

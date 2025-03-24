@@ -81,11 +81,17 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_ToggleNote, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ToggleNote);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Run, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Run);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Run, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::Walk);
+	EnhancedInputComponent->BindAction(InputConfig->IA_Reloading, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Reloading);
 }
 
 FGenericTeamId AZeroCharacterPlayer::GetGenericTeamId() const
 {
 	return TeamId;
+}
+
+void AZeroCharacterPlayer::SetHUDWidget(UZeroHUDWidget* InHUDWidget)
+{
+	HUDWidgetPtr = InHUDWidget;
 }
 
 void AZeroCharacterPlayer::BeginPlay()
@@ -159,7 +165,6 @@ void AZeroCharacterPlayer::Walk()
 void AZeroCharacterPlayer::Fire()
 {
 	CurrentWeapon->Fire();
-	CrossHairWidgetPtr->IncreaseSpread(10.f);
 }
 
 void AZeroCharacterPlayer::Aiming()
@@ -176,14 +181,35 @@ void AZeroCharacterPlayer::ChangeWeapon()
 {
 	if (ChoicedWeapon == EWeaponType::ERifle)
 	{
-		if (CurrentWeaponType == EWeaponType::EPistol) SetRifle();
-		else SetPistol();
+		if (CurrentWeaponType == EWeaponType::EPistol)
+		{
+			SetRifle();
+			GunAmmoTextDisplay();
+		}
+		else
+		{
+			SetPistol();
+			GunAmmoTextDisplay();
+		}
 	}
 	else if (ChoicedWeapon == EWeaponType::EShotgun)
 	{
-		if (CurrentWeaponType == EWeaponType::EPistol) SetShotgun();
-		else SetPistol();
+		if (CurrentWeaponType == EWeaponType::EPistol)
+		{
+			SetShotgun();
+			GunAmmoTextDisplay();
+		}
+		else
+		{
+			SetPistol();
+			GunAmmoTextDisplay();
+		}
 	}
+}
+
+void AZeroCharacterPlayer::Reloading()
+{
+	CurrentWeapon->ReloadingCurrentAmmo();
 }
 
 void AZeroCharacterPlayer::DialogueInteract()
@@ -456,13 +482,15 @@ void AZeroCharacterPlayer::OperationNextButtonClick()
 	for (const auto& Weapon : Weapons)
 	{
 		Weapon.Value->SetOwner(this);
+		Weapon.Value->OnSetMaxAmmo.BindUObject(HUDWidgetPtr, &UZeroHUDWidget::UpdateMaxAmmo);
+		Weapon.Value->OnChangedAmmo.BindUObject(HUDWidgetPtr, &UZeroHUDWidget::UpdateCurrentAmmo);
 	}
 
 	FadeInAndOutDisplay();
 
 	SetInputByDaySequence(EDaySequence::ENight);
 	SetPistol();
-	CrossHairDisplay();
+	GunAmmoTextDisplay();
 }
 
 void AZeroCharacterPlayer::FadeInAndOutDisplay()
@@ -473,10 +501,10 @@ void AZeroCharacterPlayer::FadeInAndOutDisplay()
 	FadeInAndOutWidgetPtr = nullptr;
 }
 
-void AZeroCharacterPlayer::CrossHairDisplay()
+void AZeroCharacterPlayer::GunAmmoTextDisplay()
 {
-	CrossHairWidgetPtr = CreateWidget<UZeroCrossHairWidget>(GetPlayerController(), CrossHairWidgetClass);
-	CrossHairWidgetPtr->AddToViewport();
+	CurrentWeapon->OnSetMaxAmmo.ExecuteIfBound(CurrentWeapon->GetMaxAmmo());
+	CurrentWeapon->OnChangedAmmo.ExecuteIfBound(CurrentWeapon->GetCurrentAmmo());
 }
 
 void AZeroCharacterPlayer::NightToAfternoon()

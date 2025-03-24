@@ -24,7 +24,7 @@ protected:
 	virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) override;
 	virtual void AttackByAI() override;
 
-	// °ø°Ý ÈÄ ¾Ë¸²
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ë¸ï¿½
 	void OnAttackFinishedInternal();
 
 	void FireProjectile();

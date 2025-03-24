@@ -6,12 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "ZeroWeaponBase.generated.h"
 
-UENUM()
-enum class EFireMode : uint8
-{
-	ESingle,
-	EAuto
-};
+class UZeroWeaponAnimInstance;
+
+DECLARE_DELEGATE_OneParam(FOnChangedAmmo, uint8 /* Current Ammo */)
+DECLARE_DELEGATE_OneParam(FOnSetMaxAmmo, uint8 /* Max Ammo */)
 
 UCLASS(abstract)
 class ZEROSECTOR_API AZeroWeaponBase 
@@ -25,6 +23,14 @@ public:
 	virtual void Fire();
 	virtual void Aiming();
 
+public:
+	FORCEINLINE uint8 GetMaxAmmo() const { return MaxAmmo; }
+	FORCEINLINE uint8 GetCurrentAmmo() const { return CurrentAmmo; }
+	void ReloadingCurrentAmmo();
+
+	FOnChangedAmmo OnChangedAmmo;
+	FOnSetMaxAmmo OnSetMaxAmmo;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -33,19 +39,34 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	TObjectPtr<USkeletalMeshComponent> GunMeshComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stat")
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	float MaxRange;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stat")
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	float Damage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stat")
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	float FireRate;
+
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	float RecoilRate;
+
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	float DispersionRate;
+
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	uint8 MaxAmmo;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	uint8 CurrentAmmo;
 
 private:
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	AController* GetOwnerController() const;
 	void StopFire();
+	void ApplyRecoil();
+
+
 
 private:
 	bool bIsFire = false;

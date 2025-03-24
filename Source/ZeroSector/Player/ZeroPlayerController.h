@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "ZeroPlayerController.generated.h"
 
+class UZeroHUDWidget;
+
 UCLASS()
 class ZEROSECTOR_API AZeroPlayerController : public APlayerController
 {
@@ -20,4 +22,11 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UZeroHUDWidget> HUDWidgetPtr;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TSubclassOf<UZeroHUDWidget> HUDWidgetClass;
 };

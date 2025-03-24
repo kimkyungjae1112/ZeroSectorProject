@@ -20,6 +20,12 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Anim")
+	TObjectPtr<ACharacter> Character;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Anim")
+	TObjectPtr<UCharacterMovementComponent> Movement;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
 	uint8 bIsIdle : 1;
 
@@ -52,10 +58,4 @@ public:
 
 private:
 	void CalSpineRotation();
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<ACharacter> Character;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UCharacterMovementComponent> Movement;
 };
