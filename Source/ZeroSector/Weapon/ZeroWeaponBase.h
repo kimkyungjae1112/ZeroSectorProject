@@ -8,12 +8,8 @@
 
 class UZeroWeaponAnimInstance;
 
-UENUM()
-enum class EFireMode : uint8
-{
-	ESingle,
-	EAuto
-};
+DECLARE_DELEGATE_OneParam(FOnChangedAmmo, uint8 /* Current Ammo */)
+DECLARE_DELEGATE_OneParam(FOnSetMaxAmmo, uint8 /* Max Ammo */)
 
 UCLASS(abstract)
 class ZEROSECTOR_API AZeroWeaponBase 
@@ -24,9 +20,16 @@ class ZEROSECTOR_API AZeroWeaponBase
 public:	
 	AZeroWeaponBase();
 
-	virtual void Tick(float DeltaTime) override;
 	virtual void Fire();
 	virtual void Aiming();
+
+public:
+	FORCEINLINE uint8 GetMaxAmmo() const { return MaxAmmo; }
+	FORCEINLINE uint8 GetCurrentAmmo() const { return CurrentAmmo; }
+	void ReloadingCurrentAmmo();
+
+	FOnChangedAmmo OnChangedAmmo;
+	FOnSetMaxAmmo OnSetMaxAmmo;
 
 protected:
 	virtual void BeginPlay() override;
@@ -50,18 +53,22 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	float DispersionRate;
+
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	uint8 MaxAmmo;
 	
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	uint8 CurrentAmmo;
+
 private:
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	AController* GetOwnerController() const;
 	void StopFire();
 	void ApplyRecoil();
-	//void GunDirectionUpdate(float DeltaTime);
 
 
 
 private:
-	FTransform WeaponSocketTransform;
 	bool bIsFire = false;
 	
 	

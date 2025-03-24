@@ -7,3 +7,4 @@
 #include "UI/ZeroGetProvisoWidget.h"
 #include "UI/ZeroNoteWidget.h"
 #include "UI/ZeroCrossHairWidget.h"
+#include "UI/ZeroHUDWidget.h"

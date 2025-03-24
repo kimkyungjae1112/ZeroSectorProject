@@ -2,9 +2,15 @@
 
 
 #include "Player/ZeroPlayerController.h"
+#include "UI/ZeroHUDWidget.h"
 
 AZeroPlayerController::AZeroPlayerController()
 {
+	static ConstructorHelpers::FClassFinder<UZeroHUDWidget> HUDWidgetClassRef(TEXT("/Game/Blueprints/UI/WBP_HUD.WBP_HUD_C"));
+	if (HUDWidgetClassRef.Class)
+	{
+		HUDWidgetClass = HUDWidgetClassRef.Class;
+	}
 }
 
 void AZeroPlayerController::InputModeGameOnly()
@@ -26,4 +32,10 @@ void AZeroPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	InputModeGameOnly();
+
+	HUDWidgetPtr = CreateWidget<UZeroHUDWidget>(this, HUDWidgetClass);
+	if (HUDWidgetPtr)
+	{
+		HUDWidgetPtr->AddToViewport();
+	}
 }

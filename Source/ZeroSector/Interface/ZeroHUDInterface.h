@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "ZeroPlayerSocketInfoInterface.generated.h"
+#include "ZeroHUDInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UZeroPlayerSocketInfoInterface : public UInterface
+class UZeroHUDInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class ZEROSECTOR_API IZeroPlayerSocketInfoInterface
+class ZEROSECTOR_API IZeroHUDInterface
 {
 	GENERATED_BODY()
 
 public:
-	virtual FTransform GetWeaponSocketTransform(const FName& SocketName) const = 0;
+	virtual void SetHUDWidget(class UZeroHUDWidget* InHUDWidget) = 0;
 };

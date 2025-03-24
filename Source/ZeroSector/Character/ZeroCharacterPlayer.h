@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/ZeroCharacterBase.h"
 #include "Weapon/ZeroWeaponType.h"
-#include "Interface/ZeroPlayerSocketInfoInterface.h"
+#include "Interface/ZeroHUDInterface.h"
 #include "ZeroCharacterPlayer.generated.h"
 
 struct FInputActionValue;
@@ -20,6 +20,7 @@ class UZeroProvisoWidget;
 class UZeroGetProvisoWidget;
 class UZeroNoteWidget;
 class UZeroCrossHairWidget;
+class UZeroHUDWidget;
 class AZeroGimmick;
 class AZeroWeaponBase;
 class APlayerController;
@@ -54,7 +55,7 @@ struct FChangeInputWrapper
 UCLASS()
 class ZEROSECTOR_API AZeroCharacterPlayer 
 	: public AZeroCharacterBase
-	, public IZeroPlayerSocketInfoInterface
+	, public IZeroHUDInterface
 {
 	GENERATED_BODY()
 	
@@ -69,8 +70,8 @@ public:
 	/* IGenericTeamAgentInterface Implement */
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
-	/* IZeroPlayerSocketInfoInterface Implement */
-	virtual FTransform GetWeaponSocketTransform(const FName& SocketName) const override;
+	/* IZeroHUDInterface Implement */
+	virtual void SetHUDWidget(UZeroHUDWidget* InHUDWidget) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -92,6 +93,7 @@ private:
 	void Aiming();
 	void UnAiming();
 	void ChangeWeapon();
+	void Reloading();
 
 	void DialogueInteract();
 	void ProvisoInteract();
@@ -172,7 +174,7 @@ private:
 	void OperationWidgetDisplay();
 	void OperationNextButtonClick();
 	void FadeInAndOutDisplay();
-	void CrossHairDisplay();
+	void GunAmmoTextDisplay();
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UZeroOperationWidget> OperationWidgetClass;
@@ -201,11 +203,8 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "UI")
     TObjectPtr<UZeroNoteWidget> NoteWidgetPtr;
 
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UZeroCrossHairWidget> CrossHairWidgetClass;
-  
 	UPROPERTY(VisibleAnywhere, Category = "UI")
-	TObjectPtr<UZeroCrossHairWidget> CrossHairWidgetPtr;
+	TObjectPtr<UZeroHUDWidget> HUDWidgetPtr;
 
 /* Test Code */
 	void NightToAfternoon();

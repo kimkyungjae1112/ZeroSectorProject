@@ -1,19 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "AI/Task/BPTask_Attack.h"
+#include "AI/Task/BTTask_Attack.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/Actor.h"
 #include "Interface/ZeroCharacterAIInterface.h"
 
-UBPTask_Attack::UBPTask_Attack()
+UBTTask_Attack::UBTTask_Attack()
 {
 	NodeName = TEXT("Attack");
 }
 
 
-EBTNodeResult::Type UBPTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 

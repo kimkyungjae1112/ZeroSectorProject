@@ -20,6 +20,8 @@ AZeroWeaponPistol::AZeroWeaponPistol()
 		FireRate = StatDataRef.Object->FireRate;
 		RecoilRate = StatDataRef.Object->RecoilRate;
 		DispersionRate = StatDataRef.Object->DispersionRate;
+		MaxAmmo = StatDataRef.Object->MaxAmmo;
+		CurrentAmmo = MaxAmmo;
 	}
 }
 
