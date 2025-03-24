@@ -88,6 +88,11 @@ FGenericTeamId AZeroCharacterPlayer::GetGenericTeamId() const
 	return TeamId;
 }
 
+FTransform AZeroCharacterPlayer::GetWeaponSocketTransform(const FName& SocketName) const
+{
+	return GetMesh()->GetSocketTransform(SocketName, RTS_World);
+}
+
 void AZeroCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();

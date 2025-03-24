@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/ZeroCharacterBase.h"
 #include "Weapon/ZeroWeaponType.h"
+#include "Interface/ZeroPlayerSocketInfoInterface.h"
 #include "ZeroCharacterPlayer.generated.h"
 
 struct FInputActionValue;
@@ -51,7 +52,9 @@ struct FChangeInputWrapper
 };
 
 UCLASS()
-class ZEROSECTOR_API AZeroCharacterPlayer : public AZeroCharacterBase
+class ZEROSECTOR_API AZeroCharacterPlayer 
+	: public AZeroCharacterBase
+	, public IZeroPlayerSocketInfoInterface
 {
 	GENERATED_BODY()
 	
@@ -65,6 +68,9 @@ public:
 
 	/* IGenericTeamAgentInterface Implement */
 	virtual FGenericTeamId GetGenericTeamId() const override;
+
+	/* IZeroPlayerSocketInfoInterface Implement */
+	virtual FTransform GetWeaponSocketTransform(const FName& SocketName) const override;
 
 protected:
 	virtual void BeginPlay() override;

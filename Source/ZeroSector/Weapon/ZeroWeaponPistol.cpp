@@ -2,6 +2,7 @@
 
 
 #include "Weapon/ZeroWeaponPistol.h"
+#include "Data/ZeroWeaponStatData.h"
 #include "ZeroSector.h"
 
 AZeroWeaponPistol::AZeroWeaponPistol()
@@ -10,6 +11,15 @@ AZeroWeaponPistol::AZeroWeaponPistol()
 	if (GunBodyMeshRef.Object)
 	{
 		GunMeshComp->SetSkeletalMesh(GunBodyMeshRef.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<UZeroWeaponStatData> StatDataRef(TEXT("/Script/ZeroSector.ZeroWeaponStatData'/Game/Data/WeaponStat/DA_PistolBaseStat.DA_PistolBaseStat'"));
+	if (StatDataRef.Object)
+	{
+		MaxRange = StatDataRef.Object->MaxRange;
+		Damage = StatDataRef.Object->Damage;
+		FireRate = StatDataRef.Object->FireRate;
+		RecoilRate = StatDataRef.Object->RecoilRate;
+		DispersionRate = StatDataRef.Object->DispersionRate;
 	}
 }
 

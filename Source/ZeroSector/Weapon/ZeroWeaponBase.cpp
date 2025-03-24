@@ -3,15 +3,26 @@
 
 #include "Weapon/ZeroWeaponBase.h"
 #include "Engine/DamageEvents.h"
+#include "GameFramework/PlayerController.h"
+#include "Character/ZeroCharacterPlayer.h"
+#include "Interface/ZeroPlayerSocketInfoInterface.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "ZeroSector.h"
 
 AZeroWeaponBase::AZeroWeaponBase()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	GunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun Mesh Component"));
 	RootComponent = GunMeshComp;
 	GunMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
+}
 
-	FireRate = 0.2f;
+void AZeroWeaponBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	//GunDirectionUpdate(DeltaTime);
 }
 
 void AZeroWeaponBase::Fire()
@@ -24,6 +35,8 @@ void AZeroWeaponBase::Fire()
 
 	FHitResult HitResult;
 	FVector ShotDirection;
+	ApplyRecoil();
+
 	bool Hit = GunTrace(HitResult, ShotDirection);
 	if (Hit)
 	{
@@ -46,24 +59,31 @@ void AZeroWeaponBase::Aiming()
 void AZeroWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 bool AZeroWeaponBase::GunTrace(FHitResult& Hit, FVector& ShotDirection)
 {
-	AController* OwnerController = GetOwnerController();
-	if (OwnerController == nullptr) return false;
+	APlayerController* PC = Cast<APlayerController>(GetOwnerController());
+	if (PC == nullptr) return false;
 
-	FVector Location;
-	FRotator Rotation;
-	OwnerController->GetPlayerViewPoint(Location, Rotation);
-	ShotDirection = -Rotation.Vector();
+	UGameViewportClient* GameViewport = GetWorld()->GetGameViewport();
+	FVector2D ViewportSize;
+	GameViewport->GetViewportSize(ViewportSize);
+	ViewportSize /= 2.f;
 
-	FVector End = Location + Rotation.Vector() * 2000.f; //MaxRange;
+	// 크로스헤어 위치를 월드 공간의 방향으로 변환
+	FVector CrosshairWorldLocation;
+	FVector CrosshairWorldDirection;
+	if (!PC->DeprojectScreenPositionToWorld(ViewportSize.X, ViewportSize.Y, CrosshairWorldLocation, CrosshairWorldDirection)) return false;
+
+	FVector Muzzle = GunMeshComp->GetSocketLocation(TEXT("muzzle_Socket"));
+	FVector MuzzleEnd = Muzzle + CrosshairWorldDirection * MaxRange;
+	ShotDirection = -MuzzleEnd;
 	FCollisionQueryParams Params(NAME_None, false, GetOwner());
-
-	DrawDebugLine(GetOwner()->GetWorld(), Location, End, FColor::Red, false, 5.f);
-	return GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECollisionChannel::ECC_GameTraceChannel3, Params);
+	
+	DrawDebugLine(GetOwner()->GetWorld(), Muzzle, MuzzleEnd, FColor::Red, false, 5.f);
+	return GetWorld()->LineTraceSingleByChannel(Hit, Muzzle, MuzzleEnd, ECollisionChannel::ECC_GameTraceChannel3, Params);
 }
 
 AController* AZeroWeaponBase::GetOwnerController() const
@@ -77,5 +97,54 @@ void AZeroWeaponBase::StopFire()
 {
 	bIsFire = false;
 }
+
+void AZeroWeaponBase::ApplyRecoil()
+{
+	if (GetOwnerController())
+	{
+		FRotator ControlRotation = GetOwnerController()->GetControlRotation();
+
+		float RecoilPitch = FMath::RandRange(-3.f, 3.f);
+		float RecoilYaw = FMath::RandRange(-3.f, 3.f);
+		ControlRotation.Pitch += RecoilPitch;
+		ControlRotation.Yaw += RecoilYaw;
+
+		GetOwnerController()->SetControlRotation(ControlRotation);
+	}
+}
+
+
+
+// 총기 방향 구현 보류
+//void AZeroWeaponBase::GunDirectionUpdate(float DeltaTime)
+//{
+//	IZeroPlayerSocketInfoInterface* Interface = Cast<IZeroPlayerSocketInfoInterface>(GetOwner());
+//	if (Interface)
+//	{
+//		APlayerController* PC = Cast<APlayerController>(GetOwnerController());
+//		if (PC == nullptr) return;
+//
+//		UGameViewportClient* GameViewport = GetWorld()->GetGameViewport();
+//		FVector2D ViewportSize;
+//		GameViewport->GetViewportSize(ViewportSize);
+//		ViewportSize /= 2.f;
+//
+//		// 크로스헤어 위치를 월드 공간의 방향으로 변환
+//		FVector CrosshairWorldLocation;
+//		FVector CrosshairWorldDirection;
+//		if (!PC->DeprojectScreenPositionToWorld(ViewportSize.X, ViewportSize.Y, CrosshairWorldLocation, CrosshairWorldDirection)) return;
+//
+//		FVector Muzzle = GunMeshComp->GetSocketLocation(TEXT("muzzle_Socket"));
+//		FVector MuzzleEnd = Muzzle + CrosshairWorldDirection * 2000.f;
+//
+//
+//
+//		WeaponSocketTransform = Interface->GetWeaponSocketTransform(TEXT("hand_rRifle"));
+//
+//		FVector ToAim = MuzzleEnd - WeaponSocketTransform.GetLocation();
+//		FRotator DesiredRotation = UKismetMathLibrary::FindLookAtRotation(WeaponSocketTransform.GetLocation(), ToAim);
+//
+//	}
+//}
 
 

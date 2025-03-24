@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "ZeroWeaponBase.generated.h"
 
+class UZeroWeaponAnimInstance;
+
 UENUM()
 enum class EFireMode : uint8
 {
@@ -22,6 +24,7 @@ class ZEROSECTOR_API AZeroWeaponBase
 public:	
 	AZeroWeaponBase();
 
+	virtual void Tick(float DeltaTime) override;
 	virtual void Fire();
 	virtual void Aiming();
 
@@ -33,21 +36,32 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	TObjectPtr<USkeletalMeshComponent> GunMeshComp;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stat")
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	float MaxRange;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stat")
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	float Damage;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stat")
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	float FireRate;
 
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	float RecoilRate;
+
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	float DispersionRate;
+	
 private:
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	AController* GetOwnerController() const;
 	void StopFire();
+	void ApplyRecoil();
+	//void GunDirectionUpdate(float DeltaTime);
+
+
 
 private:
+	FTransform WeaponSocketTransform;
 	bool bIsFire = false;
 	
 	
