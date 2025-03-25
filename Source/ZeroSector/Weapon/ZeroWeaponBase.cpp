@@ -52,7 +52,13 @@ void AZeroWeaponBase::Aiming()
 void AZeroWeaponBase::ReloadingCurrentAmmo()
 {
 	CurrentAmmo = MaxAmmo;
+	GunAmmoTextDisplay();
+}
+
+void AZeroWeaponBase::GunAmmoTextDisplay()
+{
 	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
+	OnSetMaxAmmo.ExecuteIfBound(MaxAmmo);
 }
 
 void AZeroWeaponBase::BeginPlay()

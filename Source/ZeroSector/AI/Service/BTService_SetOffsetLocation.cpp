@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AI/Task/BTService_SetOffsetLocation.h"
+#include "AI/Service/BTService_SetOffsetLocation.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 #include "GameFramework/Actor.h"
@@ -9,7 +9,7 @@
 UBTService_SetOffsetLocation::UBTService_SetOffsetLocation()
 {
 	NodeName = TEXT("Set Target Offset Location");
-	Interval = 0.1f;
+	Interval = 0.5f;
 	RandomDeviation = 0.f;
 }
 

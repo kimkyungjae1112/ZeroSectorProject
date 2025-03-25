@@ -6,9 +6,6 @@
 #include "BehaviorTree/BTDecorator.h"
 #include "BTDecorator_IsDead.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class ZEROSECTOR_API UBTDecorator_IsDead : public UBTDecorator
 {

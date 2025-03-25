@@ -6,9 +6,6 @@
 #include "BehaviorTree/BTService.h"
 #include "BTService_SetOffsetLocation.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class ZEROSECTOR_API UBTService_SetOffsetLocation : public UBTService
 {

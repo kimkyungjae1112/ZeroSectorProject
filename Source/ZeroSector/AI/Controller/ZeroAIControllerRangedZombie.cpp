@@ -52,33 +52,54 @@ void AZeroAIControllerRangedZombie::OnPerceptionUpdated(AActor* Actor, FAIStimul
 
 FAIStimulus AZeroAIControllerRangedZombie::CanSenseActor(AActor* Actor, EAIPerceptionSense AIPerceptionSense)
 {
-	FActorPerceptionBlueprintInfo PerceptionInfo;
+	FActorPerceptionBlueprintInfo ActorPerceptionBlueprintInfo;
 	FAIStimulus ResultStimulus;
 
-	PerceptionComp->GetActorsPerception(Actor, PerceptionInfo);
+	PerceptionComp->GetActorsPerception(Actor, ActorPerceptionBlueprintInfo);
 
-	TSubclassOf<UAISense> SenseClass =
-		(AIPerceptionSense == EAIPerceptionSense::EPS_Sight) ? UAISense_Sight::StaticClass() :
-		(AIPerceptionSense == EAIPerceptionSense::EPS_Damage) ? UAISense_Damage::StaticClass() :
-		nullptr;
-
-	for (const FAIStimulus& Stimulus : PerceptionInfo.LastSensedStimuli)
+	//AI 가 지금 감지할 수 있는 감각 Sight, Damage
+	TSubclassOf<UAISense> QuerySenseClass;
+	switch (AIPerceptionSense)
 	{
-		if (UAIPerceptionSystem::GetSenseClassForStimulus(this, Stimulus) == SenseClass)
+	case EAIPerceptionSense::EPS_None:
+		break;
+	case EAIPerceptionSense::EPS_Sight:
+		QuerySenseClass = UAISense_Sight::StaticClass();
+		break;
+	case EAIPerceptionSense::EPS_Damage:
+		QuerySenseClass = UAISense_Damage::StaticClass();
+		break;
+	default:
+		break;
+	}
+
+	TSubclassOf<UAISense> LastSensedStimulusClass;
+
+	for (const FAIStimulus& AIStimulus : ActorPerceptionBlueprintInfo.LastSensedStimuli)
+	{
+		LastSensedStimulusClass = UAIPerceptionSystem::GetSenseClassForStimulus(this, AIStimulus);
+
+		if (QuerySenseClass == LastSensedStimulusClass)
 		{
-			ResultStimulus = Stimulus;
-			break;
+			ResultStimulus = AIStimulus;
+
+			return ResultStimulus;
 		}
 	}
+
 	return ResultStimulus;
 }
 
 void AZeroAIControllerRangedZombie::HandleSenseSight(AActor* Actor, const FAIStimulus& Stimulus)
 {
 	if (Stimulus.WasSuccessfullySensed())
+	{
 		GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), Actor);
+	}
 	else
+	{
 		GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), nullptr);
+	}
 }
 
 void AZeroAIControllerRangedZombie::HandleSenseDamage(AActor* Actor, const FAIStimulus& Stimulus)

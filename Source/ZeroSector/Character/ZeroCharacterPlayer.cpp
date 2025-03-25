@@ -16,9 +16,6 @@
 #include "Gimmick/ZeroOperationBoard.h"
 #include "Data/ZeroProvisoDataTable.h"
 #include "Data/ZeroSingleton.h"
-#include "Character/ZeroCharacterAIBase.h" // 좀비 피격 테스트용
-#include "Kismet/GameplayStatics.h" // 좀비 피격 테스트용
-#include "TimerManager.h" // 좀비 피격 테스트용
 #include "ZeroSector.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
@@ -100,24 +97,6 @@ void AZeroCharacterPlayer::BeginPlay()
 
 	SetInputAfternoonMode();
 	NoteWidgetPtr = CreateWidget<UZeroNoteWidget>(GetWorld(), NoteWidgetClass);
-
-	// 테스트용
-	TArray<AActor*> FoundZombies;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AZeroCharacterAIBase::StaticClass(), FoundZombies);
-
-	if (FoundZombies.Num() > 0)
-	{
-		TestTarget = Cast<AZeroCharacterAIBase>(FoundZombies[0]);
-	}
-
-	// 타이머 설정
-	GetWorldTimerManager().SetTimer(
-		AutoAttackTimerHandle,
-		this,
-		&AZeroCharacterPlayer::PerformAutoAttack,
-		5.0f,
-		true
-	);
 }
 
 APlayerController* AZeroCharacterPlayer::GetPlayerController() const
@@ -184,12 +163,12 @@ void AZeroCharacterPlayer::ChangeWeapon()
 		if (CurrentWeaponType == EWeaponType::EPistol)
 		{
 			SetRifle();
-			GunAmmoTextDisplay();
+			CurrentWeapon->GunAmmoTextDisplay();
 		}
 		else
 		{
 			SetPistol();
-			GunAmmoTextDisplay();
+			CurrentWeapon->GunAmmoTextDisplay();
 		}
 	}
 	else if (ChoicedWeapon == EWeaponType::EShotgun)
@@ -197,12 +176,12 @@ void AZeroCharacterPlayer::ChangeWeapon()
 		if (CurrentWeaponType == EWeaponType::EPistol)
 		{
 			SetShotgun();
-			GunAmmoTextDisplay();
+			CurrentWeapon->GunAmmoTextDisplay();
 		}
 		else
 		{
 			SetPistol();
-			GunAmmoTextDisplay();
+			CurrentWeapon->GunAmmoTextDisplay();
 		}
 	}
 }
@@ -490,7 +469,7 @@ void AZeroCharacterPlayer::OperationNextButtonClick()
 
 	SetInputByDaySequence(EDaySequence::ENight);
 	SetPistol();
-	GunAmmoTextDisplay();
+	CurrentWeapon->GunAmmoTextDisplay();
 }
 
 void AZeroCharacterPlayer::FadeInAndOutDisplay()
@@ -499,12 +478,6 @@ void AZeroCharacterPlayer::FadeInAndOutDisplay()
 	FadeInAndOutWidgetPtr->AddToViewport();
 	FadeInAndOutWidgetPtr->FadeInPlay();
 	FadeInAndOutWidgetPtr = nullptr;
-}
-
-void AZeroCharacterPlayer::GunAmmoTextDisplay()
-{
-	CurrentWeapon->OnSetMaxAmmo.ExecuteIfBound(CurrentWeapon->GetMaxAmmo());
-	CurrentWeapon->OnChangedAmmo.ExecuteIfBound(CurrentWeapon->GetCurrentAmmo());
 }
 
 void AZeroCharacterPlayer::NightToAfternoon()
@@ -527,14 +500,5 @@ void AZeroCharacterPlayer::ToggleNote()
 	{
 		NoteWidgetPtr->AddToViewport();
 		bIsNoteToggle = true;
-	}
-}
-
-void AZeroCharacterPlayer::PerformAutoAttack()
-{
-	if (TestTarget)
-	{
-		TestTarget->ApplyDamage(20.0f);
-		UE_LOG(LogTemp, Warning, TEXT("TestTarget에게 20 데미지 입힘"));
 	}
 }

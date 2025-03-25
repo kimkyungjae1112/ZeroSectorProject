@@ -4,31 +4,30 @@
 
 #include "CoreMinimal.h"
 #include "Character/ZeroCharacterBase.h"
-#include "AIController.h"
+#include "Interface/ZeroCharacterAIInterface.h"
 #include "ZeroCharacterAIBase.generated.h"
 
 UCLASS(abstract)
-class ZEROSECTOR_API AZeroCharacterAIBase : public AZeroCharacterBase
+class ZEROSECTOR_API AZeroCharacterAIBase 
+	: public AZeroCharacterBase
+	, public IZeroCharacterAIInterface
 {
 	GENERATED_BODY()
 
 public:
 	AZeroCharacterAIBase();
-	virtual void BeginPlay() override;
 
-public:
-	virtual void ApplyDamage(float Damage);
+	/* IZeroCharacterAIInterface Implement */
+	virtual float GetAIAttackRange() override;
+	virtual float GetAITurnSpeed() override;
 
+	virtual void SetAIAttackDelegate(const FOnAttackFinished& InOnAttackFinished) override;
+	virtual void AttackByAI() override;
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "Stat")
-	float Health = 100.0f;
+	virtual void BeginPlay() override;
 
-	FTimerHandle HitResetTimerHandle;
+protected:
+	FOnAttackFinished OnAttackFinished;
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
-	bool bIsRangedZombie;
-
-	bool IsRangedZombie() const { return bIsRangedZombie; }
 };

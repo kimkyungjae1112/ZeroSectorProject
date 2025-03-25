@@ -3,22 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BehaviorTree/Decorators/BTDecorator_BlackboardBase.h"
-#include "BPDecorator_AttackRange.generated.h"
+#include "BehaviorTree/BTDecorator.h"
+#include "BTDecorator_IsHit.generated.h"
 
-/**
- * 
- */
 UCLASS()
-class UBPDecorator_AttackRange : public UBTDecorator_BlackboardBase
+class ZEROSECTOR_API UBTDecorator_IsHit : public UBTDecorator
 {
 	GENERATED_BODY()
 	
-	
 public:
-	UBPDecorator_AttackRange();
+	UBTDecorator_IsHit();
 
 protected:
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
 
+public:
+	UPROPERTY(EditAnywhere, Category = "Blackboard")
+	FName IsHitKey = "bIsHit";
 };

@@ -24,9 +24,8 @@ public:
 	virtual void Aiming();
 
 public:
-	FORCEINLINE uint8 GetMaxAmmo() const { return MaxAmmo; }
-	FORCEINLINE uint8 GetCurrentAmmo() const { return CurrentAmmo; }
 	void ReloadingCurrentAmmo();
+	void GunAmmoTextDisplay();
 
 	FOnChangedAmmo OnChangedAmmo;
 	FOnSetMaxAmmo OnSetMaxAmmo;

@@ -3,9 +3,6 @@
 
 #include "Character/ZeroCharacterAIBase.h"               
 #include "AIController.h"                         
-#include "BehaviorTree/BlackboardComponent.h"     
-#include "BrainComponent.h"                       
-#include "TimerManager.h" 
 
 AZeroCharacterAIBase::AZeroCharacterAIBase()
 {
@@ -19,48 +16,23 @@ void AZeroCharacterAIBase::BeginPlay()
 {
     Super::BeginPlay();
 
-   
-    if (AAIController* AICon = Cast<AAIController>(GetController()))
-    {
-        if (UBlackboardComponent* BB = AICon->GetBlackboardComponent())
-        {
-            BB->SetValueAsBool("bIsRanged", bIsRangedZombie);
-            BB->SetValueAsFloat("AttackRange", bIsRangedZombie ? 1000.f : 200.f); 
-        }
-    } 
 }
 
-void AZeroCharacterAIBase::ApplyDamage(float Damage)
+float AZeroCharacterAIBase::GetAIAttackRange()
 {
-    Health -= Damage;
+    return 0.0f;
+}
 
-    if (Health <= 0.f)
-    {
-        if (AAIController* AICon = Cast<AAIController>(GetController()))
-        {
-            if (UBlackboardComponent* BB = AICon->GetBlackboardComponent())
-            {
-                BB->SetValueAsBool("bIsDead", true);
-            }
+float AZeroCharacterAIBase::GetAITurnSpeed()
+{
+    return 0.0f;
+}
 
-        }
+void AZeroCharacterAIBase::SetAIAttackDelegate(const FOnAttackFinished& InOnAttackFinished)
+{
+    OnAttackFinished = InOnAttackFinished;
+}
 
-    }
-    else
-    {
-        if (AAIController* AICon = Cast<AAIController>(GetController()))
-        {
-            if (UBlackboardComponent* BB = AICon->GetBlackboardComponent())
-            {
-                BB->SetValueAsBool("bIsHit", true);
-                UE_LOG(LogTemp, Warning, TEXT("attacked"));
-
-                GetWorldTimerManager().SetTimer(HitResetTimerHandle, [BB]()
-                    {
-                        BB->SetValueAsBool("bIsHit", false);
-                    }, 0.4f, false);
-            }
-        }
-
-    }
+void AZeroCharacterAIBase::AttackByAI()
+{
 }

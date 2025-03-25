@@ -6,7 +6,7 @@
 #include "UObject/Interface.h"
 #include "ZeroCharacterAIInterface.generated.h"
 
-DECLARE_DELEGATE(FAICharacterAttackFinished);
+DECLARE_DELEGATE(FOnAttackFinished);
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
@@ -15,9 +15,6 @@ class UZeroCharacterAIInterface : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class ZEROSECTOR_API IZeroCharacterAIInterface
 {
 	GENERATED_BODY()
@@ -26,6 +23,6 @@ public:
 	virtual float GetAIAttackRange() = 0;
 	virtual float GetAITurnSpeed() = 0;
 
-	virtual void SetAIAttackDelegate(const FAICharacterAttackFinished& InOnAttackFinished) = 0;
+	virtual void SetAIAttackDelegate(const FOnAttackFinished& InOnAttackFinished) = 0;
 	virtual void AttackByAI() = 0;
 };

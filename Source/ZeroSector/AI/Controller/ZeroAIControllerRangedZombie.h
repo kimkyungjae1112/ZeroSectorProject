@@ -10,9 +10,6 @@ struct FAIStimulus;
 class UAISenseConfig_Sight;
 class UAISenseConfig_Damage;
 
-/**
- * 
- */
 UCLASS()
 class ZEROSECTOR_API AZeroAIControllerRangedZombie : public AZeroAIControllerBase
 {
