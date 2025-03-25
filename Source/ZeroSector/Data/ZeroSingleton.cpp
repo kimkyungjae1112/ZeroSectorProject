@@ -9,7 +9,7 @@ UZeroSingleton::UZeroSingleton()
 	if (DialogueDataTableRef.Succeeded())
 	{
 		const UDataTable* DialogueDataTable = DialogueDataTableRef.Object;
-		//check(DialogueDataTable->GetRowMap().Num() > 0);
+		check(DialogueDataTable->GetRowMap().Num() > 0);
 
 		TArray<uint8*> ValueArray;
 		DialogueDataTable->GetRowMap().GenerateValueArray(ValueArray);
@@ -25,7 +25,6 @@ UZeroSingleton::UZeroSingleton()
 	if (ProvisoDataTableRef.Succeeded())
 	{
 		const UDataTable* ProvisoDataTable = ProvisoDataTableRef.Object;
-
 
 		TArray<uint8*> ValueArray;
 		ProvisoDataTable->GetRowMap().GenerateValueArray(ValueArray);
@@ -44,7 +43,23 @@ UZeroSingleton::UZeroSingleton()
 				return *reinterpret_cast<FZeroProvisoDataTable*>(Value);
 			}
 		);
+	}
 
+	static ConstructorHelpers::FObjectFinder<UDataTable> CharacterStatDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/Stat/ZeroZombieStatTable.ZeroZombieStatTable'"));
+	if (CharacterStatDataTableRef.Succeeded())
+	{
+		const UDataTable* CharacterStatDataTable = CharacterStatDataTableRef.Object;
+		check(CharacterStatDataTable->GetRowMap().Num() > 0);
+
+		for (const auto& Elem : CharacterStatDataTable->GetRowMap())
+		{
+			const FName& RowName = Elem.Key;
+			const FZeroCharacterStat* StatPtr = reinterpret_cast<const FZeroCharacterStat*>(Elem.Value);
+			if (StatPtr)
+			{
+				CharacterStatTable.Add(RowName, *StatPtr);
+			}
+		}
 	}
 
 }

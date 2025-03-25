@@ -26,11 +26,6 @@ class AZeroWeaponBase;
 class APlayerController;
 class AZeroPlayerController;
 
-/* 
-	Component 변수 선언할 때 Comp로 줄이기
-	CameraComponent -> CameraComp
-*/
-
 DECLARE_DELEGATE(FChangeInput)
 
 UENUM()

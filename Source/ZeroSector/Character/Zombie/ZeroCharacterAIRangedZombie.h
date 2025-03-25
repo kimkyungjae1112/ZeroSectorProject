@@ -10,5 +10,10 @@ UCLASS()
 class ZEROSECTOR_API AZeroCharacterAIRangedZombie : public AZeroCharacterAIBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	AZeroCharacterAIRangedZombie();
+
+	/* IGenericTeamAgentInterface Implement */
+	virtual FGenericTeamId GetGenericTeamId() const override;
 };

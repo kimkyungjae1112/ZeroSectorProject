@@ -7,6 +7,8 @@
 #include "Interface/ZeroCharacterAIInterface.h"
 #include "ZeroCharacterAIBase.generated.h"
 
+class UZeroStatComponent;
+
 UCLASS(abstract)
 class ZEROSECTOR_API AZeroCharacterAIBase 
 	: public AZeroCharacterBase
@@ -26,6 +28,11 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	TObjectPtr<UZeroStatComponent> StatComp;
 
 protected:
 	FOnAttackFinished OnAttackFinished;

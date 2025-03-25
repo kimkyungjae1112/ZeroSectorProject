@@ -2,12 +2,14 @@
 
 
 #include "Character/ZeroCharacterAIBase.h"               
-#include "AIController.h"                         
+#include "Component/ZeroStatComponent.h"
 
 AZeroCharacterAIBase::AZeroCharacterAIBase()
 {
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+
+    StatComp = CreateDefaultSubobject<UZeroStatComponent>(TEXT("Stat Component"));
 }
 
 

@@ -50,6 +50,7 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 
 	CurrentWeaponType = EWeaponType::ENone;
 	TeamId = FGenericTeamId(0);
+	ClassName = TEXT("Player");
 }
 
 void AZeroCharacterPlayer::Tick(float DeltaSeconds)

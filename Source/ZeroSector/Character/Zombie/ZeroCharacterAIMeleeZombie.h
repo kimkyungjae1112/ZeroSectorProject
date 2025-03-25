@@ -11,4 +11,9 @@ class ZEROSECTOR_API AZeroCharacterAIMeleeZombie : public AZeroCharacterAIBase
 {
 	GENERATED_BODY()
 	
+public:
+	AZeroCharacterAIMeleeZombie();
+
+	/* IGenericTeamAgentInterface Implement */
+	virtual FGenericTeamId GetGenericTeamId() const override;
 };

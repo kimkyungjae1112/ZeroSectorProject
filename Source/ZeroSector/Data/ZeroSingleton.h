@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "Data/ZeroDialogueDataTable.h"
 #include "Data/ZeroProvisoDataTable.h"
+#include "Data/ZeroCharacterStat.h"
 #include "ZeroSingleton.generated.h"
 
 UCLASS()
@@ -18,14 +19,15 @@ public:
 	static UZeroSingleton& Get();
 
 	FORCEINLINE FZeroDialogueDataTable GetDialogueTable(int32 RowIndex) const { return DialogueTables.IsValidIndex(RowIndex) ? DialogueTables[RowIndex] : FZeroDialogueDataTable(); }
-
 	FORCEINLINE FZeroProvisoDataTable GetProvisoData(int32 RowIndex) const { return ProvisoDataList.IsValidIndex(RowIndex) ? ProvisoDataList[RowIndex] : FZeroProvisoDataTable(); }
+	FORCEINLINE FZeroCharacterStat GetCharacterStat(const FName& ClassName) const { return CharacterStatTable[ClassName]; }
 
+	/* 단서 데이터 */
 	TArray<FZeroProvisoDataTable> GetCollectedProvisos() const;
-
 	void AddCollectedProviso(const FZeroProvisoDataTable& ProvisoData);
 
 private:
+	UPROPERTY()
 	TArray<FZeroDialogueDataTable> DialogueTables;
 
 	UPROPERTY()
@@ -33,4 +35,7 @@ private:
 
 	UPROPERTY()
 	TArray<FZeroProvisoDataTable> CollectedProvisos;
+
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	TMap<FName, FZeroCharacterStat> CharacterStatTable;
 };
