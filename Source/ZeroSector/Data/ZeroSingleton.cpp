@@ -45,7 +45,7 @@ UZeroSingleton::UZeroSingleton()
 		);
 	}
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> CharacterStatDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/Stat/ZeroZombieStatTable.ZeroZombieStatTable'"));
+	static ConstructorHelpers::FObjectFinder<UDataTable> CharacterStatDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/CharacterStat/ZeroCharacterStatTable.ZeroCharacterStatTable'"));
 	if (CharacterStatDataTableRef.Succeeded())
 	{
 		const UDataTable* CharacterStatDataTable = CharacterStatDataTableRef.Object;
