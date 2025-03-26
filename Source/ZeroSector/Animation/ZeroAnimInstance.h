@@ -33,9 +33,6 @@ public:
 	uint8 bIsFalling : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
-	uint8 bIsAiming : 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
 	uint8 bIsCrouch : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
