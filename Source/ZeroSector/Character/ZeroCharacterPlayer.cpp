@@ -16,6 +16,7 @@
 #include "Gimmick/ZeroOperationBoard.h"
 #include "Data/ZeroProvisoDataTable.h"
 #include "Data/ZeroSingleton.h"
+#include "Component/Input/ZeroInputBaseComponent.h"
 #include "ZeroSector.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
@@ -36,7 +37,6 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
-	Walk();
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
 	SpringArmComp->SetupAttachment(GetMesh(), TEXT("headSocket"));
@@ -44,6 +44,8 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	CameraComp->SetupAttachment(SpringArmComp);
+
+	InputComp = CreateDefaultSubobject<UZeroInputBaseComponent>(TEXT("Input Config Component"));
 
 	ChangeInputMap.Add(EDaySequence::EAfternoon, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputAfternoonMode)));
 	ChangeInputMap.Add(EDaySequence::ENight, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputNightMode)));
@@ -96,6 +98,7 @@ void AZeroCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	Walk();
 	SetInputAfternoonMode();
 	NoteWidgetPtr = CreateWidget<UZeroNoteWidget>(GetWorld(), NoteWidgetClass);
 }
@@ -112,34 +115,22 @@ AZeroPlayerController* AZeroCharacterPlayer::GetZeroPlayerController() const
 
 void AZeroCharacterPlayer::Move(const FInputActionValue& Value)
 {
-	FVector2D InputValue = Value.Get<FVector2D>();
-
-	FRotator Rotation = Controller->GetControlRotation();
-	FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
-
-	FVector ForwardVector = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	FVector RightVector = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-	AddMovementInput(ForwardVector, InputValue.X);
-	AddMovementInput(RightVector, InputValue.Y);
+	InputComp->Move(Value);
 }
 
 void AZeroCharacterPlayer::Look(const FInputActionValue& Value)
 {
-	FVector2D InputValue = Value.Get<FVector2D>();
-
-	AddControllerPitchInput(-InputValue.Y);
-	AddControllerYawInput(InputValue.X);
+	InputComp->Look(Value);
 }
 
 void AZeroCharacterPlayer::Run()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	InputComp->Run();
 }
 
 void AZeroCharacterPlayer::Walk()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	InputComp->Walk();
 }
 
 void AZeroCharacterPlayer::Fire()

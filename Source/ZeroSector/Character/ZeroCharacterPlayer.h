@@ -21,6 +21,7 @@ class UZeroGetProvisoWidget;
 class UZeroNoteWidget;
 class UZeroCrossHairWidget;
 class UZeroHUDWidget;
+class UZeroInputBaseComponent;
 class AZeroGimmick;
 class AZeroWeaponBase;
 class APlayerController;
@@ -104,6 +105,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Input")
 	TObjectPtr<UZeroInputConfig> InputConfig;
+
+	UPROPERTY(VisibleAnywhere, Category = "Input")
+	TObjectPtr<UZeroInputBaseComponent> InputComp;
 
 /* 상호작용 */
 	void InteractBeam();
