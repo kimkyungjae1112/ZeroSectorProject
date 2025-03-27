@@ -6,24 +6,18 @@
 #include "Character/ZeroCharacterBase.h"
 #include "Weapon/ZeroWeaponType.h"
 #include "Interface/ZeroHUDInterface.h"
+#include "Interface/ZeroAfternoonInputInterface.h"
+#include "Interface/ZeroNightInputInterface.h"
+#include "Interface/ZeroUIComponentInterface.h"
 #include "ZeroCharacterPlayer.generated.h"
 
 struct FInputActionValue;
-class IZeroDialogueInterface;
 class UZeroInputConfig;
 class USpringArmComponent;
 class UCameraComponent;
-class UZeroPlayerCameraData;
-class UZeroFadeInAndOutWidget;
-class UZeroOperationWidget;
-class UZeroProvisoWidget;
-class UZeroGetProvisoWidget;
-class UZeroNoteWidget;
-class UZeroCrossHairWidget;
 class UZeroHUDWidget;
 class UZeroInputBaseComponent;
-class AZeroGimmick;
-class AZeroWeaponBase;
+class UZeroUIComponent;
 class APlayerController;
 class AZeroPlayerController;
 
@@ -51,6 +45,9 @@ UCLASS()
 class ZEROSECTOR_API AZeroCharacterPlayer 
 	: public AZeroCharacterBase
 	, public IZeroHUDInterface
+	, public IZeroAfternoonInputInterface
+	, public IZeroNightInputInterface
+	, public IZeroUIComponentInterface
 {
 	GENERATED_BODY()
 	
@@ -68,9 +65,26 @@ public:
 	/* IZeroHUDInterface Implement */
 	virtual void SetHUDWidget(UZeroHUDWidget* InHUDWidget) override;
 
-protected:
-	virtual void BeginPlay() override;
+	/* IZeroAfternoonInputInterface Implemnt */
+	virtual void DisplayInteractUI() override;
+	virtual void CloseInteractUI() override;
 
+	/* IZeroNightInputInterface Implemnt */
+	virtual USpringArmComponent* GetSpringArmComp() override;
+	
+#if WITH_EDITOR
+	virtual void NightToAfternoon() override;
+#endif
+
+	/* IZeroUIComponentInterface Implement */
+	virtual class AZeroPlayerController* GetOwnerController() override;
+	virtual void ChangeInputMode() override;
+
+
+protected:
+	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
+	
 
 /* 포인터를 얻어오는 유틸리티 함수 */
 private:
@@ -94,6 +108,9 @@ private:
 	void ProvisoInteract();
 	void OperationBoardInteract();
 
+	void ToggleNoteDisplay();
+
+
 /* Input 데이터 및 변경 */
 private:
 	void SetInputByDaySequence(EDaySequence DaySequence);
@@ -108,52 +125,15 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Input")
 	TObjectPtr<UZeroInputBaseComponent> InputComp;
-
-/* 상호작용 */
-	void InteractBeam();
-	void InteractProcess(const FHitResult& InHitResult, bool bIsHit);
-	void InteractBeamReachedProviso(AActor* InHitActor);
-
-	UPROPERTY(EditAnywhere, Category = "Interact")
-	float DetectDistance;
-
-/* 대화 섹션 */
-private:
-	void SetDefaultMovement();
-	void SetDialogueMovement();
-
-	IZeroDialogueInterface* DialogueInterface;
-
-
-/* 기믹 */
-private:
-	UPROPERTY(VisibleAnywhere, Category = "Gimmick")
-	TObjectPtr<AZeroGimmick> InteractedGimmick;
-
 	
 /* 무기 */
 private:
-	void SetNoWeapon();
-	void SetRifle();
-	void SetPistol();
-	void SetShotgun();
-	void SetupTransformWeapon(const FName& SocketName);
-	void ChangeWeaponMesh();
-
 	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))
 	FORCEINLINE EWeaponType GetWeaponType() const { return CurrentWeaponType; }
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	TMap<EWeaponType, AZeroWeaponBase*> Weapons;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TObjectPtr<AZeroWeaponBase> CurrentWeapon;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	EWeaponType CurrentWeaponType;
 
-	EWeaponType ChoicedWeapon;
-	bool bIsAiming = false;
 
 /* 카메라 */
 private:
@@ -163,53 +143,14 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> CameraComp;
 
-	UPROPERTY(VisibleAnywhere, Category = "Camera")
-	TObjectPtr<UZeroPlayerCameraData> CameraData;
-
 	
 /* UI */
 private:
-	void OperationWidgetDisplay();
-	void OperationNextButtonClick();
-	void FadeInAndOutDisplay();
-
-	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<UZeroOperationWidget> OperationWidgetClass;
-
-	UPROPERTY(VisibleAnywhere, Category = "UI")
-	TObjectPtr<UZeroOperationWidget> OperationWidgetPtr;
-
-	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<UZeroFadeInAndOutWidget> FadeInAndOutWidgetClass;
-
-	UPROPERTY(VisibleAnywhere, Category = "UI")
-	TObjectPtr<UZeroFadeInAndOutWidget> FadeInAndOutWidgetPtr;
-
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UZeroProvisoWidget> ProvisoWidgetClass;
-
-	UPROPERTY(VisibleAnywhere, Category = "UI")
-	TObjectPtr<UZeroProvisoWidget> ProvisoWidgetPtr;
-
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UZeroGetProvisoWidget> GetProvisoWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UZeroNoteWidget> NoteWidgetClass;
-
-	UPROPERTY(VisibleAnywhere, Category = "UI")
-    TObjectPtr<UZeroNoteWidget> NoteWidgetPtr;
-
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TObjectPtr<UZeroHUDWidget> HUDWidgetPtr;
 
-/* Test Code */
-	void NightToAfternoon();
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UZeroUIComponent> UIComp;
 
-	
-/* 개인 수첩 */
-	void ToggleNote();
-	int8 bIsNoteToggle : 1;
-	int32 ProvisoNum = 0;
 
 };

@@ -24,6 +24,8 @@ public:
 	virtual void Aiming();
 
 public:
+	FORCEINLINE USkeletalMeshComponent* GetGunMeshComp() const { return GunMeshComp; }
+
 	void ReloadingCurrentAmmo();
 	void GunAmmoTextDisplay();
 
