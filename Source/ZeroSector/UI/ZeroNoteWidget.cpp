@@ -24,11 +24,10 @@ void UZeroNoteWidget::NativeConstruct()
 
     ResearcherInfoBox->SetVisibility(ESlateVisibility::Hidden);
 
-    if (CloseButton)
+    if (CloseButton && !CloseButton->OnClicked.IsAlreadyBound(this, &UZeroNoteWidget::CloseClueDetail))
     {
         CloseButton->OnClicked.AddDynamic(this, &UZeroNoteWidget::CloseClueDetail);
     }
-
 }
 
 
@@ -45,12 +44,10 @@ void UZeroNoteWidget::SetNoteInfo(const FZeroProvisoDataTable& ProvisoData)
     }
 }
 
+
 void UZeroNoteWidget::AddProvisoToUI(const FZeroProvisoDataTable& ProvisoData)
 {
-    if (!ProvisoButtonClass || !ProvisoWrapBox) return;
-
     UZeroProvisoButtonWidget* NewButtonWidget = CreateWidget<UZeroProvisoButtonWidget>(this, ProvisoButtonClass);
-    if (!NewButtonWidget) return;
 
     NewButtonWidget->InitProviso(ProvisoData);
     NewButtonWidget->OnProvisoClicked.AddDynamic(this, &UZeroNoteWidget::ShowClueDetail);
@@ -67,7 +64,9 @@ void UZeroNoteWidget::AddProvisoToUI(const FZeroProvisoDataTable& ProvisoData)
         WrapSlot->SetHorizontalAlignment(HAlign_Center);
         WrapSlot->SetVerticalAlignment(VAlign_Center);
     }
+
 }
+
 
 void UZeroNoteWidget::DisplayResearcher(UZeroResearcherData* ResearcherData)
 {

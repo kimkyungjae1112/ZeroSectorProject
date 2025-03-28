@@ -11,6 +11,12 @@ AZeroPlayerController::AZeroPlayerController()
 	{
 		HUDWidgetClass = HUDWidgetClassRef.Class;
 	}
+
+	static ConstructorHelpers::FClassFinder<UUserWidget> BlurWidgetRef(TEXT("/Game/Blueprints/UI/WBP_Blur.WBP_Blur_C"));
+	if (BlurWidgetRef.Succeeded())
+	{
+		BlurWidgetClass = BlurWidgetRef.Class;
+	}
 }
 
 void AZeroPlayerController::InputModeGameOnly()
@@ -27,6 +33,40 @@ void AZeroPlayerController::InputModeUIOnly()
 	SetInputMode(UIOnly);
 }
 
+void AZeroPlayerController::InputModeGameAndUI()
+{
+	bShowMouseCursor = true;
+	FInputModeGameAndUI GameAndUI;
+	SetInputMode(GameAndUI);
+}
+
+void AZeroPlayerController::ApplyBlurEffect()
+{
+	if (!BlurWidgetClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BLUR"))
+	}
+
+	if (!BlurWidgetInstance)
+	{
+		BlurWidgetInstance = CreateWidget<UUserWidget>(this, BlurWidgetClass);
+	}
+
+	if (BlurWidgetInstance && !BlurWidgetInstance->IsInViewport())
+	{
+		BlurWidgetInstance->AddToViewport(-100); 
+	}
+}
+
+void AZeroPlayerController::RemoveBlurEffect()
+{
+	if (BlurWidgetInstance && BlurWidgetInstance->IsInViewport())
+	{
+		BlurWidgetInstance->RemoveFromParent();
+	}
+}
+
+
 void AZeroPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -39,3 +79,5 @@ void AZeroPlayerController::BeginPlay()
 		HUDWidgetPtr->AddToViewport();
 	}
 }
+
+
