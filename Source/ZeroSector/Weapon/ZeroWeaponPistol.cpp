@@ -32,8 +32,3 @@ void AZeroWeaponPistol::Fire()
 	ZE_LOG(LogZeroSector, Display, TEXT("Pistol Fire"));
 }
 
-void AZeroWeaponPistol::Aiming()
-{
-	Super::Aiming();
-
-}

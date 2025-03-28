@@ -57,21 +57,6 @@ void UZeroInputNightComponent::Fire()
 	CurrentWeapon->Fire();
 }
 
-void UZeroInputNightComponent::Aiming()
-{
-	IZeroNightInputInterface* Interface = Cast<IZeroNightInputInterface>(Player);
-	if (Interface)
-	{
-		FVector ZoomSocket = CurrentWeapon->GetGunMeshComp()->GetSocketLocation(TEXT("ZoomIn"));
-
-		Interface->GetSpringArmComp()->SetWorldLocation(ZoomSocket);
-	}
-}
-
-void UZeroInputNightComponent::UnAiming()
-{
-}
-
 void UZeroInputNightComponent::ChangeWeapon()
 {
 	if (ChoicedWeapon == EWeaponType::ERifle)
@@ -129,6 +114,13 @@ void UZeroInputNightComponent::SetupWeapon(const EWeaponType& WeaponType)
 	default:
 		ZE_LOG(LogZeroSector, Error, TEXT("무기 안들어옴"));
 		break;
+	}
+
+	for (const auto& Weapon : Weapons)
+	{
+		Weapon.Value->SetOwner(Player);
+		/*Weapon.Value->OnSetMaxAmmo.BindUObject(HUDWidgetPtr, &UZeroHUDWidget::UpdateMaxAmmo);
+		Weapon.Value->OnChangedAmmo.BindUObject(HUDWidgetPtr, &UZeroHUDWidget::UpdateCurrentAmmo);*/
 	}
 
 	SetPistol();

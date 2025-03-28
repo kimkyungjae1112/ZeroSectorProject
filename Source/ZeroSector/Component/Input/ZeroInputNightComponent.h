@@ -22,8 +22,6 @@ public:
 	virtual void Walk() override;
 
 	virtual void Fire() override;
-	virtual void Aiming() override;
-	virtual void UnAiming() override;
 	virtual void ChangeWeapon() override;
 	virtual void Reloading() override;
 	virtual void SetupWeapon(const EWeaponType& WeaponType) override;

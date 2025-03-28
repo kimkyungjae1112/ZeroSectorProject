@@ -44,11 +44,6 @@ void AZeroWeaponBase::Fire()
 	}
 }
 
-void AZeroWeaponBase::Aiming()
-{
-	//Aiming 관련 기능 구현
-}
-
 void AZeroWeaponBase::ReloadingCurrentAmmo()
 {
 	CurrentAmmo = MaxAmmo;

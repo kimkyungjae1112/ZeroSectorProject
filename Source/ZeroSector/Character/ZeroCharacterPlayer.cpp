@@ -69,8 +69,6 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationBoardInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ProvisoInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Fire, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Fire);
-	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Aiming);
-	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::UnAiming);
 	EnhancedInputComponent->BindAction(InputConfig->IA_ChangeWeapon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ChangeWeapon);
 	EnhancedInputComponent->BindAction(InputConfig->IA_NightToAfternoon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::NightToAfternoon);
 	EnhancedInputComponent->BindAction(InputConfig->IA_ToggleNote, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ToggleNoteDisplay);
@@ -97,11 +95,6 @@ void AZeroCharacterPlayer::DisplayInteractUI()
 void AZeroCharacterPlayer::CloseInteractUI()
 {
 	UIComp->InteractUIClose();
-}
-
-USpringArmComponent* AZeroCharacterPlayer::GetSpringArmComp()
-{
-	return SpringArmComp;
 }
 
 #if WITH_EDITOR
@@ -177,7 +170,6 @@ void AZeroCharacterPlayer::Look(const FInputActionValue& Value)
 	}
 }
 
-
 void AZeroCharacterPlayer::Run()
 {
 	if (InputComp)
@@ -199,22 +191,6 @@ void AZeroCharacterPlayer::Fire()
 	if (InputComp)
 	{
 		InputComp->Fire();
-	}
-}
-
-void AZeroCharacterPlayer::Aiming()
-{
-	if (InputComp)
-	{
-		InputComp->Aiming();
-	}
-}
-
-void AZeroCharacterPlayer::UnAiming()
-{
-	if (InputComp)
-	{
-		InputComp->UnAiming();
 	}
 }
 

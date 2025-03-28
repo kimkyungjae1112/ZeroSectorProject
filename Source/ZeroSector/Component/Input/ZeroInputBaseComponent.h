@@ -41,8 +41,6 @@ public:
 
 	/* Night */
 	virtual void Fire() PURE_VIRTUAL(UZeroInputBaseComponent::Fire, );
-	virtual void Aiming() PURE_VIRTUAL(UZeroInputBaseComponent::Aiming, );
-	virtual void UnAiming() PURE_VIRTUAL(UZeroInputBaseComponent::UnAiming, );
 	virtual void ChangeWeapon() PURE_VIRTUAL(UZeroInputBaseComponent::ChangeWeapon, );
 	virtual void Reloading() PURE_VIRTUAL(UZeroInputBaseComponent::Reloading, );
 	virtual void SetupWeapon(const EWeaponType& WeaponType) PURE_VIRTUAL(UZeroInputBaseComponent::SetupWeapon, );

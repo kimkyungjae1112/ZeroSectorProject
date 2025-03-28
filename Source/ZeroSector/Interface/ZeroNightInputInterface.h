@@ -18,6 +18,5 @@ class ZEROSECTOR_API IZeroNightInputInterface
 	GENERATED_BODY()
 
 public:
-	virtual class USpringArmComponent* GetSpringArmComp() = 0;
 	virtual void NightToAfternoon() = 0;
 };

@@ -70,8 +70,6 @@ public:
 	virtual void CloseInteractUI() override;
 
 	/* IZeroNightInputInterface Implemnt */
-	virtual USpringArmComponent* GetSpringArmComp() override;
-	
 #if WITH_EDITOR
 	virtual void NightToAfternoon() override;
 #endif
@@ -99,8 +97,6 @@ private:
 	void Run();
 	void Walk();
 	void Fire();
-	void Aiming();
-	void UnAiming();
 	void ChangeWeapon();
 	void Reloading();
 

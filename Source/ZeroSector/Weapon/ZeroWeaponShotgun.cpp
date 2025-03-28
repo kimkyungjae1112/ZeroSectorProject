@@ -29,9 +29,3 @@ void AZeroWeaponShotgun::Fire()
 	Super::Fire();
 
 }
-
-void AZeroWeaponShotgun::Aiming()
-{
-	Super::Aiming();
-
-}

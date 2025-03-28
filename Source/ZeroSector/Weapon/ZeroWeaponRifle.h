@@ -15,5 +15,4 @@ public:
 	AZeroWeaponRifle();
 	
 	virtual void Fire() override;
-	virtual void Aiming() override;
 };
