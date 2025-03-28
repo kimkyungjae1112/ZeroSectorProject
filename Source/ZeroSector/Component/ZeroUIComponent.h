@@ -12,8 +12,6 @@ class UZeroOperationWidget;
 class UZeroProvisoWidget;
 class UZeroGetProvisoWidget;
 class UZeroNoteWidget;
-class UZeroCrossHairWidget;
-class UZeroHUDWidget;
 
 DECLARE_DELEGATE_OneParam(FOnClickOperationNextButton, const EWeaponType&)
 
@@ -69,9 +67,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TObjectPtr<UZeroNoteWidget> NoteWidgetPtr;
-
-	UPROPERTY(VisibleAnywhere, Category = "UI")
-	TObjectPtr<UZeroHUDWidget> HUDWidgetPtr;
 
 	int32 ProvisoNum = 0;
 	bool bIsNoteToggle = false;
