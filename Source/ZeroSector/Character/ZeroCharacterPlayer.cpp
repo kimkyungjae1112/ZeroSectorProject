@@ -3,22 +3,18 @@
 
 #include "Character/ZeroCharacterPlayer.h"
 #include "ZeroHeader/ZeroInputHeader.h"
-#include "ZeroHeader/ZeroUIHeader.h"
-#include "ZeroHeader/ZeroWeaponHeader.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Data/ZeroPlayerCameraData.h"
-#include "Interface/ZeroDialogueInterface.h"
+#include "Component/Input/ZeroInputBaseComponent.h"
+#include "Component/Input/ZeroInputAfternoonComponent.h"
+#include "Component/Input/ZeroInputNightComponent.h"
+#include "Component/ZeroUIComponent.h"
 #include "Player/ZeroPlayerController.h"
-#include "Gimmick/ZeroProvisoActor.h"
-#include "Gimmick/ZeroOperationBoard.h"
-#include "Data/ZeroProvisoDataTable.h"
-#include "Data/ZeroSingleton.h"
 #include "ZeroSector.h"
 
-AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
+AZeroCharacterPlayer::AZeroCharacterPlayer()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	
@@ -27,16 +23,10 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 	{
 		InputConfig = InputConfigRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UZeroPlayerCameraData> CameraDataRef(TEXT("/Script/ZeroSector.ZeroPlayerCameraData'/Game/Data/Camera/DA_CameraData.DA_CameraData'"));
-	if (CameraDataRef.Object)
-	{
-		CameraData = CameraDataRef.Object;
-	}
 	
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
-	Walk();
 
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
 	SpringArmComp->SetupAttachment(GetMesh(), TEXT("headSocket"));
@@ -44,6 +34,9 @@ AZeroCharacterPlayer::AZeroCharacterPlayer() : DetectDistance(800.f)
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
 	CameraComp->SetupAttachment(SpringArmComp);
+
+	InputComp = CreateDefaultSubobject<UZeroInputBaseComponent>(TEXT("Input Config Component"));
+	UIComp = CreateDefaultSubobject<UZeroUIComponent>(TEXT("UI Component"));
 
 	ChangeInputMap.Add(EDaySequence::EAfternoon, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputAfternoonMode)));
 	ChangeInputMap.Add(EDaySequence::ENight, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputNightMode)));
@@ -57,7 +50,11 @@ void AZeroCharacterPlayer::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	InteractBeam();
+	if (InputComp && InputComp->IsA(UZeroInputAfternoonComponent::StaticClass()))
+	{
+		//ZE_LOG(LogZeroSector, Display, TEXT("Tick 실행?"));
+		InputComp->InteractBeam();
+	}
 }
 
 void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -72,11 +69,9 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationBoardInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ProvisoInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Fire, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Fire);
-	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Aiming);
-	EnhancedInputComponent->BindAction(InputConfig->IA_Aiming, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::UnAiming);
 	EnhancedInputComponent->BindAction(InputConfig->IA_ChangeWeapon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ChangeWeapon);
 	EnhancedInputComponent->BindAction(InputConfig->IA_NightToAfternoon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::NightToAfternoon);
-	EnhancedInputComponent->BindAction(InputConfig->IA_ToggleNote, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ToggleNote);
+	EnhancedInputComponent->BindAction(InputConfig->IA_ToggleNote, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ToggleNoteDisplay);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Run, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Run);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Run, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::Walk);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Reloading, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Reloading);
@@ -92,12 +87,61 @@ void AZeroCharacterPlayer::SetHUDWidget(UZeroHUDWidget* InHUDWidget)
 	HUDWidgetPtr = InHUDWidget;
 }
 
+void AZeroCharacterPlayer::DisplayInteractUI()
+{
+	UIComp->InteractUIDisplay();
+}
+
+void AZeroCharacterPlayer::CloseInteractUI()
+{
+	UIComp->InteractUIClose();
+}
+
+#if WITH_EDITOR
+void AZeroCharacterPlayer::NightToAfternoon()
+{
+	UIComp->FadeInAndOutDisplay();
+	SetInputByDaySequence(EDaySequence::EAfternoon);
+}
+#endif
+
+AZeroPlayerController* AZeroCharacterPlayer::GetOwnerController()
+{
+	return GetZeroPlayerController();
+}
+
+void AZeroCharacterPlayer::ChangeInputMode()
+{
+	if (InputComp && InputComp->IsA(UZeroInputAfternoonComponent::StaticClass()))
+	{
+		SetInputByDaySequence(EDaySequence::ENight);
+		UIComp->OnClickOperationNextButton.BindUObject(InputComp, &UZeroInputBaseComponent::SetupWeapon);
+		CurrentWeaponType = InputComp->GetWeaponType();
+	}
+	else
+	{
+		SetInputByDaySequence(EDaySequence::EAfternoon);
+	}
+}
+
+void AZeroCharacterPlayer::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	InputComp = NewObject<UZeroInputNightComponent>(this, UZeroInputNightComponent::StaticClass());
+	InputComp->RegisterComponent();
+}
+
 void AZeroCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	Walk();
 	SetInputAfternoonMode();
-	NoteWidgetPtr = CreateWidget<UZeroNoteWidget>(GetWorld(), NoteWidgetClass);
+	InputComp->OnOperationInteract.BindUObject(UIComp, &UZeroUIComponent::OperationInteract);
+	InputComp->OnProvisoInteract.BindUObject(UIComp, &UZeroUIComponent::ProvisoInteract);
+	InputComp->OnNoteDisplay.BindUObject(UIComp, &UZeroUIComponent::ToggleNoteDisplay);
 }
 
 APlayerController* AZeroCharacterPlayer::GetPlayerController() const
@@ -112,105 +156,72 @@ AZeroPlayerController* AZeroCharacterPlayer::GetZeroPlayerController() const
 
 void AZeroCharacterPlayer::Move(const FInputActionValue& Value)
 {
-	FVector2D InputValue = Value.Get<FVector2D>();
-
-	FRotator Rotation = Controller->GetControlRotation();
-	FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
-
-	FVector ForwardVector = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	FVector RightVector = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-	AddMovementInput(ForwardVector, InputValue.X);
-	AddMovementInput(RightVector, InputValue.Y);
+	if (InputComp)
+	{
+		InputComp->Move(Value);
+	}
 }
 
 void AZeroCharacterPlayer::Look(const FInputActionValue& Value)
 {
-	FVector2D InputValue = Value.Get<FVector2D>();
-
-	AddControllerPitchInput(-InputValue.Y);
-	AddControllerYawInput(InputValue.X);
+	if (InputComp)
+	{
+		InputComp->Look(Value);
+	}
 }
 
 void AZeroCharacterPlayer::Run()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	if (InputComp)
+	{
+		InputComp->Run();
+	}
 }
 
 void AZeroCharacterPlayer::Walk()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	if (InputComp)
+	{
+		InputComp->Walk();
+	}
 }
 
 void AZeroCharacterPlayer::Fire()
 {
-	CurrentWeapon->Fire();
-}
-
-void AZeroCharacterPlayer::Aiming()
-{
-	bIsAiming = true;
-}
-
-void AZeroCharacterPlayer::UnAiming()
-{
-	bIsAiming = false;
+	if (InputComp)
+	{
+		InputComp->Fire();
+	}
 }
 
 void AZeroCharacterPlayer::ChangeWeapon()
 {
-	if (ChoicedWeapon == EWeaponType::ERifle)
+	if (InputComp)
 	{
-		if (CurrentWeaponType == EWeaponType::EPistol)
-		{
-			SetRifle();
-			CurrentWeapon->GunAmmoTextDisplay();
-		}
-		else
-		{
-			SetPistol();
-			CurrentWeapon->GunAmmoTextDisplay();
-		}
-	}
-	else if (ChoicedWeapon == EWeaponType::EShotgun)
-	{
-		if (CurrentWeaponType == EWeaponType::EPistol)
-		{
-			SetShotgun();
-			CurrentWeapon->GunAmmoTextDisplay();
-		}
-		else
-		{
-			SetPistol();
-			CurrentWeapon->GunAmmoTextDisplay();
-		}
+		InputComp->ChangeWeapon();
+		CurrentWeaponType = InputComp->GetWeaponType();
 	}
 }
 
 void AZeroCharacterPlayer::Reloading()
 {
-	CurrentWeapon->ReloadingCurrentAmmo();
+	if (InputComp)
+	{
+		InputComp->Reloading();
+	}
 }
 
 void AZeroCharacterPlayer::DialogueInteract()
 {
-	if (DialogueInterface)
+	if (InputComp)
 	{
-		DialogueInterface->StartDialogue();
-		FOnFinishedDialogue OnFinishedDialogue;
-		OnFinishedDialogue.BindLambda([&]()
-			{
-				SetDefaultMovement();
-			});
-		DialogueInterface->SetupFinishedDialogueDelegate(OnFinishedDialogue);
-
-		SetDialogueMovement();
+		InputComp->DialogueInteract();
 	}
 }
 
 void AZeroCharacterPlayer::ProvisoInteract()
-{
-	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")))
+{	
+	if (InputComp)
 	{
 		UZeroGetProvisoWidget* GetProvisoWidgetInstance = CreateWidget<UZeroGetProvisoWidget>(GetWorld(), GetProvisoWidgetClass);
 		if (GetProvisoWidgetInstance)
@@ -233,15 +244,23 @@ void AZeroCharacterPlayer::ProvisoInteract()
 		}
 
 		ProvisoNum = 1;
+		InputComp->ProvisoInteract();
 	}
-	
 }
 
 void AZeroCharacterPlayer::OperationBoardInteract()
 {
-	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("OperationBoard")))
+	if (InputComp)
 	{
-		OperationWidgetDisplay();
+		InputComp->OperationBoardInteract();
+	}
+}
+
+void AZeroCharacterPlayer::ToggleNoteDisplay()
+{
+	if (InputComp)
+	{
+		InputComp->ToggleNote();
 	}
 }
 
@@ -254,9 +273,17 @@ void AZeroCharacterPlayer::SetInputAfternoonMode()
 {
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
 	{
+		if (InputComp)
+		{
+			InputComp->DestroyComponent();
+			InputComp = nullptr;
+		}
+
+		InputComp = NewObject<UZeroInputAfternoonComponent>(this, UZeroInputAfternoonComponent::StaticClass());
+		InputComp->RegisterComponent();
+
 		Subsystem->ClearAllMappings();
 		Subsystem->AddMappingContext(InputConfig->IMC_Day, 0);
-		ZE_LOG(LogZeroSector, Display, TEXT("Afternoon InputMode"));
 	}
 }
 
@@ -264,24 +291,18 @@ void AZeroCharacterPlayer::SetInputNightMode()
 {
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetPlayerController()->GetLocalPlayer()))
 	{
+		if (InputComp)
+		{
+			InputComp->DestroyComponent();
+			InputComp = nullptr;
+		}
+
+		InputComp = NewObject<UZeroInputNightComponent>(this, UZeroInputNightComponent::StaticClass());
+		InputComp->RegisterComponent();
+
 		Subsystem->ClearAllMappings();
 		Subsystem->AddMappingContext(InputConfig->IMC_Night, 0);
-		ZE_LOG(LogZeroSector, Display, TEXT("Night InputMode"));
 	}
-}
-
-void AZeroCharacterPlayer::InteractBeam()
-{
-	FVector EyeVectorStart;
-	FRotator EyeRotatorStart;
-	GetController()->GetPlayerViewPoint(EyeVectorStart, EyeRotatorStart);
-
-	FVector EyeVectorEnd = EyeVectorStart + EyeRotatorStart.Vector() * DetectDistance;
-	FHitResult HitResult;
-	FCollisionQueryParams Param(NAME_None, false, this);
-
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, EyeVectorStart, EyeVectorEnd, ECC_GameTraceChannel1, Param);
-	InteractProcess(HitResult, bHit);
 }
 
 void AZeroCharacterPlayer::InteractProcess(const FHitResult& InHitResult, bool bIsHit)
