@@ -9,7 +9,7 @@ void UZeroProvisoButtonWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    if (ProvisoButton)
+    if (ProvisoButton && !ProvisoButton->OnClicked.IsAlreadyBound(this, &UZeroProvisoButtonWidget::HandleClick))
     {
         ProvisoButton->OnClicked.AddDynamic(this, &UZeroProvisoButtonWidget::HandleClick);
     }
@@ -17,7 +17,7 @@ void UZeroProvisoButtonWidget::NativeConstruct()
 
 void UZeroProvisoButtonWidget::InitProviso(const FZeroProvisoDataTable& InProvisoData)
 {
-    StoredData = InProvisoData;
+    ProvisoData = InProvisoData;
 
     if (ProvisoText)
     {
@@ -27,5 +27,5 @@ void UZeroProvisoButtonWidget::InitProviso(const FZeroProvisoDataTable& InProvis
 
 void UZeroProvisoButtonWidget::HandleClick()
 {
-    OnProvisoClicked.Broadcast(StoredData);
+    OnProvisoClicked.Broadcast(ProvisoData);
 }

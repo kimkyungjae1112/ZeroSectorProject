@@ -19,6 +19,10 @@ public:
 public:
 	void InputModeGameOnly();
 	void InputModeUIOnly();
+	void InputModeGameAndUI();
+
+	void ApplyBlurEffect();
+	void RemoveBlurEffect();
 
 protected:
 	virtual void BeginPlay() override;
@@ -29,4 +33,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TSubclassOf<UZeroHUDWidget> HUDWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UUserWidget> BlurWidgetInstance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> BlurWidgetClass;
 };

@@ -22,24 +22,24 @@ class UCanvasPanel;
 UCLASS()
 class ZEROSECTOR_API UZeroNoteWidget : public UUserWidget
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
     void SetNoteInfo(const FZeroProvisoDataTable& ProvisoData);
 
 protected:
-	virtual void NativeConstruct() override;
+    virtual void NativeConstruct() override;
 
     UPROPERTY(meta = (BindWidget))
     UWrapBox* ProvisoWrapBox;
 
     int32 CurrentProvisoCount = 0;
 
-	void ShowWidget();
+    void ShowWidget();
 
     void AddProvisoToUI(const FZeroProvisoDataTable& ProvisoData);
 
-// 연구원
+    // 연구원
 public:
     UFUNCTION(BlueprintCallable, Category = "UI")
     void DisplayResearcher(UZeroResearcherData* ResearcherData);
@@ -75,7 +75,7 @@ private:
     UPROPERTY(meta = (BindWidget))
     UVerticalBox* ResearcherInfoBox;
 
-// 단서
+    // 단서
 protected:
 
     UPROPERTY(meta = (BindWidget))
@@ -100,4 +100,5 @@ protected:
 
     UFUNCTION()
     void CloseClueDetail();
+
 };

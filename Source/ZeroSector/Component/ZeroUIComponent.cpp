@@ -46,28 +46,37 @@ void UZeroUIComponent::FadeInAndOutDisplay()
 void UZeroUIComponent::ToggleNoteDisplay()
 {
 	IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
-	if (Interface == nullptr) return;
 
 	if (bIsNoteToggle)
 	{
-		NoteWidgetPtr->RemoveFromParent();
+		if (NoteWidgetPtr && NoteWidgetPtr->IsInViewport())
+		{
+			NoteWidgetPtr->RemoveFromParent();
+		}
 		bIsNoteToggle = false;
+		Interface->GetOwnerController()->RemoveBlurEffect();
 		Interface->GetOwnerController()->InputModeGameOnly();
-		
 	}
 	else
 	{
-		NoteWidgetPtr = CreateWidget<UZeroNoteWidget>(GetWorld(), NoteWidgetClass);
-		NoteWidgetPtr->AddToViewport();
-		bIsNoteToggle = true;
+		if (!NoteWidgetPtr)
+		{
+			// 최초 한 번만 생성
+			NoteWidgetPtr = CreateWidget<UZeroNoteWidget>(GetWorld(), NoteWidgetClass);
+			if (!NoteWidgetPtr)
+			{
+				return;
+			}
+		}
 
-		// 게임 + UI 모드로 전환하되, 키보드 포커스를 Note 위젯에 주지 않음
-		FInputModeGameAndUI InputMode;
-		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-		InputMode.SetHideCursorDuringCapture(false);
-		InputMode.SetWidgetToFocus(nullptr); // 또는 특정 포커스 위젯
-		Interface->GetOwnerController()->SetInputMode(InputMode);
-		Interface->GetOwnerController()->bShowMouseCursor = true;
+		if (!NoteWidgetPtr->IsInViewport())
+		{
+			NoteWidgetPtr->AddToViewport();
+		}
+
+		bIsNoteToggle = true;
+		Interface->GetOwnerController()->ApplyBlurEffect();
+		Interface->GetOwnerController()->InputModeGameAndUI();
 	}
 }
 
@@ -136,6 +145,8 @@ void UZeroUIComponent::ProvisoInteract()
 			NoteWidgetPtr->SetNoteInfo(ProvisoData);
 		}
 	}
+
+
 
 	ProvisoNum = 1;
 }
