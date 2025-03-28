@@ -6,9 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "ZeroProvisoWidget.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class ZEROSECTOR_API UZeroProvisoWidget : public UUserWidget
 {
@@ -18,7 +15,6 @@ public:
 
     UFUNCTION(Category = "UI")
     void ShowWidget();
-
 	
 };
 

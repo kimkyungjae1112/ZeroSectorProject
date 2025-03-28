@@ -228,7 +228,7 @@ void AZeroCharacterPlayer::ProvisoInteract()
 
 			if (NoteWidgetPtr)
 			{
-				NoteWidgetPtr->SetNoteInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
+				NoteWidgetPtr->SetNoteInfo(ProvisoData);
 			}
 		}
 
@@ -491,15 +491,25 @@ void AZeroCharacterPlayer::NightToAfternoon()
 
 void AZeroCharacterPlayer::ToggleNote()
 {
-
 	if (bIsNoteToggle)
 	{
 		NoteWidgetPtr->RemoveFromParent();
 		bIsNoteToggle = false;
+
+		GetZeroPlayerController()->SetInputMode(FInputModeGameOnly());
+		GetZeroPlayerController()->bShowMouseCursor = false;
 	}
 	else
 	{
 		NoteWidgetPtr->AddToViewport();
 		bIsNoteToggle = true;
+
+		// 게임 + UI 모드로 전환하되, 키보드 포커스를 Note 위젯에 주지 않음
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+		InputMode.SetWidgetToFocus(nullptr); // 또는 특정 포커스 위젯
+		GetZeroPlayerController()->SetInputMode(InputMode);
+		GetZeroPlayerController()->bShowMouseCursor = true;
 	}
 }
