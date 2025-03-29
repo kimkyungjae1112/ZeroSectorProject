@@ -12,8 +12,6 @@ AZeroCharacterAIBase::AZeroCharacterAIBase()
     StatComp = CreateDefaultSubobject<UZeroStatComponent>(TEXT("Stat Component"));
 }
 
-
-
 void AZeroCharacterAIBase::BeginPlay()
 {
     Super::BeginPlay();
@@ -30,11 +28,20 @@ float AZeroCharacterAIBase::GetAITurnSpeed()
     return 0.0f;
 }
 
-void AZeroCharacterAIBase::SetAIAttackDelegate(const FOnAttackFinished& InOnAttackFinished)
+void AZeroCharacterAIBase::SetAIAttackOneDelegate(const FOnAttackOneFinished& InOnAttackFinished)
 {
-    OnAttackFinished = InOnAttackFinished;
+    OnAttackOneFinished = InOnAttackFinished;
 }
 
-void AZeroCharacterAIBase::AttackByAI()
+void AZeroCharacterAIBase::SetAIAttackTwoDelegate(const FOnAttackOneFinished& InOnAttackTwoFinished)
+{
+    OnAttackTwoFinished = InOnAttackTwoFinished;
+}
+
+void AZeroCharacterAIBase::AttackOneByAI()
+{
+}
+
+void AZeroCharacterAIBase::AttackTwoByAI()
 {
 }

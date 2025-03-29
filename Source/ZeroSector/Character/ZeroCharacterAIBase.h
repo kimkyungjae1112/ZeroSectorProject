@@ -23,8 +23,10 @@ public:
 	virtual float GetAIAttackRange() override;
 	virtual float GetAITurnSpeed() override;
 
-	virtual void SetAIAttackDelegate(const FOnAttackFinished& InOnAttackFinished) override;
-	virtual void AttackByAI() override;
+	virtual void SetAIAttackOneDelegate(const FOnAttackOneFinished& InOnAttackOneFinished) override;
+	virtual void SetAIAttackTwoDelegate(const FOnAttackOneFinished& InOnAttackTwoFinished) override;
+	virtual void AttackOneByAI() override;
+	virtual void AttackTwoByAI() override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -35,6 +37,7 @@ protected:
 	TObjectPtr<UZeroStatComponent> StatComp;
 
 protected:
-	FOnAttackFinished OnAttackFinished;
+	FOnAttackOneFinished OnAttackOneFinished;
+	FOnAttackTwoFinished OnAttackTwoFinished;
 
 };
