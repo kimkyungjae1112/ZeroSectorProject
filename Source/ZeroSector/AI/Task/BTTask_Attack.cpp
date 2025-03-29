@@ -27,7 +27,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 		return EBTNodeResult::Failed;
 	}
 
-	FOnAttackFinished OnAttackFinished;
+	FOnAttackOneFinished OnAttackFinished;
 	OnAttackFinished.BindLambda(
 		[&]()
 		{
@@ -35,7 +35,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 		}
 	);
 
-	AIPawn->SetAIAttackDelegate(OnAttackFinished);
-	AIPawn->AttackByAI();
+	AIPawn->SetAIAttackOneDelegate(OnAttackFinished);
+	AIPawn->AttackOneByAI();
 	return EBTNodeResult::InProgress;
 }

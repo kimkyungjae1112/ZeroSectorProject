@@ -25,12 +25,14 @@ public:
 	/* IZeroClassIdentifierInterface Implement */
 	virtual FName GetClassName() const override { return ClassName; }
 
+	virtual void CustomDamaged(/* 인자들 ,,, Damage, ImpactLoc, DamageType, Instigator ...*/) PURE_VIRTUAL(AZeroCharacterBase::CustomDamaged, );
+
 protected:
 	virtual void BeginPlay() override;
 
 	FGenericTeamId TeamId;
 
 	/* 스텟을 받기 위한 키 */
-	UPROPERTY(VisibleAnywhere, Category = "Class")
+	UPROPERTY(EditDefaultsOnly, Category = "Type")
 	FName ClassName;
 };

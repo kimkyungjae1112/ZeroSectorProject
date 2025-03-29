@@ -6,7 +6,8 @@
 #include "UObject/Interface.h"
 #include "ZeroCharacterAIInterface.generated.h"
 
-DECLARE_DELEGATE(FOnAttackFinished);
+DECLARE_DELEGATE(FOnAttackOneFinished);
+DECLARE_DELEGATE(FOnAttackTwoFinished);
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
@@ -23,6 +24,9 @@ public:
 	virtual float GetAIAttackRange() = 0;
 	virtual float GetAITurnSpeed() = 0;
 
-	virtual void SetAIAttackDelegate(const FOnAttackFinished& InOnAttackFinished) = 0;
-	virtual void AttackByAI() = 0;
+	virtual void SetAIAttackOneDelegate(const FOnAttackOneFinished& InOnAttackOneFinished) = 0;
+	virtual void SetAIAttackTwoDelegate(const FOnAttackTwoFinished& InOnAttackTwoFinished) = 0;
+
+	virtual void AttackOneByAI() = 0;
+	virtual void AttackTwoByAI() = 0;
 };
