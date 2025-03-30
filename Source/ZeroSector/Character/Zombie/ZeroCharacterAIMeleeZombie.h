@@ -63,7 +63,12 @@ public:
 
 	/* IGenericTeamAgentInterface Implement */
 	virtual FGenericTeamId GetGenericTeamId() const override;
+	
+/* Damaged */
+public:
+	bool CheckDeath() const;
 
+/* Behavior */
 private:
 	void BeginAttackOne();
 	void BeginAttackOneByCommon();
@@ -91,6 +96,8 @@ private:
 
 	UPROPERTY()
 	TMap<EZombieType, FZombieDeadWrapper> ZombieDeadMaps;
+
+
 
 
 private:

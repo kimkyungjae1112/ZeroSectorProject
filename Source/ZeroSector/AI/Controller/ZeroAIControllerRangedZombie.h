@@ -15,8 +15,10 @@ class ZEROSECTOR_API AZeroAIControllerRangedZombie : public AZeroAIControllerBas
 {
 	GENERATED_BODY()
 
-	public:
+public:
 	AZeroAIControllerRangedZombie();
+
+	virtual bool IsDead() const override;
 
 protected:
 	virtual void BeginPlay() override;

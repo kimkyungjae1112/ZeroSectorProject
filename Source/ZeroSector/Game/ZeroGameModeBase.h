@@ -13,4 +13,10 @@ class ZEROSECTOR_API AZeroGameModeBase : public AGameModeBase
 	
 public:
 	AZeroGameModeBase();
+
+public:
+	void PawnKilled(APawn* PawnKilled);
+
+private:
+	void EndGame(bool bIsPlayerWinner);
 };

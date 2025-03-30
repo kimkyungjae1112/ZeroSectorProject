@@ -4,6 +4,7 @@
 #include "Character/Zombie/ZeroCharacterAIMeleeZombie.h"
 #include "Component/ZeroZombieBehaviorComponent.h"
 #include "Component/ZeroStatComponent.h"
+#include "Game/ZeroGameModeBase.h"
 #include "ZeroSector.h"
 
 AZeroCharacterAIMeleeZombie::AZeroCharacterAIMeleeZombie()
@@ -47,6 +48,11 @@ void AZeroCharacterAIMeleeZombie::AttackTwoByAI()
 FGenericTeamId AZeroCharacterAIMeleeZombie::GetGenericTeamId() const
 {
 	return TeamId;
+}
+
+bool AZeroCharacterAIMeleeZombie::CheckDeath() const
+{
+	return StatComp->GetCurrentHp() <= 0.f;
 }
 
 void AZeroCharacterAIMeleeZombie::BeginAttackOne()
@@ -108,6 +114,12 @@ void AZeroCharacterAIMeleeZombie::EndAttackTwo()
 void AZeroCharacterAIMeleeZombie::BeginDead()
 {
 	ZombieDeadMaps[CurrentType].ZombieDead.ExecuteIfBound();
+
+	AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
+	{
+		GameMode->PawnKilled(this);
+	}
 }
 
 void AZeroCharacterAIMeleeZombie::BeginDeadByCommon()

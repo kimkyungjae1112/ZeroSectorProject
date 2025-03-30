@@ -19,7 +19,7 @@ enum class EAIPerceptionSense : uint8
 	EPS_Damage
 };
 
-UCLASS()
+UCLASS(abstract)
 class ZEROSECTOR_API AZeroAIControllerBase : public AAIController
 {
 	GENERATED_BODY()
@@ -27,12 +27,16 @@ class ZEROSECTOR_API AZeroAIControllerBase : public AAIController
 public:
 	AZeroAIControllerBase();
 
+	virtual bool IsDead() const PURE_VIRTUAL(AZeroAIControllerBase::IsDead, return false;);
+
+
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
 	/* IGenericTeamAgentInterface Implement */
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+
 
 public:
 	void RunAI();

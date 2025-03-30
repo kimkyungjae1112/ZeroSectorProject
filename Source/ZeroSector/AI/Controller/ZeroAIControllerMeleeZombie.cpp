@@ -45,6 +45,11 @@ AZeroAIControllerMeleeZombie::AZeroAIControllerMeleeZombie()
 	TeamID = FGenericTeamId(1);
 }
 
+bool AZeroAIControllerMeleeZombie::IsDead() const
+{
+	return false;
+}
+
 void AZeroAIControllerMeleeZombie::BeginPlay()
 {
 	Super::BeginPlay();

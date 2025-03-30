@@ -18,6 +18,8 @@ class ZEROSECTOR_API AZeroAIControllerMeleeZombie : public AZeroAIControllerBase
 public:
 	AZeroAIControllerMeleeZombie();
 
+	virtual bool IsDead() const override;
+
 protected:
 	virtual void BeginPlay() override;
 	

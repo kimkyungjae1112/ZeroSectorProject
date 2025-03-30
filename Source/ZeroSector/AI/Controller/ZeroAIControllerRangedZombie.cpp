@@ -32,6 +32,11 @@ AZeroAIControllerRangedZombie::AZeroAIControllerRangedZombie()
 	TeamID = FGenericTeamId(1);
 }
 
+bool AZeroAIControllerRangedZombie::IsDead() const
+{
+	return false;
+}
+
 void AZeroAIControllerRangedZombie::BeginPlay()
 {
 	Super::BeginPlay();
