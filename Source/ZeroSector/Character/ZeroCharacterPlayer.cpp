@@ -100,8 +100,7 @@ void AZeroCharacterPlayer::CloseInteractUI()
 #if WITH_EDITOR
 void AZeroCharacterPlayer::NightToAfternoon()
 {
-	UIComp->FadeInAndOutDisplay();
-	SetInputByDaySequence(EDaySequence::EAfternoon);
+	ChangeInputMode();
 }
 #endif
 
@@ -115,13 +114,24 @@ void AZeroCharacterPlayer::ChangeInputMode()
 	if (InputComp && InputComp->IsA(UZeroInputAfternoonComponent::StaticClass()))
 	{
 		SetInputByDaySequence(EDaySequence::ENight);
+		UIComp->FadeInAndOutDisplay();
 		UIComp->OnClickOperationNextButton.BindUObject(InputComp, &UZeroInputBaseComponent::SetupWeapon);
 		CurrentWeaponType = InputComp->GetWeaponType();
 	}
 	else
 	{
+		InputComp->SetUnequipWeapon();
+		UIComp->FadeInAndOutDisplay();
+		CurrentWeaponType = InputComp->GetWeaponType();
 		SetInputByDaySequence(EDaySequence::EAfternoon);
 	}
+}
+
+float AZeroCharacterPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float SuperResult = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	return 0.0f;
 }
 
 void AZeroCharacterPlayer::PostInitializeComponents()
@@ -136,12 +146,10 @@ void AZeroCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 	Walk();
 	SetInputAfternoonMode();
-	InputComp->OnOperationInteract.BindUObject(UIComp, &UZeroUIComponent::OperationInteract);
-	InputComp->OnProvisoInteract.BindUObject(UIComp, &UZeroUIComponent::ProvisoInteract);
-	InputComp->OnNoteDisplay.BindUObject(UIComp, &UZeroUIComponent::ToggleNoteDisplay);
+	AfternoonInputDelegate();
+	GetZeroPlayerController()->OnClearZombie.BindUObject(this, &AZeroCharacterPlayer::ChangeInputMode);
 }
 
 APlayerController* AZeroCharacterPlayer::GetPlayerController() const
@@ -254,12 +262,14 @@ void AZeroCharacterPlayer::SetInputAfternoonMode()
 	{
 		if (InputComp)
 		{
+			ZE_LOG(LogZeroSector, Display, TEXT("Afternoon 으로 전환"));
 			InputComp->DestroyComponent();
 			InputComp = nullptr;
 		}
 
 		InputComp = NewObject<UZeroInputAfternoonComponent>(this, UZeroInputAfternoonComponent::StaticClass());
 		InputComp->RegisterComponent();
+		AfternoonInputDelegate();
 
 		Subsystem->ClearAllMappings();
 		Subsystem->AddMappingContext(InputConfig->IMC_Day, 0);
@@ -282,4 +292,11 @@ void AZeroCharacterPlayer::SetInputNightMode()
 		Subsystem->ClearAllMappings();
 		Subsystem->AddMappingContext(InputConfig->IMC_Night, 0);
 	}
+}
+
+void AZeroCharacterPlayer::AfternoonInputDelegate()
+{
+	InputComp->OnOperationInteract.BindUObject(UIComp, &UZeroUIComponent::OperationInteract);
+	InputComp->OnProvisoInteract.BindUObject(UIComp, &UZeroUIComponent::ProvisoInteract);
+	InputComp->OnNoteDisplay.BindUObject(UIComp, &UZeroUIComponent::ToggleNoteDisplay);
 }

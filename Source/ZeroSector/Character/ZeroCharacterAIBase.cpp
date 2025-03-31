@@ -45,3 +45,10 @@ void AZeroCharacterAIBase::AttackOneByAI()
 void AZeroCharacterAIBase::AttackTwoByAI()
 {
 }
+
+float AZeroCharacterAIBase::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+    float SuperResult = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+    return 0.0f;
+}

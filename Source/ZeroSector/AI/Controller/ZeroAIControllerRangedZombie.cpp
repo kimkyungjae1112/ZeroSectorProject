@@ -34,7 +34,7 @@ AZeroAIControllerRangedZombie::AZeroAIControllerRangedZombie()
 
 bool AZeroAIControllerRangedZombie::IsDead() const
 {
-	return false;
+	return true;
 }
 
 void AZeroAIControllerRangedZombie::BeginPlay()

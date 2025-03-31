@@ -6,6 +6,7 @@
 #include "AI/Controller/ZeroAIControllerMeleeZombie.h"
 #include "AI/Controller/ZeroAIControllerRangedZombie.h"
 #include "EngineUtils.h"
+#include "ZeroSector.h"
 
 AZeroGameModeBase::AZeroGameModeBase()
 {
@@ -29,17 +30,16 @@ void AZeroGameModeBase::PawnKilled(APawn* PawnKilled)
 		EndGame(false);
 	}
 
-	for (AZeroAIControllerBase* AIController : TActorRange<AZeroAIControllerMeleeZombie>(GetWorld()))
+	for (AZeroAIControllerMeleeZombie* AIController : TActorRange<AZeroAIControllerMeleeZombie>(GetWorld()))
 	{
-		if (!AIController->IsDead())
+		if (AIController->IsDead())
 		{
 			return;
 		}
 	}
-
-	for (AZeroAIControllerBase* AIController : TActorRange<AZeroAIControllerRangedZombie>(GetWorld()))
+	for (AZeroAIControllerRangedZombie* AIController : TActorRange<AZeroAIControllerRangedZombie>(GetWorld()))
 	{
-		if (!AIController->IsDead())
+		if (AIController->IsDead())
 		{
 			return;
 		}
@@ -49,7 +49,6 @@ void AZeroGameModeBase::PawnKilled(APawn* PawnKilled)
 
 void AZeroGameModeBase::EndGame(bool bIsPlayerWinner)
 {
-	//GameHasEnded 재정의 해야함
 	for (AController* Controller : TActorRange<AController>(GetWorld()))
 	{
 		bool bIsWinner = Controller->IsPlayerController() == bIsPlayerWinner;

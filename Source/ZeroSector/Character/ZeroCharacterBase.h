@@ -25,7 +25,6 @@ public:
 	/* IZeroClassIdentifierInterface Implement */
 	virtual FName GetClassName() const override { return ClassName; }
 
-	virtual void CustomDamaged(/* 인자들 ,,, Damage, ImpactLoc, DamageType, Instigator ...*/) PURE_VIRTUAL(AZeroCharacterBase::CustomDamaged, );
 
 protected:
 	virtual void BeginPlay() override;
