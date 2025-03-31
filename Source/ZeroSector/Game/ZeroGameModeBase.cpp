@@ -6,6 +6,8 @@
 #include "AI/Controller/ZeroAIControllerMeleeZombie.h"
 #include "AI/Controller/ZeroAIControllerRangedZombie.h"
 #include "EngineUtils.h"
+#include "Game/ZeroZombieSpawner.h"
+#include "Kismet/GameplayStatics.h"
 #include "ZeroSector.h"
 
 AZeroGameModeBase::AZeroGameModeBase()
@@ -20,6 +22,18 @@ AZeroGameModeBase::AZeroGameModeBase()
 	{
 		PlayerControllerClass = PlayerControllerClassRef.Class;
 	}
+	static ConstructorHelpers::FClassFinder<AZeroZombieSpawner> SpawnerClassRef(TEXT("/Game/Blueprints/Game/BP_ZombieSpawner.BP_ZombieSpawner_C"));
+	if (SpawnerClassRef.Class)
+	{
+		SpawnerClass = SpawnerClassRef.Class;
+	}
+}
+
+void AZeroGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Spawner = Cast<AZeroZombieSpawner>(UGameplayStatics::GetActorOfClass(this, SpawnerClass));
 }
 
 void AZeroGameModeBase::PawnKilled(APawn* PawnKilled)
@@ -44,7 +58,18 @@ void AZeroGameModeBase::PawnKilled(APawn* PawnKilled)
 			return;
 		}
 	}
-	EndGame(true);
+	
+	StartWave();
+	
+	//EndGame(true);
+}
+
+void AZeroGameModeBase::StartWave()
+{
+	// if 마지막 웨이브라면
+	//		if 좀비를 다 잡았다면
+	//			EndGame(true)
+	Spawner->SpawnZombie();
 }
 
 void AZeroGameModeBase::EndGame(bool bIsPlayerWinner)

@@ -10,17 +10,6 @@
 
 AZeroAIControllerBase::AZeroAIControllerBase()
 {
-	static ConstructorHelpers::FObjectFinder<UBlackboardData> BBDataRef(TEXT("/Script/AIModule.BlackboardData'/Game/AI/Test/BB_ZombieTest.BB_ZombieTest'"));
-	if (BBDataRef.Object)
-	{
-		BBData = BBDataRef.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTDataRef(TEXT("/Script/AIModule.BehaviorTree'/Game/AI/Test/BT_ZombieTest.BT_ZombieTest'"));
-	if (BTDataRef.Object)
-	{
-		BTData = BTDataRef.Object;
-	}
-
 	PerceptionComp = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AI Perception Component"));
 }
 

@@ -8,6 +8,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
+#include "ZeroSector.h"
 
 AZeroAIControllerMeleeZombie::AZeroAIControllerMeleeZombie()
 {
