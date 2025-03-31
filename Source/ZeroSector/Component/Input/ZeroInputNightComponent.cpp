@@ -136,6 +136,12 @@ void UZeroInputNightComponent::NightToAfternoon()
 	SetNoWeapon();
 }
 
+void UZeroInputNightComponent::PauseMenu()
+{
+	UE_LOG(LogTemp, Warning, TEXT("pause"));
+	OnPauseMenu.ExecuteIfBound();
+}
+
 void UZeroInputNightComponent::BeginPlay()
 {
 	Super::BeginPlay();

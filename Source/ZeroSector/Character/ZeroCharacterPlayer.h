@@ -105,6 +105,7 @@ private:
 	void OperationBoardInteract();
 
 	void ToggleNoteDisplay();
+	void PauseMenuDisplay();
 
 
 /* Input 데이터 및 변경 */

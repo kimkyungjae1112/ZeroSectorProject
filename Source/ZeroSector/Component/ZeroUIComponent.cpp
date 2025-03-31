@@ -6,11 +6,21 @@
 #include "Interface/ZeroUIComponentInterface.h"
 #include "Player/ZeroPlayerController.h"
 #include "Data/ZeroSingleton.h"
+#include "Kismet/GameplayStatics.h"
+#include "UI/ZeroPauseMenuWidget.h"
 #include "ZeroSector.h"
 
 UZeroUIComponent::UZeroUIComponent()
 {
-
+	static ConstructorHelpers::FClassFinder<UZeroPauseMenuWidget> WidgetClass(TEXT("/Game/Blueprints/UI/WBP_PauseMenu"));
+	if (WidgetClass.Succeeded())
+	{
+		PauseMenuWidgetClass = WidgetClass.Class;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TT"));
+	}
 }
 
 
@@ -149,6 +159,20 @@ void UZeroUIComponent::ProvisoInteract()
 
 
 	ProvisoNum = 1;
+}
+
+void UZeroUIComponent::PauseMenuDisplay()
+{
+	IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
+	if (UGameplayStatics::IsGamePaused(GetWorld()))
+		return;
+	UZeroPauseMenuWidget* PauseWidget = CreateWidget<UZeroPauseMenuWidget>(GetWorld(), PauseMenuWidgetClass);
+	if (PauseWidget)
+	{
+		PauseWidget->AddToViewport();
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		Interface->GetOwnerController()->InputModeUIOnly();
+	}
 }
 
 
