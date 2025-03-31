@@ -25,9 +25,8 @@ public:
 	virtual void ChangeWeapon() override;
 	virtual void Reloading() override;
 	virtual void SetupWeapon(const EWeaponType& WeaponType) override;
+	virtual void SetUnequipWeapon() override;
 	virtual EWeaponType GetWeaponType() override;
-
-	virtual void NightToAfternoon() override;
 
 protected:
 	virtual void BeginPlay() override;

@@ -3,6 +3,7 @@
 
 #include "Player/ZeroPlayerController.h"
 #include "UI/ZeroHUDWidget.h"
+#include "ZeroSector.h"
 
 AZeroPlayerController::AZeroPlayerController()
 {
@@ -16,6 +17,25 @@ AZeroPlayerController::AZeroPlayerController()
 	if (BlurWidgetRef.Succeeded())
 	{
 		BlurWidgetClass = BlurWidgetRef.Class;
+	}
+}
+
+void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
+{
+	Super::GameHasEnded(EndGameFocus, bIsWinner);
+
+	if (bIsWinner)
+	{
+		FTimerHandle WinTimer;
+		GetWorld()->GetTimerManager().SetTimer(WinTimer, [&]()
+			{
+				OnClearZombie.ExecuteIfBound();
+			}, 3.f, false);
+		ZE_LOG(LogZeroSector, Display, TEXT("Player Win"));
+	}
+	else
+	{
+		ZE_LOG(LogZeroSector, Display, TEXT("Player Loose"));
 	}
 }
 

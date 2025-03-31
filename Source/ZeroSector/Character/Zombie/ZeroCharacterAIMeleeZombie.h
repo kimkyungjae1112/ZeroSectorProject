@@ -66,7 +66,8 @@ public:
 	
 /* Damaged */
 public:
-	bool CheckDeath() const;
+	/* APawn override */
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 /* Behavior */
 private:

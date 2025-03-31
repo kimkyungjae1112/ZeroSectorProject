@@ -126,14 +126,14 @@ void UZeroInputNightComponent::SetupWeapon(const EWeaponType& WeaponType)
 	SetPistol();
 }
 
+void UZeroInputNightComponent::SetUnequipWeapon()
+{
+	SetNoWeapon();
+}
+
 EWeaponType UZeroInputNightComponent::GetWeaponType()
 {
 	return CurrentWeaponType;
-}
-
-void UZeroInputNightComponent::NightToAfternoon()
-{
-	SetNoWeapon();
 }
 
 void UZeroInputNightComponent::BeginPlay()

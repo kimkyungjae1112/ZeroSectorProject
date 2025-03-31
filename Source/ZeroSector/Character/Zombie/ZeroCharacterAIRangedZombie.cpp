@@ -2,6 +2,7 @@
 
 
 #include "Character/Zombie/ZeroCharacterAIRangedZombie.h"
+#include "Component/ZeroStatComponent.h"
 
 AZeroCharacterAIRangedZombie::AZeroCharacterAIRangedZombie()
 {
@@ -13,4 +14,13 @@ AZeroCharacterAIRangedZombie::AZeroCharacterAIRangedZombie()
 FGenericTeamId AZeroCharacterAIRangedZombie::GetGenericTeamId() const
 {
 	return TeamId;
+}
+
+float AZeroCharacterAIRangedZombie::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float SuperResult = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	StatComp->ApplyDamage(Damage);
+
+	return 0.0f;
 }

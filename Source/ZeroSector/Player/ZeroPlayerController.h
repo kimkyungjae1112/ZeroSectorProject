@@ -8,6 +8,8 @@
 
 class UZeroHUDWidget;
 
+DECLARE_DELEGATE(FOnClearZombie)
+
 UCLASS()
 class ZEROSECTOR_API AZeroPlayerController : public APlayerController
 {
@@ -16,7 +18,11 @@ class ZEROSECTOR_API AZeroPlayerController : public APlayerController
 public:
 	AZeroPlayerController();
 
+	virtual void GameHasEnded(class AActor* EndGameFocus = nullptr, bool bIsWinner = false) override;
+
 public:
+	FOnClearZombie OnClearZombie;
+
 	void InputModeGameOnly();
 	void InputModeUIOnly();
 	void InputModeGameAndUI();

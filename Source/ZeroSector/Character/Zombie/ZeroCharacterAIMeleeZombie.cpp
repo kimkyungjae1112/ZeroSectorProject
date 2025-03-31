@@ -50,9 +50,13 @@ FGenericTeamId AZeroCharacterAIMeleeZombie::GetGenericTeamId() const
 	return TeamId;
 }
 
-bool AZeroCharacterAIMeleeZombie::CheckDeath() const
+float AZeroCharacterAIMeleeZombie::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	return StatComp->GetCurrentHp() <= 0.f;
+	float SuperResult = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	StatComp->ApplyDamage(Damage);
+
+	return 0.0f;
 }
 
 void AZeroCharacterAIMeleeZombie::BeginAttackOne()
@@ -113,7 +117,18 @@ void AZeroCharacterAIMeleeZombie::EndAttackTwo()
 
 void AZeroCharacterAIMeleeZombie::BeginDead()
 {
+	DetachFromControllerPendingDestroy();
+
 	ZombieDeadMaps[CurrentType].ZombieDead.ExecuteIfBound();
+	ZE_LOG(LogZeroSector, Display, TEXT("Zombie Dead"));
+
+	SetActorEnableCollision(false);
+	
+	FTimerHandle DestoryTimer;
+	GetWorld()->GetTimerManager().SetTimer(DestoryTimer, [&]()
+		{
+			Destroy();
+		}, 1.5f, false);
 
 	AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GameMode)
