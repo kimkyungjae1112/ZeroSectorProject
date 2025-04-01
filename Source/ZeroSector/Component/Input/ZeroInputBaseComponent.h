@@ -52,9 +52,6 @@ public:
 	/* Menu */
 	virtual void PauseMenu() PURE_VIRTUAL(UZeroInputBaseComponent::PauseMenu, );
 
-	/* Test Code */
-	virtual void NightToAfternoon() PURE_VIRTUAL(UZeroInputBaseComponent::NightToAfternoon, );
-
 protected:
 	virtual void BeginPlay() override;
 
