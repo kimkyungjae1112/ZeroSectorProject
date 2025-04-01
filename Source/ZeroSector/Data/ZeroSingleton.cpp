@@ -45,19 +45,19 @@ UZeroSingleton::UZeroSingleton()
 		);
 	}
 
-	static ConstructorHelpers::FObjectFinder<UDataTable> CharacterStatDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/CharacterStat/ZeroCharacterStatTable.ZeroCharacterStatTable'"));
-	if (CharacterStatDataTableRef.Succeeded())
+	static ConstructorHelpers::FObjectFinder<UDataTable> ZombieSpawnDataRef(TEXT("/Script/Engine.DataTable'/Game/Data/Zombie/ZeroZombieSpawnDataTable.ZeroZombieSpawnDataTable'"));
+	if (ZombieSpawnDataRef.Succeeded())
 	{
-		const UDataTable* CharacterStatDataTable = CharacterStatDataTableRef.Object;
-		check(CharacterStatDataTable->GetRowMap().Num() > 0);
+		const UDataTable* SpawnDataTableBuf = ZombieSpawnDataRef.Object;
+		check(SpawnDataTableBuf->GetRowMap().Num() > 0);
 
-		for (const auto& Elem : CharacterStatDataTable->GetRowMap())
+		for (const auto& Elem : SpawnDataTableBuf->GetRowMap())
 		{
 			const FName& RowName = Elem.Key;
-			const FZeroCharacterStat* StatPtr = reinterpret_cast<const FZeroCharacterStat*>(Elem.Value);
+			const FZeroZombieSpawnDataTable* StatPtr = reinterpret_cast<const FZeroZombieSpawnDataTable*>(Elem.Value);
 			if (StatPtr)
 			{
-				CharacterStatTable.Add(RowName, *StatPtr);
+				SpawnDataTable.Add(RowName, *StatPtr);
 			}
 		}
 	}

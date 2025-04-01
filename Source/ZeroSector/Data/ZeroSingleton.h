@@ -7,6 +7,7 @@
 #include "Data/ZeroDialogueDataTable.h"
 #include "Data/ZeroProvisoDataTable.h"
 #include "Data/ZeroCharacterStat.h"
+#include "Data/ZeroZombieSpawnDataTable.h"
 #include "ZeroSingleton.generated.h"
 
 UCLASS()
@@ -20,7 +21,11 @@ public:
 
 	FORCEINLINE FZeroDialogueDataTable GetDialogueTable(int32 RowIndex) const { return DialogueTables.IsValidIndex(RowIndex) ? DialogueTables[RowIndex] : FZeroDialogueDataTable(); }
 	FORCEINLINE FZeroProvisoDataTable GetProvisoData(int32 RowIndex) const { return ProvisoDataList.IsValidIndex(RowIndex) ? ProvisoDataList[RowIndex] : FZeroProvisoDataTable(); }
-	FORCEINLINE FZeroCharacterStat GetCharacterStat(const FName& ClassName) const { return CharacterStatTable[ClassName]; }
+	FORCEINLINE FZeroZombieSpawnDataTable GetZombieSpawnData(uint8 RowIndex) const 
+	{
+		FName Row = *FString::FromInt(RowIndex);
+		return SpawnDataTable[Row];
+	}
 
 	/* 단서 데이터 */
 	TArray<FZeroProvisoDataTable> GetCollectedProvisos() const;
@@ -36,6 +41,6 @@ private:
 	UPROPERTY()
 	TArray<FZeroProvisoDataTable> CollectedProvisos;
 
-	UPROPERTY(VisibleAnywhere, Category = "Stat")
-	TMap<FName, FZeroCharacterStat> CharacterStatTable;
+	UPROPERTY()
+	TMap<FName, FZeroZombieSpawnDataTable> SpawnDataTable;
 };

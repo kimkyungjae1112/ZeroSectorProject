@@ -8,6 +8,7 @@
 #include "Game/ZeroZombieSpawner.h"
 #include "Kismet/GameplayStatics.h"
 #include "Environment/ZeroDaySequence.h"
+#include "Data/ZeroSingleton.h"
 #include "ZeroSector.h"
 
 AZeroGameModeBase::AZeroGameModeBase()
@@ -39,6 +40,39 @@ void AZeroGameModeBase::BeginPlay()
 	Spawner = Cast<AZeroZombieSpawner>(UGameplayStatics::GetActorOfClass(this, SpawnerClass));
 }
 
+void AZeroGameModeBase::InitDay()
+{
+	SpawnDataTable = UZeroSingleton::Get().GetZombieSpawnData(Day);
+	MaxWave = SpawnDataTable.MaxWave;
+	CurrentWave = 0;
+	ZombieNum = SpawnDataTable.ZombieNum[CurrentWave];
+	Day++;
+	ZE_LOG(LogZeroSector, Display, TEXT("MaxWave : %d, ZombieNum : %d"), MaxWave, ZombieNum);
+}
+
+void AZeroGameModeBase::ChangeDay()
+{
+	AZeroDaySequence* DaySequence = Cast<AZeroDaySequence>(UGameplayStatics::GetActorOfClass(GetWorld(), AZeroDaySequence::StaticClass()));
+	if (DaySequence)
+	{
+		if (DaySequence->IsNight())
+		{
+			CurrentDaySequence = EDaySequence::EAfternoon;
+			DaySequence->NightfallToAfternoon();
+			//낮에 처리해야 하는 UI
+		}
+		else
+		{
+			CurrentDaySequence = EDaySequence::ENight;
+			DaySequence->AfternoonToNightfall();
+			InitDay();
+
+			StartWave();
+			//밤에 처리해야 하는 UI
+		}
+	}
+}
+
 void AZeroGameModeBase::PawnKilled(APawn* PawnKilled)
 {
 	APlayerController* PC = Cast<APlayerController>(PawnKilled->GetController());
@@ -62,37 +96,27 @@ void AZeroGameModeBase::PawnKilled(APawn* PawnKilled)
 		}
 	}
 	
-	StartWave();
-	
-	//EndGame(true);
-}
-
-void AZeroGameModeBase::ChangeDay()
-{
-	AZeroDaySequence* DaySequence = Cast<AZeroDaySequence>(UGameplayStatics::GetActorOfClass(GetWorld(), AZeroDaySequence::StaticClass()));
-	if (DaySequence)
-	{
-		if (DaySequence->IsNight())
+	// 이제 트리거에서 GameMode를 가져온 다음 StartWave를 불러주면 됨.
+	FTimerHandle TempTimer;
+	GetWorld()->GetTimerManager().SetTimer(TempTimer, [&]()
 		{
-			CurrentDaySequence = EDaySequence::EAfternoon;
-			DaySequence->NightfallToAfternoon();
-			//낮에 처리해야 하는 UI
-		}
-		else
-		{
-			CurrentDaySequence = EDaySequence::ENight;
-			DaySequence->AfternoonToNightfall();
-			//밤에 처리해야 하는 UI
-		}
-	}
+			StartWave();
+		}, 3.f, false);
 }
 
 void AZeroGameModeBase::StartWave()
 {
-	// if 마지막 웨이브라면
-	//		if 좀비를 다 잡았다면
-	//			EndGame(true)
-	Spawner->SpawnZombie();
+	if (CurrentWave == MaxWave)
+	{
+		EndGame(true);
+		return;
+	}
+
+	ZombieNum = SpawnDataTable.ZombieNum[CurrentWave];
+	CurrentWave++;
+	Spawner->SpawnZombie(ZombieNum);
+
+	ZE_LOG(LogZeroSector, Display, TEXT("%d"), CurrentWave);
 }
 
 void AZeroGameModeBase::EndGame(bool bIsPlayerWinner)

@@ -8,7 +8,11 @@
 
 UZeroStatComponent::UZeroStatComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	static ConstructorHelpers::FObjectFinder<UDataTable> AnimDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/CharacterStat/ZeroCharacterStatTable.ZeroCharacterStatTable'"));
+	if (AnimDataTableRef.Succeeded())
+	{
+		DataTableBuffer = AnimDataTableRef.Object;
+	}
 
 }
 
@@ -20,22 +24,10 @@ void UZeroStatComponent::BeginPlay()
 	IZeroClassIdentifierInterface* CII = Cast<IZeroClassIdentifierInterface>(GetOwner());
 	if (CII)
 	{
-		SetStat(CII->GetClassName());
+		FString ContextString(TEXT("Stat Context"));
+		BaseStat = *DataTableBuffer->FindRow<FZeroCharacterStat>(CII->GetClassName(), ContextString);
 		CurrentHp = BaseStat.MaxHp;
 	}
-}
-
-
-void UZeroStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-}
-
-void UZeroStatComponent::SetStat(const FName& InName)
-{
-	BaseStat = UZeroSingleton::Get().GetCharacterStat(InName);
-	check(BaseStat.MaxHp > 0.f);
 }
 
 float UZeroStatComponent::ApplyDamage(float InDamage)

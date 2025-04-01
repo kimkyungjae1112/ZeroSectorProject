@@ -17,11 +17,11 @@ void AZeroZombieSpawner::BeginPlay()
 	
 }
 
-void AZeroZombieSpawner::SpawnZombie()
+void AZeroZombieSpawner::SpawnZombie(uint8 InZombieNum)
 {
     const float SplineLength = SplineComp->GetSplineLength();
 
-    for (int32 i = 0; i < ZombieNum; ++i)
+    for (int32 i = 0; i < InZombieNum; ++i)
     {
         float Distance = i * Spacing;
         if (Distance > SplineLength) break;

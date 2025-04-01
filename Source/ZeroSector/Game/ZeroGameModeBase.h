@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Environment/ZeroDayType.h"
+#include "Data/ZeroZombieSpawnDataTable.h"
 #include "ZeroGameModeBase.generated.h"
 
 class AZeroZombieSpawner;
@@ -23,8 +24,9 @@ protected:
 public:
 	FORCEINLINE EDaySequence GetDaySequence() const { return CurrentDaySequence; }
 
-	void PawnKilled(APawn* PawnKilled);
+	void InitDay();
 	void ChangeDay();
+	void PawnKilled(APawn* PawnKilled);
 
 private:
 	void StartWave();
@@ -40,8 +42,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Env")
 	EDaySequence CurrentDaySequence;
 
+	UPROPERTY()
+	FZeroZombieSpawnDataTable SpawnDataTable;
+
 	uint8 Day;
 	uint8 MaxWave;
 	uint8 CurrentWave;
-
+	uint8 ZombieNum;
 };

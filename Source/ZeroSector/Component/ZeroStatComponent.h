@@ -21,14 +21,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 public:
 	FOnHpZero OnHpZero;
 	FOnHpChanged OnHpChanged;
 
-	void SetStat(const FName& InName);
 	FORCEINLINE void SetModifierStat(const FZeroCharacterStat& InModifierStat) { ModifierStat = InModifierStat; }
 	FORCEINLINE float GetCurrentHp() const { return CurrentHp; }
 	FORCEINLINE FZeroCharacterStat GetTotalStat() const { return BaseStat + ModifierStat; }
@@ -49,5 +45,7 @@ protected:
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = "Stat", Meta = (AllowPrivateAccess = "true"))
 	FZeroCharacterStat ModifierStat;
-		
+
+	UPROPERTY()
+	TObjectPtr<UDataTable> DataTableBuffer;
 };

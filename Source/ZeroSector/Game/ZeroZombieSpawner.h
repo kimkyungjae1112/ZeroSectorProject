@@ -21,7 +21,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	void SpawnZombie();
+	void SpawnZombie(uint8 InZombieNum);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Zero")
