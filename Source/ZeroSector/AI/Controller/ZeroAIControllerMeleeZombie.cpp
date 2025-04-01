@@ -47,7 +47,7 @@ AZeroAIControllerMeleeZombie::AZeroAIControllerMeleeZombie()
 
 bool AZeroAIControllerMeleeZombie::IsDead() const
 {
-	return false;
+	return true;
 }
 
 void AZeroAIControllerMeleeZombie::BeginPlay()

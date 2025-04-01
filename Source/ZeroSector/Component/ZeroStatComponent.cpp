@@ -4,6 +4,7 @@
 #include "Component/ZeroStatComponent.h"
 #include "Data/ZeroSingleton.h"
 #include "Interface/ZeroClassIdentifierInterface.h"
+#include "ZeroSector.h"
 
 UZeroStatComponent::UZeroStatComponent()
 {
@@ -56,5 +57,6 @@ void UZeroStatComponent::SetHp(float NewHp)
 	const float ActualHp = FMath::Clamp(NewHp, 0, BaseStat.MaxHp);
 	CurrentHp = NewHp;
 	OnHpChanged.Broadcast(CurrentHp);
+	ZE_LOG(LogZeroSector, Display, TEXT("Rest Health : %f"), CurrentHp);
 }
 

@@ -78,6 +78,8 @@ public:
 	virtual class AZeroPlayerController* GetOwnerController() override;
 	virtual void ChangeInputMode() override;
 
+	/* APawn override */
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
 	virtual void PostInitializeComponents() override;
@@ -122,6 +124,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Input")
 	TObjectPtr<UZeroInputBaseComponent> InputComp;
+
+/* Input Delegate 관리 */
+private:
+	void AfternoonInputDelegate();
 	
 /* 무기 */
 private:

@@ -46,12 +46,13 @@ public:
 	virtual void ChangeWeapon() PURE_VIRTUAL(UZeroInputBaseComponent::ChangeWeapon, );
 	virtual void Reloading() PURE_VIRTUAL(UZeroInputBaseComponent::Reloading, );
 	virtual void SetupWeapon(const EWeaponType& WeaponType) PURE_VIRTUAL(UZeroInputBaseComponent::SetupWeapon, );
+	virtual void SetUnequipWeapon() PURE_VIRTUAL(UZeroInputBaseComponent::SetUnequipWeapon, );
 	virtual EWeaponType GetWeaponType() PURE_VIRTUAL(UZeroInputBaseComponent::GetWeaponType, return EWeaponType::EPistol;);
 
 	/* Menu */
 	virtual void PauseMenu() PURE_VIRTUAL(UZeroInputBaseComponent::PauseMenu, );
 
-		/* Test Code */
+	/* Test Code */
 	virtual void NightToAfternoon() PURE_VIRTUAL(UZeroInputBaseComponent::NightToAfternoon, );
 
 protected:

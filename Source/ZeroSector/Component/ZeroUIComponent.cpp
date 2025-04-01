@@ -41,8 +41,6 @@ void UZeroUIComponent::OperationNextButtonClick()
 
 	OnClickOperationNextButton.ExecuteIfBound(OperationWidgetPtr->GetWeaponType());
 	OperationWidgetPtr->RemoveFromParent();
-
-	FadeInAndOutDisplay();
 }
 
 void UZeroUIComponent::FadeInAndOutDisplay()
