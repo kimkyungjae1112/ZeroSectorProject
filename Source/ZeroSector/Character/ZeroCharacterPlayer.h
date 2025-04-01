@@ -8,7 +8,6 @@
 #include "Environment/ZeroDayType.h"
 #include "Interface/ZeroHUDInterface.h"
 #include "Interface/ZeroAfternoonInputInterface.h"
-#include "Interface/ZeroNightInputInterface.h"
 #include "Interface/ZeroUIComponentInterface.h"
 #include "ZeroCharacterPlayer.generated.h"
 
@@ -40,7 +39,6 @@ class ZEROSECTOR_API AZeroCharacterPlayer
 	: public AZeroCharacterBase
 	, public IZeroHUDInterface
 	, public IZeroAfternoonInputInterface
-	, public IZeroNightInputInterface
 	, public IZeroUIComponentInterface
 {
 	GENERATED_BODY()
@@ -63,9 +61,8 @@ public:
 	virtual void DisplayInteractUI() override;
 	virtual void CloseInteractUI() override;
 
-	/* IZeroNightInputInterface Implemnt */
 #if WITH_EDITOR
-	virtual void NightToAfternoon() override;
+	void NightToAfternoon();
 #endif
 
 	/* IZeroUIComponentInterface Implement */

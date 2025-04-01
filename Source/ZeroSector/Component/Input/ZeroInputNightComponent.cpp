@@ -6,14 +6,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
-#include "Interface/ZeroNightInputInterface.h"
 #include "ZeroHeader/ZeroWeaponHeader.h"
 #include "ZeroSector.h"
-
-//#define TEMP
-
-//임시
-#include "Kismet/GameplayStatics.h"
 
 UZeroInputNightComponent::UZeroInputNightComponent()
 {
