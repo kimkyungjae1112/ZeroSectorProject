@@ -76,6 +76,7 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Run, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Run);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Run, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::Walk);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Reloading, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Reloading);
+	EnhancedInputComponent->BindAction(InputConfig->IA_PauseMenu, ETriggerEvent::Started, this, &AZeroCharacterPlayer::PauseMenuDisplay);
 }
 
 FGenericTeamId AZeroCharacterPlayer::GetGenericTeamId() const
@@ -256,6 +257,14 @@ void AZeroCharacterPlayer::ToggleNoteDisplay()
 	}
 }
 
+void AZeroCharacterPlayer::PauseMenuDisplay()
+{
+	if (InputComp)
+	{	
+		InputComp->PauseMenu();
+	}
+}
+
 void AZeroCharacterPlayer::SetInputByDaySequence(EDaySequence DaySequence)
 {
 	ChangeInputMap[DaySequence].ChangeInput.ExecuteIfBound();
@@ -292,6 +301,8 @@ void AZeroCharacterPlayer::SetInputNightMode()
 
 		InputComp = NewObject<UZeroInputNightComponent>(this, UZeroInputNightComponent::StaticClass());
 		InputComp->RegisterComponent();
+		InputComp->OnPauseMenu.BindUObject(UIComp, &UZeroUIComponent::PauseMenuDisplay);
+
 
 		Subsystem->ClearAllMappings();
 		Subsystem->AddMappingContext(InputConfig->IMC_Night, 0);
@@ -303,4 +314,5 @@ void AZeroCharacterPlayer::AfternoonInputDelegate()
 	InputComp->OnOperationInteract.BindUObject(UIComp, &UZeroUIComponent::OperationInteract);
 	InputComp->OnProvisoInteract.BindUObject(UIComp, &UZeroUIComponent::ProvisoInteract);
 	InputComp->OnNoteDisplay.BindUObject(UIComp, &UZeroUIComponent::ToggleNoteDisplay);
+  InputComp->OnPauseMenu.BindUObject(UIComp, &UZeroUIComponent::PauseMenuDisplay);
 }

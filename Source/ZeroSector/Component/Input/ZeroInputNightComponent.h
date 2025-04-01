@@ -28,6 +28,9 @@ public:
 	virtual void SetUnequipWeapon() override;
 	virtual EWeaponType GetWeaponType() override;
 
+	virtual void PauseMenu() override;
+  virtual void NightToAfternoon() override;
+	
 protected:
 	virtual void BeginPlay() override;
 
