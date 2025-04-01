@@ -9,6 +9,7 @@
 #include "Gimmick/ZeroOperationBoard.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "Interface/ZeroAfternoonInputInterface.h"
+#include "UI/ZeroPauseMenuWidget.h"
 #include "ZeroSector.h"
 
 UZeroInputAfternoonComponent::UZeroInputAfternoonComponent()
@@ -148,6 +149,11 @@ void UZeroInputAfternoonComponent::OperationBoardInteract()
 void UZeroInputAfternoonComponent::ToggleNote()
 {
 	OnNoteDisplay.ExecuteIfBound();
+}
+
+void UZeroInputAfternoonComponent::PauseMenu()
+{
+	OnPauseMenu.ExecuteIfBound();
 }
 
 void UZeroInputAfternoonComponent::BeginPlay()

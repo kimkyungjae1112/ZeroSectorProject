@@ -30,6 +30,7 @@ public:
 	virtual void ProvisoInteract() override;
 	virtual void OperationBoardInteract() override;
 	virtual void ToggleNote() override;
+	virtual void PauseMenu() override;
 
 protected:
 	virtual void BeginPlay() override;

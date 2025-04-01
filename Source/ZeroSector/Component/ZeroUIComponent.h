@@ -12,6 +12,7 @@ class UZeroOperationWidget;
 class UZeroProvisoWidget;
 class UZeroGetProvisoWidget;
 class UZeroNoteWidget;
+class UZeroPauseMenuWidget;
 
 DECLARE_DELEGATE_OneParam(FOnClickOperationNextButton, const EWeaponType&)
 
@@ -38,6 +39,7 @@ public:
 
 	void OperationInteract();
 	void ProvisoInteract();
+	void PauseMenuDisplay();
 
 
 private:
@@ -67,6 +69,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TObjectPtr<UZeroNoteWidget> NoteWidgetPtr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UZeroPauseMenuWidget> PauseMenuWidgetClass;
 
 	int32 ProvisoNum = 0;
 	bool bIsNoteToggle = false;

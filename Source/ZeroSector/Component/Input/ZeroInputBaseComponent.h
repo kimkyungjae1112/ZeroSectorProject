@@ -12,6 +12,7 @@ struct FInputActionValue;
 DECLARE_DELEGATE(FOnOperationInteract)
 DECLARE_DELEGATE(FOnProvisoInteract)
 DECLARE_DELEGATE(FOnNoteDisplay)
+DECLARE_DELEGATE(FOnPauseMenu)
 
 UCLASS( abstract, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ZEROSECTOR_API UZeroInputBaseComponent : public UActorComponent
@@ -38,6 +39,7 @@ public:
 	FOnOperationInteract OnOperationInteract;
 	FOnProvisoInteract OnProvisoInteract;
 	FOnNoteDisplay OnNoteDisplay;
+	FOnPauseMenu OnPauseMenu;
 
 	/* Night */
 	virtual void Fire() PURE_VIRTUAL(UZeroInputBaseComponent::Fire, );
@@ -46,6 +48,12 @@ public:
 	virtual void SetupWeapon(const EWeaponType& WeaponType) PURE_VIRTUAL(UZeroInputBaseComponent::SetupWeapon, );
 	virtual void SetUnequipWeapon() PURE_VIRTUAL(UZeroInputBaseComponent::SetUnequipWeapon, );
 	virtual EWeaponType GetWeaponType() PURE_VIRTUAL(UZeroInputBaseComponent::GetWeaponType, return EWeaponType::EPistol;);
+
+	/* Menu */
+	virtual void PauseMenu() PURE_VIRTUAL(UZeroInputBaseComponent::PauseMenu, );
+
+	/* Test Code */
+	virtual void NightToAfternoon() PURE_VIRTUAL(UZeroInputBaseComponent::NightToAfternoon, );
 
 protected:
 	virtual void BeginPlay() override;
