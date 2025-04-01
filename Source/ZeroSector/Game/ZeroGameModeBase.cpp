@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Game/ZeroGameModeBase.h"
 #include "GameFramework/PlayerController.h"
 #include "AI/Controller/ZeroAIControllerMeleeZombie.h"
@@ -8,6 +7,7 @@
 #include "EngineUtils.h"
 #include "Game/ZeroZombieSpawner.h"
 #include "Kismet/GameplayStatics.h"
+#include "Environment/ZeroDaySequence.h"
 #include "ZeroSector.h"
 
 AZeroGameModeBase::AZeroGameModeBase()
@@ -27,6 +27,9 @@ AZeroGameModeBase::AZeroGameModeBase()
 	{
 		SpawnerClass = SpawnerClassRef.Class;
 	}
+
+	CurrentDaySequence = EDaySequence::EAfternoon;
+	Day = 1;
 }
 
 void AZeroGameModeBase::BeginPlay()
@@ -62,6 +65,26 @@ void AZeroGameModeBase::PawnKilled(APawn* PawnKilled)
 	StartWave();
 	
 	//EndGame(true);
+}
+
+void AZeroGameModeBase::ChangeDay()
+{
+	AZeroDaySequence* DaySequence = Cast<AZeroDaySequence>(UGameplayStatics::GetActorOfClass(GetWorld(), AZeroDaySequence::StaticClass()));
+	if (DaySequence)
+	{
+		if (DaySequence->IsNight())
+		{
+			CurrentDaySequence = EDaySequence::EAfternoon;
+			DaySequence->NightfallToAfternoon();
+			//낮에 처리해야 하는 UI
+		}
+		else
+		{
+			CurrentDaySequence = EDaySequence::ENight;
+			DaySequence->AfternoonToNightfall();
+			//밤에 처리해야 하는 UI
+		}
+	}
 }
 
 void AZeroGameModeBase::StartWave()

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/ZeroCharacterBase.h"
 #include "Weapon/ZeroWeaponType.h"
+#include "Environment/ZeroDayType.h"
 #include "Interface/ZeroHUDInterface.h"
 #include "Interface/ZeroAfternoonInputInterface.h"
 #include "Interface/ZeroNightInputInterface.h"
@@ -22,13 +23,6 @@ class APlayerController;
 class AZeroPlayerController;
 
 DECLARE_DELEGATE(FChangeInput)
-
-UENUM()
-enum class EDaySequence : uint8
-{
-	EAfternoon,
-	ENight
-};
 
 USTRUCT()
 struct FChangeInputWrapper

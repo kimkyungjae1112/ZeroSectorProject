@@ -30,12 +30,12 @@ public:
 	FOnClickOperationNextButton OnClickOperationNextButton;
 
 public:
-	void OperationNextButtonClick();
 	void FadeInAndOutDisplay();
 	void ToggleNoteDisplay();
 	void InteractUIDisplay();
 	void InteractUIClose();
 
+	void OperationNextButtonClick();
 	void OperationInteract();
 	void ProvisoInteract();
 

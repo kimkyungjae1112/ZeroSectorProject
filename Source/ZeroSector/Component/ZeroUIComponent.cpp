@@ -20,19 +20,6 @@ void UZeroUIComponent::BeginPlay()
 
 }
 
-void UZeroUIComponent::OperationNextButtonClick()
-{
-	IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
-	if (Interface)
-	{
-		Interface->GetOwnerController()->InputModeGameOnly();
-		Interface->ChangeInputMode();
-	}
-
-	OnClickOperationNextButton.ExecuteIfBound(OperationWidgetPtr->GetWeaponType());
-	OperationWidgetPtr->RemoveFromParent();
-}
-
 void UZeroUIComponent::FadeInAndOutDisplay()
 {
 	FadeInAndOutWidgetPtr = CreateWidget<UZeroFadeInAndOutWidget>(GetWorld(), FadeInAndOutWidgetClass);
@@ -99,6 +86,19 @@ void UZeroUIComponent::InteractUIClose()
 	{
 		ProvisoWidgetPtr->RemoveFromParent();
 	}
+}
+
+void UZeroUIComponent::OperationNextButtonClick()
+{
+	IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
+	if (Interface)
+	{
+		Interface->GetOwnerController()->InputModeGameOnly();
+		Interface->ChangeInputMode();
+	}
+
+	OnClickOperationNextButton.ExecuteIfBound(OperationWidgetPtr->GetWeaponType());
+	OperationWidgetPtr->RemoveFromParent();
 }
 
 void UZeroUIComponent::OperationInteract()

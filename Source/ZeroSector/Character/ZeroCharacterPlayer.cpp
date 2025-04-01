@@ -12,6 +12,7 @@
 #include "Component/Input/ZeroInputNightComponent.h"
 #include "Component/ZeroUIComponent.h"
 #include "Player/ZeroPlayerController.h"
+#include "Game/ZeroGameModeBase.h"
 #include "ZeroSector.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer()
@@ -111,9 +112,13 @@ AZeroPlayerController* AZeroCharacterPlayer::GetOwnerController()
 
 void AZeroCharacterPlayer::ChangeInputMode()
 {
+	AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GameMode == nullptr) return;
+	
+	GameMode->ChangeDay();
 	if (InputComp && InputComp->IsA(UZeroInputAfternoonComponent::StaticClass()))
 	{
-		SetInputByDaySequence(EDaySequence::ENight);
+		SetInputByDaySequence(GameMode->GetDaySequence());
 		UIComp->FadeInAndOutDisplay();
 		UIComp->OnClickOperationNextButton.BindUObject(InputComp, &UZeroInputBaseComponent::SetupWeapon);
 		CurrentWeaponType = InputComp->GetWeaponType();
@@ -123,7 +128,7 @@ void AZeroCharacterPlayer::ChangeInputMode()
 		InputComp->SetUnequipWeapon();
 		UIComp->FadeInAndOutDisplay();
 		CurrentWeaponType = InputComp->GetWeaponType();
-		SetInputByDaySequence(EDaySequence::EAfternoon);
+		SetInputByDaySequence(GameMode->GetDaySequence());
 	}
 }
 
@@ -262,7 +267,6 @@ void AZeroCharacterPlayer::SetInputAfternoonMode()
 	{
 		if (InputComp)
 		{
-			ZE_LOG(LogZeroSector, Display, TEXT("Afternoon 으로 전환"));
 			InputComp->DestroyComponent();
 			InputComp = nullptr;
 		}

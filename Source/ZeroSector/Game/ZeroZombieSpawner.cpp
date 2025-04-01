@@ -15,8 +15,6 @@ void AZeroZombieSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	
-    // 임시
-    SpawnZombie();
 }
 
 void AZeroZombieSpawner::SpawnZombie()

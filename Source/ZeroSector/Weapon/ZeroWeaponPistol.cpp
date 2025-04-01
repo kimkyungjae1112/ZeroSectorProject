@@ -29,6 +29,5 @@ void AZeroWeaponPistol::Fire()
 {
 	Super::Fire();
 
-	ZE_LOG(LogZeroSector, Display, TEXT("Pistol Fire"));
 }
 

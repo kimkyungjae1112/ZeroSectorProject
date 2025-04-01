@@ -4,8 +4,6 @@
 #include "UI/ZeroFadeInAndOutWidget.h"
 #include "Components/Border.h"
 #include "Animation/WidgetAnimation.h"
-#include "Kismet/GameplayStatics.h"
-#include "Environment/ZeroDaySequence.h"
 #include "ZeroSector.h"
 
 UZeroFadeInAndOutWidget::UZeroFadeInAndOutWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -32,18 +30,6 @@ void UZeroFadeInAndOutWidget::FadeInPlay()
 void UZeroFadeInAndOutWidget::FadeOutPlay()
 {
 	PlayAnimation(FadeOut);
-	AZeroDaySequence* DaySequence = Cast<AZeroDaySequence>(UGameplayStatics::GetActorOfClass(GetWorld(), AZeroDaySequence::StaticClass()));
-	if (DaySequence)
-	{
-		if (DaySequence->IsNight())
-		{
-			DaySequence->NightfallToAfternoon();
-		}
-		else
-		{
-			DaySequence->AfternoonToNightfall();
-		}
-	}
 
 	BindToAnimationFinished(FadeOut, RemoveEvent);
 }
