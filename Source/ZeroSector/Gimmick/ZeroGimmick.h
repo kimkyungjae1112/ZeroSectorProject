@@ -6,21 +6,21 @@
 #include "GameFramework/Actor.h"
 #include "ZeroGimmick.generated.h"
 
+class UBoxComponent;
+
 UCLASS(abstract)
 class ZEROSECTOR_API AZeroGimmick : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AZeroGimmick();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "Collision")
+	TObjectPtr<UBoxComponent> BoxComp;
 
 };

@@ -5,7 +5,6 @@
 
 AZeroOperationBoard::AZeroOperationBoard()
 {
-	PrimaryActorTick.bCanEverTick = true;
 
 	Tags.Add(TEXT("OperationBoard"));
 }
@@ -16,9 +15,4 @@ void AZeroOperationBoard::BeginPlay()
 	
 }
 
-void AZeroOperationBoard::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 

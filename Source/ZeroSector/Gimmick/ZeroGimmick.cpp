@@ -2,11 +2,13 @@
 
 
 #include "Gimmick/ZeroGimmick.h"
+#include "Components/BoxComponent.h"
 
 AZeroGimmick::AZeroGimmick()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
+	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Component"));
+	RootComponent = BoxComp;
+	BoxComp->SetCollisionProfileName(TEXT("Interact"));
 }
 
 void AZeroGimmick::BeginPlay()
@@ -15,9 +17,4 @@ void AZeroGimmick::BeginPlay()
 	
 }
 
-void AZeroGimmick::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
