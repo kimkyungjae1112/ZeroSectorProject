@@ -19,7 +19,8 @@ public class ZeroSector : ModuleRules
 				"EnhancedInput",
 				"AIModule",
                 "NavigationSystem",
-				"GameplayTasks"
+				"GameplayTasks",
+                "SlateCore"
             }
 		);
 
