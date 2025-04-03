@@ -17,7 +17,7 @@ void UZeroFadeInAndOutWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	Border = Cast<UBorder>(GetWidgetFromName(TEXT("Border")));
-	ensure(Border);
+	//ensure(Border);
 }
 
 void UZeroFadeInAndOutWidget::FadeInPlay()

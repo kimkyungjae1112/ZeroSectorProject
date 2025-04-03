@@ -4,6 +4,7 @@
 #include "UI/ZeroHUDWidget.h"
 #include "Components/TextBlock.h"
 #include "Interface/ZeroHUDInterface.h"
+#include "ZeroSector.h"
 
 UZeroHUDWidget::UZeroHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {

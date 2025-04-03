@@ -7,11 +7,13 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
 #include "ZeroHeader/ZeroWeaponHeader.h"
+#include "UI/ZeroHUDWidget.h"
+#include "Interface/ZeroNightInputInterface.h"
 #include "ZeroSector.h"
 
 UZeroInputNightComponent::UZeroInputNightComponent()
 {
-	CurrentWeaponType = EWeaponType::ENone;
+	CurrentWeaponType = EWeaponType::EPistol;
 }
 
 void UZeroInputNightComponent::Move(const FInputActionValue& Value)
@@ -110,12 +112,17 @@ void UZeroInputNightComponent::SetupWeapon(const EWeaponType& WeaponType)
 		break;
 	}
 
-	for (const auto& Weapon : Weapons)
+	IZeroNightInputInterface* Interface = Cast<IZeroNightInputInterface>(Player);
+	if (Interface)
 	{
-		Weapon.Value->SetOwner(Player);
-		/*Weapon.Value->OnSetMaxAmmo.BindUObject(HUDWidgetPtr, &UZeroHUDWidget::UpdateMaxAmmo);
-		Weapon.Value->OnChangedAmmo.BindUObject(HUDWidgetPtr, &UZeroHUDWidget::UpdateCurrentAmmo);*/
+		for (const auto& Weapon : Weapons)
+		{
+			Weapon.Value->SetOwner(Player);
+			Weapon.Value->OnSetMaxAmmo.BindUObject(Interface->GetWeaponHUDWidget(), &UZeroHUDWidget::UpdateMaxAmmo);
+			Weapon.Value->OnChangedAmmo.BindUObject(Interface->GetWeaponHUDWidget(), &UZeroHUDWidget::UpdateCurrentAmmo);
+		}
 	}
+
 
 	SetPistol();
 }
@@ -167,7 +174,7 @@ void UZeroInputNightComponent::SetPistol()
 {
 	CurrentWeaponType = EWeaponType::EPistol;
 	CurrentWeapon = Weapons[EWeaponType::EPistol];
-
+	CurrentWeapon->GunAmmoTextDisplay();
 	SetupTransformWeapon(TEXT("hand_rPistol"));
 	ChangeWeaponMesh();
 }

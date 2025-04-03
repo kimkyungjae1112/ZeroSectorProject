@@ -39,7 +39,6 @@ public:
 	FOnOperationInteract OnOperationInteract;
 	FOnProvisoInteract OnProvisoInteract;
 	FOnNoteDisplay OnNoteDisplay;
-	FOnPauseMenu OnPauseMenu;
 
 	/* Night */
 	virtual void Fire() PURE_VIRTUAL(UZeroInputBaseComponent::Fire, );
@@ -51,6 +50,8 @@ public:
 
 	/* Menu */
 	virtual void PauseMenu() PURE_VIRTUAL(UZeroInputBaseComponent::PauseMenu, );
+	
+	FOnPauseMenu OnPauseMenu;
 
 protected:
 	virtual void BeginPlay() override;

@@ -13,6 +13,8 @@
 #include "Component/ZeroUIComponent.h"
 #include "Player/ZeroPlayerController.h"
 #include "Game/ZeroGameModeBase.h"
+#include "Weapon/ZeroWeaponBase.h"
+#include "UI/ZeroHUDWidget.h"
 #include "ZeroSector.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer()
@@ -97,6 +99,11 @@ void AZeroCharacterPlayer::DisplayInteractUI()
 void AZeroCharacterPlayer::CloseInteractUI()
 {
 	UIComp->InteractUIClose();
+}
+
+UZeroHUDWidget* AZeroCharacterPlayer::GetWeaponHUDWidget() const
+{
+	return HUDWidgetPtr;
 }
 
 #if WITH_EDITOR
@@ -314,5 +321,5 @@ void AZeroCharacterPlayer::AfternoonInputDelegate()
 	InputComp->OnOperationInteract.BindUObject(UIComp, &UZeroUIComponent::OperationInteract);
 	InputComp->OnProvisoInteract.BindUObject(UIComp, &UZeroUIComponent::ProvisoInteract);
 	InputComp->OnNoteDisplay.BindUObject(UIComp, &UZeroUIComponent::ToggleNoteDisplay);
-  InputComp->OnPauseMenu.BindUObject(UIComp, &UZeroUIComponent::PauseMenuDisplay);
+	InputComp->OnPauseMenu.BindUObject(UIComp, &UZeroUIComponent::PauseMenuDisplay);
 }
