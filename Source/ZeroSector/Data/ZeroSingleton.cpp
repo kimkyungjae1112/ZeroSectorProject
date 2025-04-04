@@ -5,22 +5,6 @@
 
 UZeroSingleton::UZeroSingleton()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> DialogueDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable.DialogueDataTable'"));
-	if (DialogueDataTableRef.Succeeded())
-	{
-		const UDataTable* DialogueDataTable = DialogueDataTableRef.Object;
-		check(DialogueDataTable->GetRowMap().Num() > 0);
-
-		TArray<uint8*> ValueArray;
-		DialogueDataTable->GetRowMap().GenerateValueArray(ValueArray);
-		Algo::Transform(ValueArray, DialogueTables,
-			[](uint8* Value)
-			{
-				return *reinterpret_cast<FZeroDialogueDataTable*>(Value);
-			}
-		);
-	}
-
 	static ConstructorHelpers::FObjectFinder<UDataTable> ProvisoDataTableRef(TEXT("/Game/Data/Proviso/ProvisoDataTable.ProvisoDataTable"));
 	if (ProvisoDataTableRef.Succeeded())
 	{

@@ -35,5 +35,5 @@ void UZeroDialogueOptionWidget::SetDialogueOptionText(const FText& InText)
 
 void UZeroDialogueOptionWidget::OnClickedOption()
 {
-	DialogueComp->OnClickedOption(DialogueTableInOption);
+	DialogueComp->OnClickedOption(DialogueTableInOption, Reliability);
 }

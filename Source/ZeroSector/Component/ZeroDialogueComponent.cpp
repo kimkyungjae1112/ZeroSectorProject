@@ -4,6 +4,7 @@
 #include "Component/ZeroDialogueComponent.h"
 #include "Data/ZeroSingleton.h"
 #include "Data/ZeroDialogueOptionDataTable.h"
+#include "Data/ZeroResearcherData.h"
 #include "UI/ZeroDialogueWidget.h"
 #include "UI/ZeroDialogueOptionWidget.h"
 #include "Components/ScrollBox.h"
@@ -37,6 +38,18 @@ UZeroDialogueComponent::UZeroDialogueComponent()
     DialogueTableMap.Add(TEXT("Normal1"), N1_DialogueTable);
     DialogueTableMap.Add(TEXT("Normal2"), N2_DialogueTable);
     DialogueTableMap.Add(TEXT("Normal3"), N3_DialogueTable);
+
+    V_Researcher = FSoftObjectPath(TEXT("/Script/ZeroSector.ZeroResearcherData'/Game/Data/Researcher/DA_Researcher_V.DA_Researcher_V'"));
+    C_Researcher = FSoftObjectPath(TEXT("/Script/ZeroSector.ZeroResearcherData'/Game/Data/Researcher/DA_Researcher_C.DA_Researcher_C'"));
+    N1_Researcher = FSoftObjectPath(TEXT("/Script/ZeroSector.ZeroResearcherData'/Game/Data/Researcher/DA_Researcher_N1.DA_Researcher_N1'"));
+    N2_Researcher = FSoftObjectPath(TEXT("/Script/ZeroSector.ZeroResearcherData'/Game/Data/Researcher/DA_Researcher_N2.DA_Researcher_N2'"));
+    N3_Researcher = FSoftObjectPath(TEXT("/Script/ZeroSector.ZeroResearcherData'/Game/Data/Researcher/DA_Researcher_N3.DA_Researcher_N3'"));
+    
+    ResearcherDataMap.Add(TEXT("Vaccine"), V_Researcher);
+    ResearcherDataMap.Add(TEXT("Criminal"), C_Researcher);
+    ResearcherDataMap.Add(TEXT("Normal1"), N1_Researcher);
+    ResearcherDataMap.Add(TEXT("Normal2"), N2_Researcher);
+    ResearcherDataMap.Add(TEXT("Normal3"), N3_Researcher);
 }
 
 void UZeroDialogueComponent::StartDialogue()
@@ -69,6 +82,11 @@ void UZeroDialogueComponent::SetupFinishedDialogueDelegate(const FOnFinishedDial
     OnFinishedDialogue = InOnFinishedDialogue;
 }
 
+void UZeroDialogueComponent::ShutdownGame()
+{
+    ResearcherData->Trust = 0.f;
+}
+
 void UZeroDialogueComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -81,11 +99,18 @@ void UZeroDialogueComponent::BeginPlay()
             DialogueTable = *DialogueTableMap[CII->GetClassName()].LoadSynchronous()->FindRow<FZeroDialogueDataTable>(TEXT("1"), DialogueContext);
             PrevIndex = DialogueTable.PrevIndex;
         }
+        if (ResearcherDataMap[CII->GetClassName()].IsPending())
+        {
+            ResearcherDataMap[CII->GetClassName()].LoadSynchronous();
+        }
+        ResearcherData = ResearcherDataMap[CII->GetClassName()].Get();
     }
 }
 
-void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTable)
+void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTable, float Reliability)
 {
+    ResearcherData->Trust += Reliability;
+    ZE_LOG(LogZeroSector, Display, TEXT("신뢰도 : %f"), ResearcherData->Trust)
     DialogueWidgetPtr->GetScrollBox()->ClearChildren();
 
     DialogueTable = InDialogueTable;
@@ -173,6 +198,7 @@ void UZeroDialogueComponent::DialogueOptionSpawn(const FZeroDialogueOptionDataTa
 {
     DialogueOptionWidgetPtr = CreateWidget<UZeroDialogueOptionWidget>(GetWorld(), DialogueOptionWidgetClass);
     DialogueOptionWidgetPtr->SetDialogueComp(this);
+    DialogueOptionWidgetPtr->SetReliability(InDialogueOptionTable.Reliability);
     DialogueOptionDataInit(InDialogueOptionTable.DataTable, InDialogueOptionTable.RowIndex);
     DialogueWidgetPtr->GetScrollBox()->AddChild(DialogueOptionWidgetPtr);
     DialogueOptionWidgetPtr->SetDialogueOptionText(InDialogueOptionTable.OptionDialogue);
