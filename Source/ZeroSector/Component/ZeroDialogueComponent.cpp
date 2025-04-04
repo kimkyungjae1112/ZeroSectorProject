@@ -99,7 +99,7 @@ void UZeroDialogueComponent::BeginPlay()
             DialogueTable = *DialogueTableMap[CII->GetClassName()].LoadSynchronous()->FindRow<FZeroDialogueDataTable>(TEXT("1"), DialogueContext);
             PrevIndex = DialogueTable.PrevIndex;
         }
-        if (ResearcherDataMap[CII->GetClassName()].IsPending())
+        if (ResearcherDataMap[CII->GetClassName()] && ResearcherDataMap[CII->GetClassName()].IsPending())
         {
             ResearcherDataMap[CII->GetClassName()].LoadSynchronous();
         }
