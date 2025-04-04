@@ -73,22 +73,22 @@ private:
     TObjectPtr<UTextBlock> TrustText;
 
     UPROPERTY(meta = (BindWidget))
-    UVerticalBox* ResearcherInfoBox;
+    TObjectPtr<UVerticalBox> ResearcherInfoBox;
 
     // 단서
 protected:
 
     UPROPERTY(meta = (BindWidget))
-    UCanvasPanel* DetailPopupBox;
+    TObjectPtr<UCanvasPanel> DetailPopupBox;
 
     UPROPERTY(meta = (BindWidget))
-    UTextBlock* DetailNameText;
+    TObjectPtr<UTextBlock> DetailNameText;
 
     UPROPERTY(meta = (BindWidget))
-    UTextBlock* DetailDescText;
+    TObjectPtr<UTextBlock> DetailDescText;
 
     UPROPERTY(meta = (BindWidget))
-    UButton* CloseButton;
+    TObjectPtr<UButton> CloseButton;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
     TSubclassOf<class UZeroProvisoButtonWidget> ProvisoButtonClass;

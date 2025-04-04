@@ -8,6 +8,8 @@
 #include "Data/ZeroSingleton.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/ZeroPauseMenuWidget.h"
+#include "UI/ZeroExcludeResearcherWidget.h"
+#include "UI/ZeroSelectResearcherWidget.h"
 #include "ZeroSector.h"
 
 UZeroUIComponent::UZeroUIComponent()
@@ -16,10 +18,6 @@ UZeroUIComponent::UZeroUIComponent()
 	if (WidgetClass.Succeeded())
 	{
 		PauseMenuWidgetClass = WidgetClass.Class;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("TT"));
 	}
 }
 
@@ -170,6 +168,38 @@ void UZeroUIComponent::PauseMenuDisplay()
 		PauseWidget->AddToViewport();
 		UGameplayStatics::SetGamePaused(GetWorld(), true);
 		Interface->GetOwnerController()->InputModeUIOnly();
+	}
+}
+
+void UZeroUIComponent::ExcludeResearcherDisplay()
+{
+	IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
+	if (Interface)
+	{
+		Interface->GetOwnerController()->InputModeUIOnly();
+		Interface->GetOwnerController()->ApplyBlurEffect();
+	}
+
+	UZeroExcludeResearcherWidget* ExcludeResearcherWidget = CreateWidget<UZeroExcludeResearcherWidget>(GetWorld(), ExcludeResearcherWidgetClass);
+	if (ExcludeResearcherWidget)
+	{
+		ExcludeResearcherWidget->AddToViewport();
+	}
+}
+
+void UZeroUIComponent::SelectResearcherDisplay()
+{
+	IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
+	if (Interface)
+	{
+		Interface->GetOwnerController()->InputModeUIOnly();
+		Interface->GetOwnerController()->ApplyBlurEffect();
+	}
+
+	UZeroSelectResearcherWidget* SelectResearcherWidget = CreateWidget<UZeroSelectResearcherWidget>(GetWorld(), SelectResearcherWidgetClass);
+	if (SelectResearcherWidget)
+	{
+		SelectResearcherWidget->AddToViewport();
 	}
 }
 

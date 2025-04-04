@@ -104,6 +104,8 @@ private:
 
 	void ToggleNoteDisplay();
 	void PauseMenuDisplay();
+	void ExcludeResearcherDisplay();
+	void SelectResearcherDisplay();
 
 
 /* Input 데이터 및 변경 */

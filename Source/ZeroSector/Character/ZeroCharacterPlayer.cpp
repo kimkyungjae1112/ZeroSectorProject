@@ -79,6 +79,8 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Run, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::Walk);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Reloading, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Reloading);
 	EnhancedInputComponent->BindAction(InputConfig->IA_PauseMenu, ETriggerEvent::Started, this, &AZeroCharacterPlayer::PauseMenuDisplay);
+	EnhancedInputComponent->BindAction(InputConfig->IA_ExcludeResearcher, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ExcludeResearcherDisplay);
+	EnhancedInputComponent->BindAction(InputConfig->IA_SelectResearcher, ETriggerEvent::Started, this, &AZeroCharacterPlayer::SelectResearcherDisplay);
 }
 
 FGenericTeamId AZeroCharacterPlayer::GetGenericTeamId() const
@@ -272,6 +274,22 @@ void AZeroCharacterPlayer::PauseMenuDisplay()
 	}
 }
 
+void AZeroCharacterPlayer::ExcludeResearcherDisplay()
+{
+	if (InputComp)
+	{
+		InputComp->ExcludeResearcher();
+	}
+}
+
+void AZeroCharacterPlayer::SelectResearcherDisplay()
+{
+	if (InputComp)
+	{
+		InputComp->SelectResearcher();
+	}
+}
+
 void AZeroCharacterPlayer::SetInputByDaySequence(EDaySequence DaySequence)
 {
 	ChangeInputMap[DaySequence].ChangeInput.ExecuteIfBound();
@@ -322,4 +340,6 @@ void AZeroCharacterPlayer::AfternoonInputDelegate()
 	InputComp->OnProvisoInteract.BindUObject(UIComp, &UZeroUIComponent::ProvisoInteract);
 	InputComp->OnNoteDisplay.BindUObject(UIComp, &UZeroUIComponent::ToggleNoteDisplay);
 	InputComp->OnPauseMenu.BindUObject(UIComp, &UZeroUIComponent::PauseMenuDisplay);
+	InputComp->OnExcludeResearcher.BindUObject(UIComp, &UZeroUIComponent::ExcludeResearcherDisplay);
+	InputComp->OnSelectResearcher.BindUObject(UIComp, &UZeroUIComponent::SelectResearcherDisplay);
 }

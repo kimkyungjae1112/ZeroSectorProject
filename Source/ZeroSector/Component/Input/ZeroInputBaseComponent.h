@@ -13,6 +13,8 @@ DECLARE_DELEGATE(FOnOperationInteract)
 DECLARE_DELEGATE(FOnProvisoInteract)
 DECLARE_DELEGATE(FOnNoteDisplay)
 DECLARE_DELEGATE(FOnPauseMenu)
+DECLARE_DELEGATE(FOnExcludeResearcher)
+DECLARE_DELEGATE(FOnSelectResearcher)
 
 UCLASS( abstract, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ZEROSECTOR_API UZeroInputBaseComponent : public UActorComponent
@@ -35,10 +37,14 @@ public:
 	virtual void ProvisoInteract() PURE_VIRTUAL(UZeroInputBaseComponent::ProvisoInteract, );
 	virtual void OperationBoardInteract() PURE_VIRTUAL(UZeroInputBaseComponent::OperationBoardInteract, );
 	virtual void ToggleNote() PURE_VIRTUAL(UZeroInputBaseComponent::ToggleNote, );
+	virtual void ExcludeResearcher() PURE_VIRTUAL(UZeroInputBaseComponent::ExcludeResearcher, );
+	virtual void SelectResearcher() PURE_VIRTUAL(UZeroInputBaseComponent::SelectResearcher, );
 
 	FOnOperationInteract OnOperationInteract;
 	FOnProvisoInteract OnProvisoInteract;
 	FOnNoteDisplay OnNoteDisplay;
+	FOnExcludeResearcher OnExcludeResearcher;
+	FOnSelectResearcher OnSelectResearcher;
 
 	/* Night */
 	virtual void Fire() PURE_VIRTUAL(UZeroInputBaseComponent::Fire, );

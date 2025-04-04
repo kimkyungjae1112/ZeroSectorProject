@@ -31,6 +31,8 @@ public:
 	virtual void OperationBoardInteract() override;
 	virtual void ToggleNote() override;
 	virtual void PauseMenu() override;
+	virtual void ExcludeResearcher() override;
+	virtual void SelectResearcher() override;
 
 protected:
 	virtual void BeginPlay() override;
