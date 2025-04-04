@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "Data/ZeroDialogueDataTable.h"
+#include "Character/ZeroNPCType.h"
 #include "ZeroDialogueComponent.generated.h"
 
 struct FZeroDialogueOptionDataTable;
@@ -82,5 +83,16 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	bool bIsTalking;
 		
+	UPROPERTY(VisibleAnywhere)
+	FName PrevIndex;
+
 	FOnFinishedDialogue OnFinishedDialogue;
+
+	TSoftObjectPtr<UDataTable> S_DialogueTable;
+	TSoftObjectPtr<UDataTable> V_DialogueTable;
+	TSoftObjectPtr<UDataTable> C_DialogueTable;
+	TSoftObjectPtr<UDataTable> N1_DialogueTable;
+	TSoftObjectPtr<UDataTable> N2_DialogueTable;
+	TSoftObjectPtr<UDataTable> N3_DialogueTable;
+	TMap<FName, TSoftObjectPtr<UDataTable>> DialogueTableMap;
 };

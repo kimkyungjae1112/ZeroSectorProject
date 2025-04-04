@@ -8,6 +8,7 @@
 #include "UI/ZeroDialogueOptionWidget.h"
 #include "Components/ScrollBox.h"
 #include "Player/ZeroPlayerController.h"
+#include "Interface/ZeroClassIdentifierInterface.h"
 #include "ZeroSector.h"
 
 UZeroDialogueComponent::UZeroDialogueComponent()
@@ -22,6 +23,20 @@ UZeroDialogueComponent::UZeroDialogueComponent()
     {
         DialogueOptionWidgetClass = DialogueOptionWidgetClassRef.Class;
     }
+
+    S_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_S.DialogueDataTable_S'"));
+	V_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_V.DialogueDataTable_V'"));
+	C_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_C.DialogueDataTable_C'"));
+	N1_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N1.DialogueDataTable_N1'"));
+	N2_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N2.DialogueDataTable_N2'"));
+	N3_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N3.DialogueDataTable_N3'"));
+
+    DialogueTableMap.Add(TEXT("Speedwagon"), S_DialogueTable);
+    DialogueTableMap.Add(TEXT("Vaccine"), V_DialogueTable);
+    DialogueTableMap.Add(TEXT("Criminal"), C_DialogueTable);
+    DialogueTableMap.Add(TEXT("Normal1"), N1_DialogueTable);
+    DialogueTableMap.Add(TEXT("Normal2"), N2_DialogueTable);
+    DialogueTableMap.Add(TEXT("Normal3"), N3_DialogueTable);
 }
 
 void UZeroDialogueComponent::StartDialogue()
@@ -58,7 +73,15 @@ void UZeroDialogueComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-    DialogueTable = UZeroSingleton::Get().GetDialogueTable(0);
+    if (IZeroClassIdentifierInterface* CII = Cast<IZeroClassIdentifierInterface>(GetOwner()))
+    {
+        if (DialogueTableMap[CII->GetClassName()].IsPending())
+        {
+            FString DialogueContext(TEXT("Dialogue Context"));
+            DialogueTable = *DialogueTableMap[CII->GetClassName()].LoadSynchronous()->FindRow<FZeroDialogueDataTable>(TEXT("1"), DialogueContext);
+            PrevIndex = DialogueTable.PrevIndex;
+        }
+    }
 }
 
 void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTable)
@@ -87,7 +110,10 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
                 OnFinishedDialogue.ExecuteIfBound();
                 InputModeGameOnly();
             }, 3.f, false);
-        DialogueTable = UZeroSingleton::Get().GetDialogueTable(0);
+
+        FString ContextString(TEXT("Dialogue Context"));
+        FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(DialogueTable.PrevIndex, ContextString);
+        DialogueTable = *FoundRow;
     }
 }
 
@@ -134,7 +160,10 @@ void UZeroDialogueComponent::InProgressDialogue()
                 OnFinishedDialogue.ExecuteIfBound();
                 InputModeGameOnly();
             }, 3.f, false);
-        DialogueTable = UZeroSingleton::Get().GetDialogueTable(0);
+
+        FString ContextString(TEXT("Dialogue Context"));
+        FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(DialogueTable.PrevIndex, ContextString);
+        DialogueTable = *FoundRow;
     }
 
     DialogueDataInit();
@@ -151,8 +180,10 @@ void UZeroDialogueComponent::DialogueOptionSpawn(const FZeroDialogueOptionDataTa
 
 void UZeroDialogueComponent::DialogueDataInit()
 {
+    // 다음에 갈 대사 선택 하는거
     RowIndex = DialogueTable.RowIndex;
     bIsEnd = DialogueTable.bIsEnd;
+    PrevIndex = DialogueTable.PrevIndex;
 
     // 1. DataTable이 유효한지 먼저 확인
     if (!DialogueTable.DataTable.IsValid())

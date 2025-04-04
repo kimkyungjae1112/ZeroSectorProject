@@ -27,5 +27,8 @@ public:
 	bool bIsOpenOption;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	FName PrevIndex;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	TArray<FZeroDialogueOptionDataTable> OptionDialogues;
 };

@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Character/ZeroCharacterAIBase.h"
+#include "Character/Zombie/ZeroCharacterBaseZombie.h"
 #include "ZeroZombieType.h"
-#include "ZeroCharacterAIMeleeZombie.generated.h"
+#include "ZeroCharacterMeleeZombie.generated.h"
 
 class UZeroZombieBehaviorComponent;
 
@@ -50,12 +50,12 @@ public:
 };
 
 UCLASS()
-class ZEROSECTOR_API AZeroCharacterAIMeleeZombie : public AZeroCharacterAIBase
+class ZEROSECTOR_API AZeroCharacterMeleeZombie : public AZeroCharacterBaseZombie
 {
 	GENERATED_BODY()
 	
 public:
-	AZeroCharacterAIMeleeZombie();
+	AZeroCharacterMeleeZombie();
 
 	/* IZeroCharacterAIInterface Implement */
 	virtual void AttackOneByAI() override;
