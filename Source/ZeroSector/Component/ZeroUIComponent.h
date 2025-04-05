@@ -13,6 +13,8 @@ class UZeroProvisoWidget;
 class UZeroGetProvisoWidget;
 class UZeroNoteWidget;
 class UZeroPauseMenuWidget;
+class UZeroExcludeResearcherWidget;
+class UZeroSelectResearcherWidget;
 
 DECLARE_DELEGATE_OneParam(FOnClickOperationNextButton, const EWeaponType&)
 
@@ -40,6 +42,8 @@ public:
 	void OperationInteract();
 	void ProvisoInteract();
 	void PauseMenuDisplay();
+	void ExcludeResearcherDisplay();
+	void SelectResearcherDisplay();
 
 
 private:
@@ -72,6 +76,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UZeroPauseMenuWidget> PauseMenuWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UZeroExcludeResearcherWidget> ExcludeResearcherWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UZeroSelectResearcherWidget> SelectResearcherWidgetClass;
 
 	int32 ProvisoNum = 0;
 	bool bIsNoteToggle = false;

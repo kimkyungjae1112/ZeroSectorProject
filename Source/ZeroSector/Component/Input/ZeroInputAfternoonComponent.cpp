@@ -156,6 +156,16 @@ void UZeroInputAfternoonComponent::PauseMenu()
 	OnPauseMenu.ExecuteIfBound();
 }
 
+void UZeroInputAfternoonComponent::ExcludeResearcher()
+{
+	OnExcludeResearcher.ExecuteIfBound();
+}
+
+void UZeroInputAfternoonComponent::SelectResearcher()
+{
+	OnSelectResearcher.ExecuteIfBound();
+}
+
 void UZeroInputAfternoonComponent::BeginPlay()
 {
 	Super::BeginPlay();

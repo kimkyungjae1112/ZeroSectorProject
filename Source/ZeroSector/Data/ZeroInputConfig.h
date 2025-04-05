@@ -53,4 +53,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
 	TObjectPtr<UInputAction> IA_PauseMenu;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
+	TObjectPtr<UInputAction> IA_ExcludeResearcher;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
+	TObjectPtr<UInputAction> IA_SelectResearcher;
 };
