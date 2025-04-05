@@ -3,7 +3,7 @@
 
 #include "Game/ZeroZombieSpawner.h"
 #include "Components/SplineComponent.h"
-#include "Character/Zombie/ZeroCharacterAIMeleeZombie.h"
+#include "Character/Zombie/ZeroCharacterMeleeZombie.h"
 
 AZeroZombieSpawner::AZeroZombieSpawner()
 {
@@ -29,7 +29,7 @@ void AZeroZombieSpawner::SpawnZombie(uint8 InZombieNum)
         FVector Location = SplineComp->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
         FRotator Rotation = SplineComp->GetRotationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
 
-        GetWorld()->SpawnActor<AZeroCharacterAIMeleeZombie>(MeleeZombieClass, Location, Rotation);
+        GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(MeleeZombieClass, Location, Rotation);
     }
 }
 

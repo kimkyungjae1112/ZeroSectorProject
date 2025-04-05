@@ -3,16 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Character/ZeroCharacterAIBase.h"
-#include "ZeroCharacterAIRangedZombie.generated.h"
+#include "Character/Zombie/ZeroCharacterBaseZombie.h"
+#include "ZeroCharacterRangedZombie.generated.h"
 
 UCLASS()
-class ZEROSECTOR_API AZeroCharacterAIRangedZombie : public AZeroCharacterAIBase
+class ZEROSECTOR_API AZeroCharacterRangedZombie : public AZeroCharacterBaseZombie
 {
 	GENERATED_BODY()
 
 public:
-	AZeroCharacterAIRangedZombie();
+	AZeroCharacterRangedZombie();
 
 	/* IGenericTeamAgentInterface Implement */
 	virtual FGenericTeamId GetGenericTeamId() const override;

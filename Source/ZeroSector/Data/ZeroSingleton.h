@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "Data/ZeroDialogueDataTable.h"
 #include "Data/ZeroProvisoDataTable.h"
 #include "Data/ZeroCharacterStat.h"
 #include "Data/ZeroZombieSpawnDataTable.h"
@@ -19,7 +18,6 @@ public:
 	UZeroSingleton();
 	static UZeroSingleton& Get();
 
-	FORCEINLINE FZeroDialogueDataTable GetDialogueTable(int32 RowIndex) const { return DialogueTables.IsValidIndex(RowIndex) ? DialogueTables[RowIndex] : FZeroDialogueDataTable(); }
 	FORCEINLINE FZeroProvisoDataTable GetProvisoData(int32 RowIndex) const { return ProvisoDataList.IsValidIndex(RowIndex) ? ProvisoDataList[RowIndex] : FZeroProvisoDataTable(); }
 	FORCEINLINE FZeroZombieSpawnDataTable GetZombieSpawnData(uint8 RowIndex) const 
 	{
@@ -32,9 +30,6 @@ public:
 	void AddCollectedProviso(const FZeroProvisoDataTable& ProvisoData);
 
 private:
-	UPROPERTY()
-	TArray<FZeroDialogueDataTable> DialogueTables;
-
 	UPROPERTY()
 	TArray<FZeroProvisoDataTable> ProvisoDataList;
 

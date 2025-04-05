@@ -7,7 +7,7 @@
 #include "ZeroZombieSpawner.generated.h"
 
 class USplineComponent;
-class AZeroCharacterAIMeleeZombie;
+class AZeroCharacterMeleeZombie;
 
 UCLASS()
 class ZEROSECTOR_API AZeroZombieSpawner : public AActor
@@ -28,7 +28,7 @@ private:
 	TObjectPtr<USplineComponent> SplineComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Zero")
-	TSubclassOf<AZeroCharacterAIMeleeZombie> MeleeZombieClass;
+	TSubclassOf<AZeroCharacterMeleeZombie> MeleeZombieClass;
 
 	UPROPERTY(EditAnywhere, Category = "Zero")
 	int ZombieNum = 5;

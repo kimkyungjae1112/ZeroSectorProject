@@ -23,6 +23,9 @@ protected:
 	virtual void NativeConstruct() override;
 	
 public:
+	FORCEINLINE float GetReliability() const { return Reliability; }
+	FORCEINLINE void SetReliability(float InReliability) { Reliability = InReliability; }
+
 	void SetDialogueComp(UZeroDialogueComponent* InDialogueComp);
 	void SetDialogueOptionText(const FText& InText);
 
@@ -41,4 +44,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UZeroDialogueComponent> DialogueComp;
+
+	float Reliability;
 };

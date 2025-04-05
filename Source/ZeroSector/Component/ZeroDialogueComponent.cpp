@@ -4,10 +4,12 @@
 #include "Component/ZeroDialogueComponent.h"
 #include "Data/ZeroSingleton.h"
 #include "Data/ZeroDialogueOptionDataTable.h"
+#include "Data/ZeroResearcherData.h"
 #include "UI/ZeroDialogueWidget.h"
 #include "UI/ZeroDialogueOptionWidget.h"
 #include "Components/ScrollBox.h"
 #include "Player/ZeroPlayerController.h"
+#include "Interface/ZeroClassIdentifierInterface.h"
 #include "ZeroSector.h"
 
 UZeroDialogueComponent::UZeroDialogueComponent()
@@ -22,6 +24,32 @@ UZeroDialogueComponent::UZeroDialogueComponent()
     {
         DialogueOptionWidgetClass = DialogueOptionWidgetClassRef.Class;
     }
+
+    S_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_S.DialogueDataTable_S'"));
+	V_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_V.DialogueDataTable_V'"));
+	C_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_C.DialogueDataTable_C'"));
+	N1_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N1.DialogueDataTable_N1'"));
+	N2_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N2.DialogueDataTable_N2'"));
+	N3_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N3.DialogueDataTable_N3'"));
+
+    DialogueTableMap.Add(TEXT("Speedwagon"), S_DialogueTable);
+    DialogueTableMap.Add(TEXT("Vaccine"), V_DialogueTable);
+    DialogueTableMap.Add(TEXT("Criminal"), C_DialogueTable);
+    DialogueTableMap.Add(TEXT("Normal1"), N1_DialogueTable);
+    DialogueTableMap.Add(TEXT("Normal2"), N2_DialogueTable);
+    DialogueTableMap.Add(TEXT("Normal3"), N3_DialogueTable);
+
+    V_Researcher = FSoftObjectPath(TEXT("/Script/ZeroSector.ZeroResearcherData'/Game/Data/Researcher/DA_Researcher_V.DA_Researcher_V'"));
+    C_Researcher = FSoftObjectPath(TEXT("/Script/ZeroSector.ZeroResearcherData'/Game/Data/Researcher/DA_Researcher_C.DA_Researcher_C'"));
+    N1_Researcher = FSoftObjectPath(TEXT("/Script/ZeroSector.ZeroResearcherData'/Game/Data/Researcher/DA_Researcher_N1.DA_Researcher_N1'"));
+    N2_Researcher = FSoftObjectPath(TEXT("/Script/ZeroSector.ZeroResearcherData'/Game/Data/Researcher/DA_Researcher_N2.DA_Researcher_N2'"));
+    N3_Researcher = FSoftObjectPath(TEXT("/Script/ZeroSector.ZeroResearcherData'/Game/Data/Researcher/DA_Researcher_N3.DA_Researcher_N3'"));
+    
+    ResearcherDataMap.Add(TEXT("Vaccine"), V_Researcher);
+    ResearcherDataMap.Add(TEXT("Criminal"), C_Researcher);
+    ResearcherDataMap.Add(TEXT("Normal1"), N1_Researcher);
+    ResearcherDataMap.Add(TEXT("Normal2"), N2_Researcher);
+    ResearcherDataMap.Add(TEXT("Normal3"), N3_Researcher);
 }
 
 void UZeroDialogueComponent::StartDialogue()
@@ -54,15 +82,35 @@ void UZeroDialogueComponent::SetupFinishedDialogueDelegate(const FOnFinishedDial
     OnFinishedDialogue = InOnFinishedDialogue;
 }
 
+void UZeroDialogueComponent::ShutdownGame()
+{
+    ResearcherData->Trust = 0.f;
+}
+
 void UZeroDialogueComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-    DialogueTable = UZeroSingleton::Get().GetDialogueTable(0);
+    if (IZeroClassIdentifierInterface* CII = Cast<IZeroClassIdentifierInterface>(GetOwner()))
+    {
+        if (DialogueTableMap[CII->GetClassName()].IsPending())
+        {
+            FString DialogueContext(TEXT("Dialogue Context"));
+            DialogueTable = *DialogueTableMap[CII->GetClassName()].LoadSynchronous()->FindRow<FZeroDialogueDataTable>(TEXT("1"), DialogueContext);
+            PrevIndex = DialogueTable.PrevIndex;
+        }
+        if (ResearcherDataMap[CII->GetClassName()] && ResearcherDataMap[CII->GetClassName()].IsPending())
+        {
+            ResearcherDataMap[CII->GetClassName()].LoadSynchronous();
+        }
+        ResearcherData = ResearcherDataMap[CII->GetClassName()].Get();
+    }
 }
 
-void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTable)
+void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTable, float Reliability)
 {
+    ResearcherData->Trust += Reliability;
+    ZE_LOG(LogZeroSector, Display, TEXT("신뢰도 : %f"), ResearcherData->Trust)
     DialogueWidgetPtr->GetScrollBox()->ClearChildren();
 
     DialogueTable = InDialogueTable;
@@ -87,7 +135,10 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
                 OnFinishedDialogue.ExecuteIfBound();
                 InputModeGameOnly();
             }, 3.f, false);
-        DialogueTable = UZeroSingleton::Get().GetDialogueTable(0);
+
+        FString ContextString(TEXT("Dialogue Context"));
+        FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(DialogueTable.PrevIndex, ContextString);
+        DialogueTable = *FoundRow;
     }
 }
 
@@ -134,7 +185,10 @@ void UZeroDialogueComponent::InProgressDialogue()
                 OnFinishedDialogue.ExecuteIfBound();
                 InputModeGameOnly();
             }, 3.f, false);
-        DialogueTable = UZeroSingleton::Get().GetDialogueTable(0);
+
+        FString ContextString(TEXT("Dialogue Context"));
+        FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(DialogueTable.PrevIndex, ContextString);
+        DialogueTable = *FoundRow;
     }
 
     DialogueDataInit();
@@ -144,6 +198,7 @@ void UZeroDialogueComponent::DialogueOptionSpawn(const FZeroDialogueOptionDataTa
 {
     DialogueOptionWidgetPtr = CreateWidget<UZeroDialogueOptionWidget>(GetWorld(), DialogueOptionWidgetClass);
     DialogueOptionWidgetPtr->SetDialogueComp(this);
+    DialogueOptionWidgetPtr->SetReliability(InDialogueOptionTable.Reliability);
     DialogueOptionDataInit(InDialogueOptionTable.DataTable, InDialogueOptionTable.RowIndex);
     DialogueWidgetPtr->GetScrollBox()->AddChild(DialogueOptionWidgetPtr);
     DialogueOptionWidgetPtr->SetDialogueOptionText(InDialogueOptionTable.OptionDialogue);
@@ -151,8 +206,10 @@ void UZeroDialogueComponent::DialogueOptionSpawn(const FZeroDialogueOptionDataTa
 
 void UZeroDialogueComponent::DialogueDataInit()
 {
+    // 다음에 갈 대사 선택 하는거
     RowIndex = DialogueTable.RowIndex;
     bIsEnd = DialogueTable.bIsEnd;
+    PrevIndex = DialogueTable.PrevIndex;
 
     // 1. DataTable이 유효한지 먼저 확인
     if (!DialogueTable.DataTable.IsValid())

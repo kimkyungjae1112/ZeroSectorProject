@@ -6,11 +6,13 @@
 #include "Components/ActorComponent.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "Data/ZeroDialogueDataTable.h"
+#include "Character/ZeroNPCType.h"
 #include "ZeroDialogueComponent.generated.h"
 
 struct FZeroDialogueOptionDataTable;
 class UZeroDialogueWidget;
 class UZeroDialogueOptionWidget;
+class UZeroResearcherData;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ZEROSECTOR_API UZeroDialogueComponent 
@@ -31,7 +33,10 @@ protected:
 
 public:
 	/* Dialogue Option Widget 에서 버튼 클릭 시 호출하는 함수 */
-	void OnClickedOption(FZeroDialogueDataTable InDialogueTable);
+	void OnClickedOption(FZeroDialogueDataTable InDialogueTable, float Reliability);
+
+	/* Editor 에서 실행한 후 데이터 초기화 해주는 함수 */
+	void ShutdownGame();
 
 /* Owner Actor Rotation */
 private:
@@ -82,5 +87,26 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	bool bIsTalking;
 		
+	UPROPERTY(VisibleAnywhere)
+	FName PrevIndex;
+
 	FOnFinishedDialogue OnFinishedDialogue;
+
+	TSoftObjectPtr<UDataTable> S_DialogueTable;
+	TSoftObjectPtr<UDataTable> V_DialogueTable;
+	TSoftObjectPtr<UDataTable> C_DialogueTable;
+	TSoftObjectPtr<UDataTable> N1_DialogueTable;
+	TSoftObjectPtr<UDataTable> N2_DialogueTable;
+	TSoftObjectPtr<UDataTable> N3_DialogueTable;
+	TMap<FName, TSoftObjectPtr<UDataTable>> DialogueTableMap;
+
+	TSoftObjectPtr<UZeroResearcherData> V_Researcher;
+	TSoftObjectPtr<UZeroResearcherData> C_Researcher;
+	TSoftObjectPtr<UZeroResearcherData> N1_Researcher;
+	TSoftObjectPtr<UZeroResearcherData> N2_Researcher;
+	TSoftObjectPtr<UZeroResearcherData> N3_Researcher;
+	TMap<FName, TSoftObjectPtr<UZeroResearcherData>> ResearcherDataMap;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UZeroResearcherData> ResearcherData;
 };

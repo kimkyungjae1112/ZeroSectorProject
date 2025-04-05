@@ -5,19 +5,19 @@
 #include "CoreMinimal.h"
 #include "Character/ZeroCharacterBase.h"
 #include "Interface/ZeroCharacterAIInterface.h"
-#include "ZeroCharacterAIBase.generated.h"
+#include "ZeroCharacterBaseZombie.generated.h"
 
 class UZeroStatComponent;
 
 UCLASS(abstract)
-class ZEROSECTOR_API AZeroCharacterAIBase 
+class ZEROSECTOR_API AZeroCharacterBaseZombie
 	: public AZeroCharacterBase
 	, public IZeroCharacterAIInterface
 {
 	GENERATED_BODY()
 
 public:
-	AZeroCharacterAIBase();
+	AZeroCharacterBaseZombie();
 
 	/* IZeroCharacterAIInterface Implement */
 	virtual float GetAIAttackRange() override;
