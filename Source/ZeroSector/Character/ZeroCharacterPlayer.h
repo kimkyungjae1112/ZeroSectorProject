@@ -16,9 +16,11 @@ struct FInputActionValue;
 class UZeroInputConfig;
 class USpringArmComponent;
 class UCameraComponent;
+class UZeroAfternoonHUDWidget;
 class UZeroHUDWidget;
 class UZeroInputBaseComponent;
 class UZeroUIComponent;
+class UZeroPlayerStatComponent;
 class APlayerController;
 class AZeroPlayerController;
 
@@ -58,6 +60,7 @@ public:
 
 	/* IZeroHUDInterface Implement */
 	virtual void SetHUDWidget(UZeroHUDWidget* InHUDWidget) override;
+	virtual void SetAfternoonHUDWidget(UZeroAfternoonHUDWidget* InHUDWidget) override;
 
 	/* IZeroAfternoonInputInterface Implemnt */
 	virtual void DisplayInteractUI() override;
@@ -151,7 +154,13 @@ private:
 	TObjectPtr<UZeroHUDWidget> HUDWidgetPtr;
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UZeroAfternoonHUDWidget> AfternoonHUDWidgetPtr;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TObjectPtr<UZeroUIComponent> UIComp;
 
-
+/* Stat */	
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	TObjectPtr<UZeroPlayerStatComponent> StatComp;
 };

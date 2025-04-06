@@ -11,10 +11,12 @@
 #include "Component/Input/ZeroInputAfternoonComponent.h"
 #include "Component/Input/ZeroInputNightComponent.h"
 #include "Component/ZeroUIComponent.h"
+#include "Component/ZeroPlayerStatComponent.h"
 #include "Player/ZeroPlayerController.h"
 #include "Game/ZeroGameModeBase.h"
 #include "Weapon/ZeroWeaponBase.h"
 #include "UI/ZeroHUDWidget.h"
+#include "UI/ZeroAfternoonHUDWidget.h"
 #include "ZeroSector.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer()
@@ -40,6 +42,8 @@ AZeroCharacterPlayer::AZeroCharacterPlayer()
 
 	InputComp = CreateDefaultSubobject<UZeroInputBaseComponent>(TEXT("Input Config Component"));
 	UIComp = CreateDefaultSubobject<UZeroUIComponent>(TEXT("UI Component"));
+
+	StatComp = CreateDefaultSubobject<UZeroPlayerStatComponent>(TEXT("Stat Component"));
 
 	ChangeInputMap.Add(EDaySequence::EAfternoon, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputAfternoonMode)));
 	ChangeInputMap.Add(EDaySequence::ENight, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputNightMode)));
@@ -91,6 +95,17 @@ FGenericTeamId AZeroCharacterPlayer::GetGenericTeamId() const
 void AZeroCharacterPlayer::SetHUDWidget(UZeroHUDWidget* InHUDWidget)
 {
 	HUDWidgetPtr = InHUDWidget;
+	if (HUDWidgetPtr)
+	{
+		HUDWidgetPtr->SetMaxHp(/*StatComp->GetTotalStat().MaxHp*/1000.f);
+		StatComp->OnHpChanged.AddUObject(HUDWidgetPtr, &UZeroHUDWidget::UpdateHpBar);
+		HUDWidgetPtr->UpdateHpBar(/*StatComp->GetTotalStat().MaxHp*/1000.f);
+	}
+}
+
+void AZeroCharacterPlayer::SetAfternoonHUDWidget(UZeroAfternoonHUDWidget* InHUDWidget)
+{
+	AfternoonHUDWidgetPtr = InHUDWidget;
 }
 
 void AZeroCharacterPlayer::DisplayInteractUI()
