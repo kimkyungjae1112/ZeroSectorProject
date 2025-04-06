@@ -19,7 +19,13 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 
+public:
+	void SetMaxActivePoint(float InMaxActivePoint);
+	void UpdateAPBar(float InActivePoint);
+
 private:
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UProgressBar> ActivePoint;
+	TObjectPtr<UProgressBar> ActivePointBar;
+
+	float MaxActivePoint;
 };

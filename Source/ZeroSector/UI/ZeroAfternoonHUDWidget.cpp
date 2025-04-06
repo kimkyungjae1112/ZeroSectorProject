@@ -7,16 +7,27 @@
 
 UZeroAfternoonHUDWidget::UZeroAfternoonHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	MaxActivePoint = -1.f;
 }
 
 void UZeroAfternoonHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	ActivePoint = Cast<UProgressBar>(GetWidgetFromName(TEXT("ActivePoint")));
+	ActivePointBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("ActivePoint")));
 
-	ensure(ActivePoint);
+	ensure(ActivePointBar);
 
 	IZeroHUDInterface* Interface = Cast<IZeroHUDInterface>(GetOwningPlayerPawn());
 	if (Interface)	Interface->SetAfternoonHUDWidget(this);
+}
+
+void UZeroAfternoonHUDWidget::SetMaxActivePoint(float InMaxActivePoint)
+{
+	MaxActivePoint = InMaxActivePoint;
+}
+
+void UZeroAfternoonHUDWidget::UpdateAPBar(float InActivePoint)
+{
+	ActivePointBar->SetPercent(InActivePoint / MaxActivePoint);
 }

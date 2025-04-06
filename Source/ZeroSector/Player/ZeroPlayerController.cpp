@@ -34,7 +34,7 @@ void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 		FTimerHandle WinTimer;
 		GetWorld()->GetTimerManager().SetTimer(WinTimer, [&]()
 			{
-				OnClearZombie.ExecuteIfBound();
+				OnClearZombie.Broadcast();
 			}, 3.f, false);
 		ZE_LOG(LogZeroSector, Display, TEXT("Player Win"));
 	}

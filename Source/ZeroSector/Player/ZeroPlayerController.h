@@ -9,7 +9,7 @@
 class UZeroHUDWidget;
 class UZeroAfternoonHUDWidget;
 
-DECLARE_DELEGATE(FOnClearZombie)
+DECLARE_MULTICAST_DELEGATE(FOnClearZombie)
 
 UCLASS()
 class ZEROSECTOR_API AZeroPlayerController : public APlayerController
