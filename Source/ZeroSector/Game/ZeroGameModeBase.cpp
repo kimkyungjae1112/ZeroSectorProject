@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Game/ZeroGameModeBase.h"
-#include "GameFramework/PlayerController.h"
+#include "Player/ZeroPlayerController.h"
 #include "AI/Controller/ZeroAIControllerMeleeZombie.h"
 #include "AI/Controller/ZeroAIControllerRangedZombie.h"
 #include "EngineUtils.h"
@@ -38,6 +38,7 @@ void AZeroGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	Spawner = Cast<AZeroZombieSpawner>(UGameplayStatics::GetActorOfClass(this, SpawnerClass));
+
 }
 
 void AZeroGameModeBase::InitDay()
@@ -47,6 +48,7 @@ void AZeroGameModeBase::InitDay()
 	CurrentWave = 0;
 	ZombieNum = SpawnDataTable.ZombieNum[CurrentWave];
 	Day++;
+	MaxTime = 300;
 	ZE_LOG(LogZeroSector, Display, TEXT("MaxWave : %d, ZombieNum : %d"), MaxWave, ZombieNum);
 }
 
@@ -57,9 +59,16 @@ void AZeroGameModeBase::ChangeDay()
 	{
 		if (DaySequence->IsNight())
 		{
+			GetWorld()->GetTimerManager().ClearTimer(TimeTimerHandle);
+
 			CurrentDaySequence = EDaySequence::EAfternoon;
 			DaySequence->NightfallToAfternoon();
-			//낮에 처리해야 하는 UI
+			
+			AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
+			if (PC)
+			{
+				PC->ATHUD_Display();
+			}
 		}
 		else
 		{
@@ -67,8 +76,13 @@ void AZeroGameModeBase::ChangeDay()
 			DaySequence->AfternoonToNightfall();
 			InitDay();
 
+			AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
+			if (PC)
+			{
+				PC->NightHUD_Display();
+			}
 			StartWave();
-			//밤에 처리해야 하는 UI
+			GetWorld()->GetTimerManager().SetTimer(TimeTimerHandle, this, &AZeroGameModeBase::DecreaseTime, 1, true);
 		}
 	}
 }
@@ -111,6 +125,8 @@ void AZeroGameModeBase::StartWave()
 		EndGame(true);
 		return;
 	}
+	// Wave 수 표시
+	OnStartNight.ExecuteIfBound(MaxWave - CurrentWave - 1);
 
 	ZombieNum = SpawnDataTable.ZombieNum[CurrentWave];
 	CurrentWave++;
@@ -126,4 +142,13 @@ void AZeroGameModeBase::EndGame(bool bIsPlayerWinner)
 		bool bIsWinner = Controller->IsPlayerController() == bIsPlayerWinner;
 		Controller->GameHasEnded(Controller->GetPawn(), bIsWinner);
 	}
+}
+
+void AZeroGameModeBase::DecreaseTime()
+{
+	// 남은 시간 표시, 남은 시간이 다 되면 해당 일자는 패배
+	MaxTime -= 1;
+	OnStartNightForTime.ExecuteIfBound(MaxTime);
+
+	if (MaxTime <= 0) EndGame(false);
 }

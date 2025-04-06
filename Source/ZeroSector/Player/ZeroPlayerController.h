@@ -7,8 +7,9 @@
 #include "ZeroPlayerController.generated.h"
 
 class UZeroHUDWidget;
+class UZeroAfternoonHUDWidget;
 
-DECLARE_DELEGATE(FOnClearZombie)
+DECLARE_MULTICAST_DELEGATE(FOnClearZombie)
 
 UCLASS()
 class ZEROSECTOR_API AZeroPlayerController : public APlayerController
@@ -30,6 +31,9 @@ public:
 	void ApplyBlurEffect();
 	void RemoveBlurEffect();
 
+	void ATHUD_Display();
+	void NightHUD_Display();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -39,6 +43,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TSubclassOf<UZeroHUDWidget> HUDWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UZeroAfternoonHUDWidget> AfternoonHUDWidgetPtr;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TSubclassOf<UZeroAfternoonHUDWidget> AfternoonHUDWidgetClass;
 
 	UPROPERTY()
 	TObjectPtr<UUserWidget> BlurWidgetInstance;

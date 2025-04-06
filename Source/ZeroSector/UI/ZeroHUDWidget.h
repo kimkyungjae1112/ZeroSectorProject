@@ -8,6 +8,7 @@
 
 class UZeroCrossHairWidget;
 class UTextBlock;
+class UProgressBar;
 
 UCLASS()
 class ZEROSECTOR_API UZeroHUDWidget : public UUserWidget
@@ -19,6 +20,11 @@ public:
 
 	void UpdateCurrentAmmo(uint8 InCurrentAmmo);
 	void UpdateMaxAmmo(uint8 InMaxAmmo);
+	void UpdateRemainTime(int32 InTime);
+	void UpdateRemainWave(uint8 InWave);
+
+	void SetMaxHp(float InMaxHp);
+	void UpdateHpBar(float InHp);
 
 protected:
 	virtual void NativeConstruct() override;
@@ -33,4 +39,17 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UTextBlock> MaxAmmoText;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UTextBlock> RemainMinuteText;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UTextBlock> RemainSecondText;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UTextBlock> RemainWaveText;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UProgressBar> HpBar;
+
+	float MaxHp;
 };

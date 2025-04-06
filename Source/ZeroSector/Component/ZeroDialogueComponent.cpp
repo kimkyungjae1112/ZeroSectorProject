@@ -45,6 +45,7 @@ UZeroDialogueComponent::UZeroDialogueComponent()
     N2_Researcher = FSoftObjectPath(TEXT("/Script/ZeroSector.ZeroResearcherData'/Game/Data/Researcher/DA_Researcher_N2.DA_Researcher_N2'"));
     N3_Researcher = FSoftObjectPath(TEXT("/Script/ZeroSector.ZeroResearcherData'/Game/Data/Researcher/DA_Researcher_N3.DA_Researcher_N3'"));
     
+    ResearcherDataMap.Add(TEXT("Speedwagon"), V_Researcher);
     ResearcherDataMap.Add(TEXT("Vaccine"), V_Researcher);
     ResearcherDataMap.Add(TEXT("Criminal"), C_Researcher);
     ResearcherDataMap.Add(TEXT("Normal1"), N1_Researcher);
@@ -95,10 +96,12 @@ void UZeroDialogueComponent::BeginPlay()
     {
         if (DialogueTableMap[CII->GetClassName()].IsPending())
         {
-            FString DialogueContext(TEXT("Dialogue Context"));
-            DialogueTable = *DialogueTableMap[CII->GetClassName()].LoadSynchronous()->FindRow<FZeroDialogueDataTable>(TEXT("1"), DialogueContext);
-            PrevIndex = DialogueTable.PrevIndex;
+            DialogueTableMap[CII->GetClassName()].LoadSynchronous();
         }
+        FString DialogueContext(TEXT("Dialogue Context"));
+        DialogueTable = *DialogueTableMap[CII->GetClassName()]->FindRow<FZeroDialogueDataTable>(TEXT("1"), DialogueContext);
+        PrevIndex = DialogueTable.PrevIndex;
+
         if (ResearcherDataMap[CII->GetClassName()] && ResearcherDataMap[CII->GetClassName()].IsPending())
         {
             ResearcherDataMap[CII->GetClassName()].LoadSynchronous();

@@ -11,10 +11,12 @@
 #include "Component/Input/ZeroInputAfternoonComponent.h"
 #include "Component/Input/ZeroInputNightComponent.h"
 #include "Component/ZeroUIComponent.h"
+#include "Component/ZeroPlayerStatComponent.h"
 #include "Player/ZeroPlayerController.h"
 #include "Game/ZeroGameModeBase.h"
 #include "Weapon/ZeroWeaponBase.h"
 #include "UI/ZeroHUDWidget.h"
+#include "UI/ZeroAfternoonHUDWidget.h"
 #include "ZeroSector.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer()
@@ -40,6 +42,8 @@ AZeroCharacterPlayer::AZeroCharacterPlayer()
 
 	InputComp = CreateDefaultSubobject<UZeroInputBaseComponent>(TEXT("Input Config Component"));
 	UIComp = CreateDefaultSubobject<UZeroUIComponent>(TEXT("UI Component"));
+
+	StatComp = CreateDefaultSubobject<UZeroPlayerStatComponent>(TEXT("Stat Component"));
 
 	ChangeInputMap.Add(EDaySequence::EAfternoon, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputAfternoonMode)));
 	ChangeInputMap.Add(EDaySequence::ENight, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputNightMode)));
@@ -91,6 +95,23 @@ FGenericTeamId AZeroCharacterPlayer::GetGenericTeamId() const
 void AZeroCharacterPlayer::SetHUDWidget(UZeroHUDWidget* InHUDWidget)
 {
 	HUDWidgetPtr = InHUDWidget;
+	if (HUDWidgetPtr)
+	{
+		HUDWidgetPtr->SetMaxHp(/*StatComp->GetTotalStat().MaxHp*/1000.f);
+		StatComp->OnHpChanged.AddUObject(HUDWidgetPtr, &UZeroHUDWidget::UpdateHpBar);
+		HUDWidgetPtr->UpdateHpBar(/*StatComp->GetTotalStat().MaxHp*/1000.f);
+	}
+}
+
+void AZeroCharacterPlayer::SetAfternoonHUDWidget(UZeroAfternoonHUDWidget* InHUDWidget)
+{
+	AfternoonHUDWidgetPtr = InHUDWidget;
+	if (AfternoonHUDWidgetPtr)
+	{
+		AfternoonHUDWidgetPtr->SetMaxActivePoint(StatComp->GetMaxActivePoint());
+		StatComp->OnChangedActivePoint.BindUObject(AfternoonHUDWidgetPtr, &UZeroAfternoonHUDWidget::UpdateAPBar);
+		AfternoonHUDWidgetPtr->UpdateAPBar(StatComp->GetMaxActivePoint());
+	}
 }
 
 void AZeroCharacterPlayer::DisplayInteractUI()
@@ -164,7 +185,8 @@ void AZeroCharacterPlayer::BeginPlay()
 	Walk();
 	SetInputAfternoonMode();
 	AfternoonInputDelegate();
-	GetZeroPlayerController()->OnClearZombie.BindUObject(this, &AZeroCharacterPlayer::ChangeInputMode);
+	GetZeroPlayerController()->OnClearZombie.AddUObject(this, &AZeroCharacterPlayer::ChangeInputMode);
+	GetZeroPlayerController()->OnClearZombie.AddUObject(StatComp, &UZeroPlayerStatComponent::InitActivePoint);
 }
 
 APlayerController* AZeroCharacterPlayer::GetPlayerController() const
@@ -239,6 +261,9 @@ void AZeroCharacterPlayer::DialogueInteract()
 	if (InputComp)
 	{
 		InputComp->DialogueInteract();
+		StatComp->UseActivePoint(-10.f);
+		// 이렇게 하면 행동력이 두번 쓰는걸로 적용되지만
+		// 일단 모르겠으니까 이렇게 둠,,,,
 	}
 }
 
@@ -247,6 +272,7 @@ void AZeroCharacterPlayer::ProvisoInteract()
 	if (InputComp)
 	{
 		InputComp->ProvisoInteract();
+		StatComp->UseActivePoint(-10.f);
 	}
 }
 

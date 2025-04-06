@@ -3,20 +3,25 @@
 
 #include "Player/ZeroPlayerController.h"
 #include "UI/ZeroHUDWidget.h"
+#include "UI/ZeroAfternoonHUDWidget.h"
 #include "ZeroSector.h"
 
 AZeroPlayerController::AZeroPlayerController()
 {
+	static ConstructorHelpers::FClassFinder<UUserWidget> BlurWidgetRef(TEXT("/Game/Blueprints/UI/WBP_Blur.WBP_Blur_C"));
+	if (BlurWidgetRef.Succeeded())
+	{
+		BlurWidgetClass = BlurWidgetRef.Class;
+	}
 	static ConstructorHelpers::FClassFinder<UZeroHUDWidget> HUDWidgetClassRef(TEXT("/Game/Blueprints/UI/WBP_HUD.WBP_HUD_C"));
 	if (HUDWidgetClassRef.Class)
 	{
 		HUDWidgetClass = HUDWidgetClassRef.Class;
 	}
-
-	static ConstructorHelpers::FClassFinder<UUserWidget> BlurWidgetRef(TEXT("/Game/Blueprints/UI/WBP_Blur.WBP_Blur_C"));
-	if (BlurWidgetRef.Succeeded())
+	static ConstructorHelpers::FClassFinder<UZeroAfternoonHUDWidget> AfternoonHUDWidgetClassRef(TEXT("/Game/Blueprints/UI/WBP_AfternoonHUD.WBP_AfternoonHUD_C"));
+	if (AfternoonHUDWidgetClassRef.Class)
 	{
-		BlurWidgetClass = BlurWidgetRef.Class;
+		AfternoonHUDWidgetClass = AfternoonHUDWidgetClassRef.Class;
 	}
 }
 
@@ -29,7 +34,7 @@ void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 		FTimerHandle WinTimer;
 		GetWorld()->GetTimerManager().SetTimer(WinTimer, [&]()
 			{
-				OnClearZombie.ExecuteIfBound();
+				OnClearZombie.Broadcast();
 			}, 3.f, false);
 		ZE_LOG(LogZeroSector, Display, TEXT("Player Win"));
 	}
@@ -86,6 +91,30 @@ void AZeroPlayerController::RemoveBlurEffect()
 	}
 }
 
+void AZeroPlayerController::ATHUD_Display()
+{
+	if (HUDWidgetPtr->IsInViewport())
+	{
+		HUDWidgetPtr->RemoveFromParent();
+	}
+	if (AfternoonHUDWidgetPtr && !AfternoonHUDWidgetPtr->IsInViewport())
+	{
+		AfternoonHUDWidgetPtr->AddToViewport();
+	}
+}
+
+void AZeroPlayerController::NightHUD_Display()
+{
+	if (AfternoonHUDWidgetPtr->IsInViewport())
+	{
+		AfternoonHUDWidgetPtr->RemoveFromParent();
+	}
+	if (HUDWidgetPtr && !HUDWidgetPtr->IsInViewport())
+	{
+		HUDWidgetPtr->AddToViewport();
+	}
+}
+
 
 void AZeroPlayerController::BeginPlay()
 {
@@ -93,12 +122,18 @@ void AZeroPlayerController::BeginPlay()
 
 	InputModeGameOnly();
 
-	HUDWidgetPtr = CreateWidget<UZeroHUDWidget>(this, HUDWidgetClass);
-	if (HUDWidgetPtr)
+	if (AfternoonHUDWidgetClass)
 	{
-		HUDWidgetPtr->AddToViewport();
+		AfternoonHUDWidgetPtr = CreateWidget<UZeroAfternoonHUDWidget>(this, AfternoonHUDWidgetClass);
+		if (AfternoonHUDWidgetPtr)
+		{
+			AfternoonHUDWidgetPtr->AddToViewport();
+		}
 	}
-
+	if (HUDWidgetClass)
+	{
+		HUDWidgetPtr = CreateWidget<UZeroHUDWidget>(this, HUDWidgetClass);
+	}
 }
 
 

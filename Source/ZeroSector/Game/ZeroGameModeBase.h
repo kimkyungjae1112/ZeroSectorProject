@@ -10,6 +10,9 @@
 
 class AZeroZombieSpawner;
 
+DECLARE_DELEGATE_OneParam(FOnStartNight, uint8)
+DECLARE_DELEGATE_OneParam(FOnStartNightForTime, int32)
+
 UCLASS()
 class ZEROSECTOR_API AZeroGameModeBase : public AGameModeBase
 {
@@ -24,6 +27,9 @@ protected:
 public:
 	FORCEINLINE EDaySequence GetDaySequence() const { return CurrentDaySequence; }
 
+	FOnStartNight OnStartNight;
+	FOnStartNightForTime OnStartNightForTime;
+
 	void InitDay();
 	void ChangeDay();
 	void PawnKilled(APawn* PawnKilled);
@@ -31,6 +37,7 @@ public:
 private:
 	void StartWave();
 	void EndGame(bool bIsPlayerWinner);
+	void DecreaseTime();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Spawner")
@@ -49,4 +56,7 @@ private:
 	uint8 MaxWave;
 	uint8 CurrentWave;
 	uint8 ZombieNum;
+
+	FTimerHandle TimeTimerHandle;
+	int32 MaxTime;
 };

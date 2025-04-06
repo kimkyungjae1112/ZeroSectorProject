@@ -19,4 +19,5 @@ class ZEROSECTOR_API IZeroHUDInterface
 
 public:
 	virtual void SetHUDWidget(class UZeroHUDWidget* InHUDWidget) = 0;
+	virtual void SetAfternoonHUDWidget(class UZeroAfternoonHUDWidget* InHUDWidget) = 0;
 };
