@@ -9,6 +9,7 @@
 #include "Gimmick/ZeroOperationBoard.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "Interface/ZeroAfternoonInputInterface.h"
+#include "Interface/ZeroOutlineInterface.h"
 #include "UI/ZeroPauseMenuWidget.h"
 #include "ZeroSector.h"
 
@@ -58,6 +59,7 @@ void UZeroInputAfternoonComponent::InteractBeam()
 	FVector EyeVectorEnd = EyeVectorStart + EyeRotatorStart.Vector() * DetectDistance;
 	FHitResult HitResult;
 	FCollisionQueryParams Param(NAME_None, false, GetOwner());
+	//DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, FColor::Red, false);
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, EyeVectorStart, EyeVectorEnd, ECC_GameTraceChannel1, Param);
 	InteractProcess(HitResult, bHit);
@@ -65,16 +67,17 @@ void UZeroInputAfternoonComponent::InteractBeam()
 
 void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult, bool bIsHit)
 {
-	FColor Color(FColor::Red);
+	AActor* HitActor = InHitResult.GetActor();
+
 	if (bIsHit)
 	{
-		Color = FColor::Green;
-		AActor* HitActor = InHitResult.GetActor();
+		IZeroOutlineInterface* OutlineInterface = Cast<IZeroOutlineInterface>(HitActor);
+		if (OutlineInterface) OutlineInterface->SetOverlayMaterial();
+		PrevGimmick = HitActor;
 
 		for (UActorComponent* ActorComp : InHitResult.GetActor()->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
 		{
 			DialogueInterface = Cast<IZeroDialogueInterface>(ActorComp);
-			//DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 			return;
 		}
 
@@ -92,12 +95,11 @@ void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult
 		DialogueInterface = nullptr;
 		InteractedGimmick = nullptr;
 		IZeroAfternoonInputInterface* Interface = Cast<IZeroAfternoonInputInterface>(Player);
-		if (Interface)
-		{
-			Interface->CloseInteractUI();
-		}
+		if (Interface) Interface->CloseInteractUI();
+
+		IZeroOutlineInterface* OutlineInterface = Cast<IZeroOutlineInterface>(PrevGimmick);
+		if (OutlineInterface) OutlineInterface->SetUnOverlayMaterial();
 	}
-	//DrawDebugLine(GetWorld(), EyeVectorStart, EyeVectorEnd, Color, false);
 }
 
 void UZeroInputAfternoonComponent::InteractBeamReachedProviso(AActor* InHitActor)

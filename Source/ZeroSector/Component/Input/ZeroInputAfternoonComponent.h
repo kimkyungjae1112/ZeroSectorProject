@@ -48,6 +48,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Gimmick")
 	TObjectPtr<AZeroGimmick> InteractedGimmick;
 
+	UPROPERTY(VisibleAnywhere, Category = "Gimmick")
+	TObjectPtr<AActor> PrevGimmick;
+
 	IZeroDialogueInterface* DialogueInterface;
 
 	bool bIsNoteToggle;
