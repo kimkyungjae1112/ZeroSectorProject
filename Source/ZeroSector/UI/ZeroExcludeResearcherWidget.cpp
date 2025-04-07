@@ -133,6 +133,7 @@ void UZeroExcludeResearcherWidget::OnClickExcludeOK()
 	}
 
 	RemoveFromParent();
+	OnCloseExclude.ExecuteIfBound();
 }
 
 void UZeroExcludeResearcherWidget::OnClickExcludeCancel()

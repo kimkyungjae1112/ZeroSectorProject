@@ -10,11 +10,17 @@ class UButton;
 class UTextBlock;
 class UCanvasPanel;
 
+DECLARE_DELEGATE(FOnCloseExclude)
+
 UCLASS()
 class ZEROSECTOR_API UZeroExcludeResearcherWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	public:
+
+public:
+	FOnCloseExclude OnCloseExclude;
+
+protected:
 	virtual void NativeConstruct() override;
 
 protected:

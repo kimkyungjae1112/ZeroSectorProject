@@ -10,6 +10,7 @@
 #include "UI/ZeroPauseMenuWidget.h"
 #include "UI/ZeroExcludeResearcherWidget.h"
 #include "UI/ZeroSelectResearcherWidget.h"
+#include "Game/ZeroGameModeBase.h"
 #include "ZeroSector.h"
 
 UZeroUIComponent::UZeroUIComponent()
@@ -111,6 +112,12 @@ void UZeroUIComponent::OperationNextButtonClick()
 
 void UZeroUIComponent::OperationInteract()
 {
+	if (AZeroGameModeBase::Day == 5 && bIsExclude)
+	{
+		ExcludeResearcherDisplay();
+		return;
+	}
+
 	IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
 	if (Interface)
 	{
@@ -160,8 +167,8 @@ void UZeroUIComponent::ProvisoInteract()
 void UZeroUIComponent::PauseMenuDisplay()
 {
 	IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
-	if (UGameplayStatics::IsGamePaused(GetWorld()))
-		return;
+	if (UGameplayStatics::IsGamePaused(GetWorld())) return;
+
 	UZeroPauseMenuWidget* PauseWidget = CreateWidget<UZeroPauseMenuWidget>(GetWorld(), PauseMenuWidgetClass);
 	if (PauseWidget)
 	{
@@ -184,6 +191,7 @@ void UZeroUIComponent::ExcludeResearcherDisplay()
 	if (ExcludeResearcherWidget)
 	{
 		ExcludeResearcherWidget->AddToViewport();
+		ExcludeResearcherWidget->OnCloseExclude.BindUObject(this, &UZeroUIComponent::ExcludeAfterOperation);
 	}
 }
 
@@ -201,6 +209,12 @@ void UZeroUIComponent::SelectResearcherDisplay()
 	{
 		SelectResearcherWidget->AddToViewport();
 	}
+}
+
+void UZeroUIComponent::ExcludeAfterOperation()
+{
+	bIsExclude = false;
+	OperationInteract();
 }
 
 

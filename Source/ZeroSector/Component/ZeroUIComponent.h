@@ -45,6 +45,8 @@ public:
 	void ExcludeResearcherDisplay();
 	void SelectResearcherDisplay();
 
+private:
+	void ExcludeAfterOperation();
 
 private:
 	UPROPERTY(EditAnywhere, Category = "UI")
@@ -86,4 +88,5 @@ private:
 	int32 ProvisoNum = 0;
 	bool bIsNoteToggle = false;
 
+	bool bIsExclude = true;
 };

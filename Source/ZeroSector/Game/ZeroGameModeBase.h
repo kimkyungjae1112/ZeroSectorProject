@@ -30,6 +30,8 @@ public:
 	FOnStartNight OnStartNight;
 	FOnStartNightForTime OnStartNightForTime;
 
+	static uint8 Day;
+
 	void InitDay();
 	void ChangeDay();
 	void PawnKilled(APawn* PawnKilled);
@@ -52,7 +54,6 @@ private:
 	UPROPERTY()
 	FZeroZombieSpawnDataTable SpawnDataTable;
 
-	uint8 Day;
 	uint8 MaxWave;
 	uint8 CurrentWave;
 	uint8 ZombieNum;

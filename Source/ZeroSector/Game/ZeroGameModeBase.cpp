@@ -11,6 +11,8 @@
 #include "Data/ZeroSingleton.h"
 #include "ZeroSector.h"
 
+uint8 AZeroGameModeBase::Day = 1;
+
 AZeroGameModeBase::AZeroGameModeBase()
 {
 	static ConstructorHelpers::FClassFinder<APawn> DefaultPawnClassRef(TEXT("/Game/Blueprints/Character/B_Player.B_Player_C"));
@@ -30,7 +32,6 @@ AZeroGameModeBase::AZeroGameModeBase()
 	}
 
 	CurrentDaySequence = EDaySequence::EAfternoon;
-	Day = 1;
 }
 
 void AZeroGameModeBase::BeginPlay()
@@ -49,7 +50,7 @@ void AZeroGameModeBase::InitDay()
 	ZombieNum = SpawnDataTable.ZombieNum[CurrentWave];
 	Day++;
 	MaxTime = 300;
-	ZE_LOG(LogZeroSector, Display, TEXT("MaxWave : %d, ZombieNum : %d"), MaxWave, ZombieNum);
+	ZE_LOG(LogZeroSector, Display, TEXT("MaxWave : %d, ZombieNum : %d, Day : %d"), MaxWave, ZombieNum, Day);
 }
 
 void AZeroGameModeBase::ChangeDay()
