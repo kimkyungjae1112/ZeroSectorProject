@@ -4,6 +4,7 @@
 #include "Game/ZeroGameInstance.h"
 #include "Component/ZeroDialogueComponent.h"
 #include "Character/ZeroCharacterNPC.h"
+#include "Game/ZeroGameModeBase.h"
 #include "EngineUtils.h"
 
 UZeroGameInstance::UZeroGameInstance()
@@ -16,6 +17,8 @@ void UZeroGameInstance::Shutdown()
 	{
 		NPC->GetComponentByClass<UZeroDialogueComponent>()->ShutdownGame();
 	}
+
+	AZeroGameModeBase::Day = 1;
 
 	Super::Shutdown();
 }
