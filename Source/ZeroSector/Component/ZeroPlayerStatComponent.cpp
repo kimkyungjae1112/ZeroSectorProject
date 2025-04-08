@@ -21,6 +21,11 @@ void UZeroPlayerStatComponent::InitActivePoint()
 	CurrentActivePoint = MaxActivePoint;
 }
 
+void UZeroPlayerStatComponent::InitHealth()
+{
+	SetHp(BaseStat.MaxHp);
+}
+
 void UZeroPlayerStatComponent::UseActivePoint(float UsedActivePoint)
 {
 	CurrentActivePoint += UsedActivePoint;

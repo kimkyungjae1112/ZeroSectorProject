@@ -61,6 +61,9 @@ void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 			LoseScreenPtr->AddToViewport();
 			LoseScreenPtr->FadeInPlay();
 		}
+
+		HUDWidgetPtr->RemoveFromParent();
+
 		FTimerHandle LoseTimer;
 		GetWorld()->GetTimerManager().SetTimer(LoseTimer, [&]()
 			{
