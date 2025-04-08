@@ -32,13 +32,19 @@ public:
 
 	static uint8 Day;
 
-	void InitDay();
+	void InitNight();
 	void ChangeDay();
 	void PawnKilled(APawn* PawnKilled);
 
-private:
 	void StartWave();
+	void StartTimer();
+	void RestartLevel();
+
+private:
 	void EndGame(bool bIsPlayerWinner);
+	
+	void ChangeDayToAfternoon();
+	void ChangeDayToNight();
 	void DecreaseTime();
 
 private:
@@ -60,4 +66,5 @@ private:
 
 	FTimerHandle TimeTimerHandle;
 	int32 MaxTime;
+	bool bIsProgress = false;
 };

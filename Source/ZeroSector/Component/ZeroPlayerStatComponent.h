@@ -25,6 +25,7 @@ public:
 	FOnChangedActivePoint OnChangedActivePoint;
 
 	void InitActivePoint();
+	void InitHealth();
 	void UseActivePoint(float UsedActivePoint);
 
 private:

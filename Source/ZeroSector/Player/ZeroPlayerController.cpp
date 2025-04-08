@@ -4,6 +4,7 @@
 #include "Player/ZeroPlayerController.h"
 #include "UI/ZeroHUDWidget.h"
 #include "UI/ZeroAfternoonHUDWidget.h"
+#include "UI/ZeroLoseScreenWidget.h"
 #include "ZeroSector.h"
 
 AZeroPlayerController::AZeroPlayerController()
@@ -23,6 +24,16 @@ AZeroPlayerController::AZeroPlayerController()
 	{
 		AfternoonHUDWidgetClass = AfternoonHUDWidgetClassRef.Class;
 	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> WinScreenClassRef(TEXT("/Game/Blueprints/UI/WBP_WinScreen.WBP_WinScreen_C"));
+	if (WinScreenClassRef.Class)
+	{
+		WinScreenClass = WinScreenClassRef.Class;
+	}
+	static ConstructorHelpers::FClassFinder<UZeroLoseScreenWidget> LoseScreenClassRef(TEXT("/Game/Blueprints/UI/WBP_LoseScreen.WBP_LoseScreen_C"));
+	if (LoseScreenClassRef.Class)
+	{
+		LoseScreenClass = LoseScreenClassRef.Class;
+	}
 }
 
 void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
@@ -31,16 +42,33 @@ void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 
 	if (bIsWinner)
 	{
+		WinScreenPtr = CreateWidget<UUserWidget>(this, WinScreenClass);
+		if (WinScreenPtr) WinScreenPtr->AddToViewport();
+
 		FTimerHandle WinTimer;
 		GetWorld()->GetTimerManager().SetTimer(WinTimer, [&]()
 			{
 				OnClearZombie.Broadcast();
+
+				WinScreenPtr->RemoveFromParent();
 			}, 3.f, false);
-		ZE_LOG(LogZeroSector, Display, TEXT("Player Win"));
 	}
 	else
 	{
-		ZE_LOG(LogZeroSector, Display, TEXT("Player Loose"));
+		LoseScreenPtr = CreateWidget<UZeroLoseScreenWidget>(this, LoseScreenClass);
+		if (LoseScreenPtr)
+		{
+			LoseScreenPtr->AddToViewport();
+			LoseScreenPtr->FadeInPlay();
+		}
+
+		HUDWidgetPtr->RemoveFromParent();
+
+		FTimerHandle LoseTimer;
+		GetWorld()->GetTimerManager().SetTimer(LoseTimer, [&]()
+			{
+				OnNonClearZmobie.Broadcast();
+			}, 3.f, false);
 	}
 }
 

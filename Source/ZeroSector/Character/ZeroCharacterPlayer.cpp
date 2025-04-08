@@ -19,6 +19,11 @@
 #include "UI/ZeroAfternoonHUDWidget.h"
 #include "ZeroSector.h"
 
+#if WITH_EDITOR
+#include "EngineUtils.h"
+#include "Character/Zombie/ZeroCharacterBaseZombie.h"
+#endif
+
 AZeroCharacterPlayer::AZeroCharacterPlayer()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -133,6 +138,10 @@ UZeroHUDWidget* AZeroCharacterPlayer::GetWeaponHUDWidget() const
 void AZeroCharacterPlayer::NightToAfternoon()
 {
 	ChangeInputMode();
+	for (AZeroCharacterBaseZombie* Zombie : TActorRange<AZeroCharacterBaseZombie>(GetWorld()))
+	{
+		Zombie->Destroy();
+	}
 }
 #endif
 
@@ -187,6 +196,8 @@ void AZeroCharacterPlayer::BeginPlay()
 	AfternoonInputDelegate();
 	GetZeroPlayerController()->OnClearZombie.AddUObject(this, &AZeroCharacterPlayer::ChangeInputMode);
 	GetZeroPlayerController()->OnClearZombie.AddUObject(StatComp, &UZeroPlayerStatComponent::InitActivePoint);
+	GetZeroPlayerController()->OnNonClearZmobie.AddUObject(StatComp, &UZeroPlayerStatComponent::InitHealth);
+	// 총알 갯수도 델리게이트에 바인딩
 }
 
 APlayerController* AZeroCharacterPlayer::GetPlayerController() const

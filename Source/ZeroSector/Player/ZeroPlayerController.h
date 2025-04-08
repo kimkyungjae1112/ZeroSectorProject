@@ -8,8 +8,10 @@
 
 class UZeroHUDWidget;
 class UZeroAfternoonHUDWidget;
+class UZeroLoseScreenWidget;
 
 DECLARE_MULTICAST_DELEGATE(FOnClearZombie)
+DECLARE_MULTICAST_DELEGATE(FOnNonClearZombie)
 
 UCLASS()
 class ZEROSECTOR_API AZeroPlayerController : public APlayerController
@@ -23,6 +25,7 @@ public:
 
 public:
 	FOnClearZombie OnClearZombie;
+	FOnNonClearZombie OnNonClearZmobie;
 
 	void InputModeGameOnly();
 	void InputModeUIOnly();
@@ -50,9 +53,21 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TSubclassOf<UZeroAfternoonHUDWidget> AfternoonHUDWidgetClass;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TObjectPtr<UUserWidget> BlurWidgetInstance;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> BlurWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UUserWidget> WinScreenPtr;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TSubclassOf<UUserWidget> WinScreenClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UZeroLoseScreenWidget> LoseScreenPtr;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TSubclassOf<UZeroLoseScreenWidget> LoseScreenClass;
 };
