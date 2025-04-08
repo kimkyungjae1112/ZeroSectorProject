@@ -47,6 +47,7 @@ public:
 
 private:
 	void ExcludeAfterOperation();
+	void SelectAfterOperation();
 
 private:
 	UPROPERTY(EditAnywhere, Category = "UI")
@@ -89,4 +90,5 @@ private:
 	bool bIsNoteToggle = false;
 
 	bool bIsExclude = true;
+	bool bIsSelect = true;
 };

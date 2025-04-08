@@ -34,6 +34,12 @@ public:
 	void ATHUD_Display();
 	void NightHUD_Display();
 
+	UFUNCTION(BlueprintCallable)
+	UZeroAfternoonHUDWidget* GetAfternoonHUDWidget() const { return AfternoonHUDWidgetPtr; }
+
+	UPROPERTY()
+	FString SelectedInterviewName;
+
 protected:
 	virtual void BeginPlay() override;
 

@@ -10,6 +10,7 @@
 #include "Components/ScrollBox.h"
 #include "Player/ZeroPlayerController.h"
 #include "Interface/ZeroClassIdentifierInterface.h"
+#include "UI/ZeroAfternoonHUDWidget.h"
 #include "ZeroSector.h"
 
 UZeroDialogueComponent::UZeroDialogueComponent()
@@ -58,6 +59,20 @@ void UZeroDialogueComponent::StartDialogue()
     if (bIsTalking) InProgressDialogue();
 
     RotationToPlayer();
+
+    FString CurrentActorClassName;
+    if (IZeroClassIdentifierInterface* CII = Cast<IZeroClassIdentifierInterface>(GetOwner()))
+    {
+        CurrentActorClassName = CII->GetClassName().ToString();
+    }
+
+    AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
+  
+    if (PC && PC->SelectedInterviewName == CurrentActorClassName && PC->GetAfternoonHUDWidget())
+    {
+        PC->GetAfternoonHUDWidget()->HideInterviewText();  
+    }
+
 
     ZE_LOG(LogZeroSector, Warning, TEXT("Dialogue Loaded: %s"), *DialogueTable.Dialogue.ToString());
     bIsTalking = true;

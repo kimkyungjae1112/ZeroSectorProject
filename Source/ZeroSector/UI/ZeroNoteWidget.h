@@ -18,6 +18,7 @@ class UVerticalBox;
 class UButton;
 class UZeroResearcherData;
 class UCanvasPanel;
+class UZeroAfternoonHUDWidget;
 
 UCLASS()
 class ZEROSECTOR_API UZeroNoteWidget : public UUserWidget
@@ -44,6 +45,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "UI")
     void DisplayResearcher(UZeroResearcherData* ResearcherData);
 
+    UFUNCTION()
+    void OnInterviewButtonClicked();
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Researchers")
     UZeroResearcherData* Researcher1;
 
@@ -58,6 +62,12 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Researchers")
     UZeroResearcherData* Researcher5;
+
+    UPROPERTY()
+    UZeroResearcherData* CurrentInterviewResearcher;
+
+    UPROPERTY()
+    UZeroAfternoonHUDWidget* AfternoonHUDWidget;
 
 private:
     UPROPERTY(meta = (BindWidget))
@@ -74,6 +84,9 @@ private:
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UVerticalBox> ResearcherInfoBox;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UButton> InterviewButton;
 
     // 단서
 protected:
