@@ -124,6 +124,7 @@ void UZeroSelectResearcherWidget::OnClickSelectOK()
 	}
 
 	RemoveFromParent(); 
+	OnCloseSelect.ExecuteIfBound();
 }
 
 void UZeroSelectResearcherWidget::OnClickSelectCancel()

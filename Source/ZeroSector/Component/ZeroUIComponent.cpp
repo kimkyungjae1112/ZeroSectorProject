@@ -10,6 +10,7 @@
 #include "UI/ZeroPauseMenuWidget.h"
 #include "UI/ZeroExcludeResearcherWidget.h"
 #include "UI/ZeroSelectResearcherWidget.h"
+#include "UI/ZeroAfternoonHUDWidget.h"
 #include "Game/ZeroGameModeBase.h"
 #include "ZeroSector.h"
 
@@ -118,6 +119,12 @@ void UZeroUIComponent::OperationInteract()
 		return;
 	}
 
+	if (AZeroGameModeBase::Day == 7 && bIsSelect)
+	{
+		SelectResearcherDisplay();
+		return;
+	}
+
 	IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
 	if (Interface)
 	{
@@ -208,12 +215,19 @@ void UZeroUIComponent::SelectResearcherDisplay()
 	if (SelectResearcherWidget)
 	{
 		SelectResearcherWidget->AddToViewport();
+		SelectResearcherWidget->OnCloseSelect.BindUObject(this, &UZeroUIComponent::SelectAfterOperation);
 	}
 }
 
 void UZeroUIComponent::ExcludeAfterOperation()
 {
 	bIsExclude = false;
+	OperationInteract();
+}
+
+void UZeroUIComponent::SelectAfterOperation()
+{
+	bIsSelect = false;
 	OperationInteract();
 }
 

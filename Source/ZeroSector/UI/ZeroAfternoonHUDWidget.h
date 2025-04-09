@@ -7,6 +7,7 @@
 #include "ZeroAfternoonHUDWidget.generated.h"
 
 class UProgressBar;
+class UTextBlock;
 
 UCLASS()
 class ZEROSECTOR_API UZeroAfternoonHUDWidget : public UUserWidget
@@ -28,4 +29,15 @@ private:
 	TObjectPtr<UProgressBar> ActivePointBar;
 
 	float MaxActivePoint;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void ShowInterviewText(const FString& ResearcherName);
+
+	UFUNCTION(BlueprintCallable)
+	void HideInterviewText();
+
+protected:
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> InterviewText;
 };

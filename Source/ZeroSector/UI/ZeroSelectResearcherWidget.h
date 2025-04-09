@@ -10,12 +10,16 @@ class UButton;
 class UTextBlock;
 class UCanvasPanel;
 
+DECLARE_DELEGATE(FOnCloseSelect)
+
 UCLASS()
 class ZEROSECTOR_API UZeroSelectResearcherWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	public:
 	virtual void NativeConstruct() override;
+
+	FOnCloseSelect OnCloseSelect;
 
 protected:
 	UPROPERTY(meta = (BindWidget))

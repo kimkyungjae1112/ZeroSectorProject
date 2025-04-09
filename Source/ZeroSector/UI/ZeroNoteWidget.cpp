@@ -16,6 +16,8 @@
 #include "Components/CanvasPanel.h"
 #include "Data/ZeroResearcherData.h"
 #include "UI/ZeroProvisoButtonWidget.h"
+#include "Player/ZeroPlayerController.h"
+#include "UI/ZeroAfternoonHUDWidget.h"
 
 
 void UZeroNoteWidget::NativeConstruct()
@@ -28,6 +30,12 @@ void UZeroNoteWidget::NativeConstruct()
     {
         CloseButton->OnClicked.AddDynamic(this, &UZeroNoteWidget::CloseClueDetail);
     }
+
+    if (InterviewButton && !InterviewButton->OnClicked.IsAlreadyBound(this, &UZeroNoteWidget::OnInterviewButtonClicked))
+    {
+        InterviewButton->OnClicked.AddDynamic(this, &UZeroNoteWidget::OnInterviewButtonClicked);
+    }
+
 }
 
 
@@ -72,6 +80,8 @@ void UZeroNoteWidget::DisplayResearcher(UZeroResearcherData* ResearcherData)
 {
     if (!ResearcherData) return;
 
+    CurrentInterviewResearcher = ResearcherData;
+
     ResearcherInfoBox->SetVisibility(ESlateVisibility::Visible);
 
     if (PortraitImage)
@@ -85,6 +95,19 @@ void UZeroNoteWidget::DisplayResearcher(UZeroResearcherData* ResearcherData)
 
     if (TrustText)
         TrustText->SetText(FText::AsNumber(ResearcherData->Trust));
+}
+
+void UZeroNoteWidget::OnInterviewButtonClicked()
+{
+    if (CurrentInterviewResearcher)
+    {
+        AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetOwningPlayer());
+        if (PC && PC->GetAfternoonHUDWidget())
+        {
+            PC->GetAfternoonHUDWidget()->ShowInterviewText(CurrentInterviewResearcher->Name);
+            PC->SelectedInterviewName = CurrentInterviewResearcher->Name; 
+        }
+    }
 }
 
 void UZeroNoteWidget::ShowClueDetail(const FZeroProvisoDataTable& ProvisoData)
