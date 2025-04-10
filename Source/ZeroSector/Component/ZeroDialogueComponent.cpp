@@ -222,13 +222,17 @@ void UZeroDialogueComponent::NextDayDialogue(uint8 InDay)
 {
 	while (true)
 	{
+		// 대화 DataTable의 Index를 하나씩 증가시키며 현재 날짜와 동일한지 검사
 		int32 RowIndexNum = FCString::Atoi(*RowIndex.ToString());
 		RowIndexNum++;
 		RowIndex = FName(*FString::Printf(TEXT("%d"), RowIndexNum));
+
 		FString ContextString(TEXT("Dialogue Context"));
 		FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(RowIndex, ContextString);
 		DialogueTable = *FoundRow;
 
+		// 대화 DataTable의 현재 Index의 데이터가 현재 날짜와 동일하게 나온다면
+		// 해당 날의 DataTable로 변경 후 return
 		if (DialogueTable.Day == InDay)
 		{
 			RowIndex = DialogueTable.RowIndex;
