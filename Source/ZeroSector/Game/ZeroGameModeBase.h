@@ -12,6 +12,7 @@ class AZeroZombieSpawner;
 
 DECLARE_DELEGATE_OneParam(FOnStartNight, uint8)
 DECLARE_DELEGATE_OneParam(FOnStartNightForTime, int32)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnStartAfternoon, uint8)
 
 UCLASS()
 class ZEROSECTOR_API AZeroGameModeBase : public AGameModeBase
@@ -27,8 +28,15 @@ protected:
 public:
 	FORCEINLINE EDaySequence GetDaySequence() const { return CurrentDaySequence; }
 
+	// 좀비 스폰을 위한 데이터 넘겨주는 delegate
 	FOnStartNight OnStartNight;
+	
+	// 시간 표기를 위한 delegate
 	FOnStartNightForTime OnStartNightForTime;
+
+	// 낮으로 넘어갈 때 데이터 초기화를 위한 delegate
+	// DialogueComp에서 사용
+	FOnStartAfternoon OnStartAfternoon;
 
 	static uint8 Day;
 

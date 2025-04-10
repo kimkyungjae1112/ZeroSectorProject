@@ -30,5 +30,8 @@ public:
 	FName PrevIndex;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	uint8 Day;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	TArray<FZeroDialogueOptionDataTable> OptionDialogues;
 };

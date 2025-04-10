@@ -140,7 +140,7 @@ void AZeroGameModeBase::EndGame(bool bIsPlayerWinner)
 void AZeroGameModeBase::ChangeDayToAfternoon()
 {
 	Day++;
-	ZE_LOG(LogZeroSector, Display, TEXT("Day : %d"), Day);
+	OnStartAfternoon.Broadcast(Day);
 	GetWorld()->GetTimerManager().ClearTimer(TimeTimerHandle);
 
 	CurrentDaySequence = EDaySequence::EAfternoon;

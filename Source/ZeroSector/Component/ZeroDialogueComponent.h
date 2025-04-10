@@ -50,6 +50,7 @@ private:
 /* 대화 중일 때 호출되는 함수 */
 private:
 	void InProgressDialogue();
+	void NextDayDialogue(uint8 InDay);
 
 /* UI */
 private:
