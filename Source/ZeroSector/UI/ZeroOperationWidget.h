@@ -10,12 +10,13 @@
 class UButton;
 
 DECLARE_DELEGATE(FOnClickNextButton)
+DECLARE_DELEGATE(FOnCancelButton)
 
 UCLASS()
 class ZEROSECTOR_API UZeroOperationWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 public:
 	UZeroOperationWidget(const FObjectInitializer& ObjectInitializer);
 
@@ -25,6 +26,8 @@ protected:
 public:
 	FORCEINLINE void SetDelegateClickNextButton(const FOnClickNextButton& InOnClickNextButton) { OnClickNextButton = InOnClickNextButton; }
 	FORCEINLINE EWeaponType GetWeaponType() const { return CurrentWeaponType; }
+
+	FOnCancelButton OnCancelButton;
 
 private:
 	UFUNCTION()
@@ -36,6 +39,9 @@ private:
 	UFUNCTION()
 	void ClickNextButton();
 
+	UFUNCTION()
+	void ClickCancelButton();
+
 private:
 	FOnClickNextButton OnClickNextButton;
 
@@ -44,10 +50,15 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UButton> RifleButton;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UButton> ShotgunButton;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UButton> NextButton;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UButton> CancelButton;
+
+	bool bIsSeleteced{ false };
 };

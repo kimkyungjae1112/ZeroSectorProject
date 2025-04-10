@@ -111,6 +111,17 @@ void UZeroUIComponent::OperationNextButtonClick()
 	OperationWidgetPtr->RemoveFromParent();
 }
 
+void UZeroUIComponent::OperationCancelButtonClick()
+{
+	IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
+	if (Interface)
+	{
+		Interface->GetOwnerController()->InputModeGameOnly();
+	}
+
+	OperationWidgetPtr->RemoveFromParent();
+}
+
 void UZeroUIComponent::OperationInteract()
 {
 	if (AZeroGameModeBase::Day == 5 && bIsExclude)
@@ -135,6 +146,7 @@ void UZeroUIComponent::OperationInteract()
 	if (OperationWidgetPtr)
 	{
 		OperationWidgetPtr->AddToViewport();
+		OperationWidgetPtr->OnCancelButton.BindUObject(this, &UZeroUIComponent::OperationCancelButtonClick);
 		FOnClickNextButton OnClickNextButton;
 		OnClickNextButton.BindLambda([&]()
 			{

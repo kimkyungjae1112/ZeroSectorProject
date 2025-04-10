@@ -39,6 +39,7 @@ public:
 	void InteractUIClose();
 
 	void OperationNextButtonClick();
+	void OperationCancelButtonClick();
 	void OperationInteract();
 	void ProvisoInteract();
 	void PauseMenuDisplay();
