@@ -57,7 +57,12 @@ UZeroDialogueComponent::UZeroDialogueComponent()
 
 void UZeroDialogueComponent::StartDialogue()
 {
-	if (bIsTalking) InProgressDialogue();
+	if (bIsTalking)
+	{
+		InputModeGameAndUI();
+		InProgressDialogue();
+		return;
+	}
 
 	RotationToPlayer();
 
@@ -68,12 +73,11 @@ void UZeroDialogueComponent::StartDialogue()
 	}
 
 	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
-
 	if (PC && PC->SelectedInterviewName == CurrentActorClassName && PC->GetAfternoonHUDWidget())
 	{
+		bIsInterview = true;
 		PC->GetAfternoonHUDWidget()->HideInterviewText();
 	}
-
 
 	ZE_LOG(LogZeroSector, Warning, TEXT("Dialogue Loaded: %s"), *DialogueTable.Dialogue.ToString());
 	bIsTalking = true;
@@ -135,7 +139,7 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 {
 	ResearcherData->Trust += Reliability;
 	ZE_LOG(LogZeroSector, Display, TEXT("신뢰도 : %f"), ResearcherData->Trust)
-		DialogueWidgetPtr->GetScrollBox()->ClearChildren();
+	DialogueWidgetPtr->GetScrollBox()->ClearChildren();
 
 	DialogueTable = InDialogueTable;
 	ZE_LOG(LogZeroSector, Warning, TEXT("Dialogue Loaded: %s"), *DialogueTable.Dialogue.ToString());
@@ -159,6 +163,10 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 				OnFinishedDialogue.ExecuteIfBound();
 				InputModeGameOnly();
 			}, 3.f, false);
+
+		bIsTalking = false;
+		bIsInterview = false;
+		if (AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController())) PC->SelectedInterviewName = "";
 
 		FString ContextString(TEXT("Dialogue Context"));
 		FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(DialogueTable.PrevIndex, ContextString);
@@ -186,6 +194,15 @@ void UZeroDialogueComponent::InputModeGameOnly()
 	}
 }
 
+void UZeroDialogueComponent::InputModeGameAndUI()
+{
+	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PC)
+	{
+		PC->InputModeGameAndUI();
+	}
+}
+
 void UZeroDialogueComponent::InputModeUIOnly()
 {
 	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
@@ -197,11 +214,15 @@ void UZeroDialogueComponent::InputModeUIOnly()
 
 void UZeroDialogueComponent::InProgressDialogue()
 {
+	ZE_LOG(LogZeroSector, Display, TEXT("Progress Dialogue"));
+
 	DialogueWidgetPtr->GetScrollBox()->ClearChildren();
 	DialogueWidgetPtr->UpdateDialogue(DialogueTable.Dialogue);
 
 	if (DialogueTable.bIsEnd)
 	{
+		InputModeUIOnly();
+
 		FTimerHandle Timer;
 		GetWorld()->GetTimerManager().SetTimer(Timer, [&]()
 			{
@@ -209,6 +230,8 @@ void UZeroDialogueComponent::InProgressDialogue()
 				OnFinishedDialogue.ExecuteIfBound();
 				InputModeGameOnly();
 			}, 3.f, false);
+
+		bIsTalking = false;
 
 		FString ContextString(TEXT("Dialogue Context"));
 		FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(DialogueTable.PrevIndex, ContextString);
@@ -249,8 +272,17 @@ void UZeroDialogueComponent::DialogueOptionSpawn(const FZeroDialogueOptionDataTa
 	DialogueOptionWidgetPtr->SetDialogueComp(this);
 	DialogueOptionWidgetPtr->SetReliability(InDialogueOptionTable.Reliability);
 	DialogueOptionDataInit(InDialogueOptionTable.DataTable, InDialogueOptionTable.RowIndex);
-	DialogueWidgetPtr->GetScrollBox()->AddChild(DialogueOptionWidgetPtr);
-	DialogueOptionWidgetPtr->SetDialogueOptionText(InDialogueOptionTable.OptionDialogue);
+	
+	if (InDialogueOptionTable.bIsInterview == false)
+	{
+		DialogueWidgetPtr->GetScrollBox()->AddChild(DialogueOptionWidgetPtr);
+		DialogueOptionWidgetPtr->SetDialogueOptionText(InDialogueOptionTable.OptionDialogue);
+	}
+	else if (InDialogueOptionTable.bIsInterview == true && bIsInterview == true)
+	{
+		DialogueWidgetPtr->GetScrollBox()->AddChild(DialogueOptionWidgetPtr);
+		DialogueOptionWidgetPtr->SetDialogueOptionText(InDialogueOptionTable.OptionDialogue);
+	}
 }
 
 void UZeroDialogueComponent::DialogueDataInit()

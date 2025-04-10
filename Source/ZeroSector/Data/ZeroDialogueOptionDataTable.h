@@ -20,5 +20,8 @@ public:
 	float Reliability;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	bool bIsInterview;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	TSoftObjectPtr<UDataTable> DataTable;
 };

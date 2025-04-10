@@ -45,11 +45,15 @@ private:
 /* Input Mode */
 private:
 	void InputModeGameOnly();
+	void InputModeGameAndUI();
 	void InputModeUIOnly();
 
 /* 대화 중일 때 호출되는 함수 */
 private:
 	void InProgressDialogue();
+
+/* 다음 날로 넘어가는 함수 */
+private:
 	void NextDayDialogue(uint8 InDay);
 
 /* UI */
@@ -65,6 +69,11 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TObjectPtr<UZeroDialogueOptionWidget> DialogueOptionWidgetPtr;
+
+/* Flag */
+private:
+	bool bIsInterview = false;
+	bool bIsTalking = false;
 
 /* Dialogue Data Info */
 private:
@@ -85,9 +94,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	bool bIsEnd;
 
-	UPROPERTY(VisibleAnywhere)
-	bool bIsTalking;
-		
 	UPROPERTY(VisibleAnywhere)
 	FName PrevIndex;
 
