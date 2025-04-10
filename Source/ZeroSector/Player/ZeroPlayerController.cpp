@@ -5,6 +5,8 @@
 #include "UI/ZeroHUDWidget.h"
 #include "UI/ZeroAfternoonHUDWidget.h"
 #include "UI/ZeroLoseScreenWidget.h"
+#include "Game/ZeroGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "ZeroSector.h"
 
 AZeroPlayerController::AZeroPlayerController()
@@ -42,6 +44,13 @@ void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 
 	if (bIsWinner)
 	{
+		if (AZeroGameModeBase::Day == 7)
+		{
+			// 시네마틱 재생
+			// 메인 메뉴로 이동
+			UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenuMap"));
+		}
+
 		WinScreenPtr = CreateWidget<UUserWidget>(this, WinScreenClass);
 		if (WinScreenPtr) WinScreenPtr->AddToViewport();
 
