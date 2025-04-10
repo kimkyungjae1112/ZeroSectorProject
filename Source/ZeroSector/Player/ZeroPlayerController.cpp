@@ -5,6 +5,7 @@
 #include "UI/ZeroHUDWidget.h"
 #include "UI/ZeroAfternoonHUDWidget.h"
 #include "UI/ZeroLoseScreenWidget.h"
+#include "UI/ZeroNoteWidget.h"
 #include "ZeroSector.h"
 
 AZeroPlayerController::AZeroPlayerController()
@@ -33,6 +34,11 @@ AZeroPlayerController::AZeroPlayerController()
 	if (LoseScreenClassRef.Class)
 	{
 		LoseScreenClass = LoseScreenClassRef.Class;
+	}
+	static ConstructorHelpers::FClassFinder<UZeroNoteWidget> NoteWidgetClassRef(TEXT("/Game/Blueprints/UI/WBP_Note.WBP_Note_C"));
+	if (NoteWidgetClassRef.Class)
+	{
+		NoteWidgetClass = NoteWidgetClassRef.Class;
 	}
 }
 
@@ -161,6 +167,15 @@ void AZeroPlayerController::BeginPlay()
 	if (HUDWidgetClass)
 	{
 		HUDWidgetPtr = CreateWidget<UZeroHUDWidget>(this, HUDWidgetClass);
+	}
+	if (NoteWidgetClass)
+	{
+		NoteWidgetPtr = CreateWidget<UZeroNoteWidget>(this, NoteWidgetClass);
+		if (NoteWidgetPtr)
+		{
+			NoteWidgetPtr->AddToViewport(); 
+			NoteWidgetPtr->SetVisibility(ESlateVisibility::Collapsed); 
+		}
 	}
 }
 

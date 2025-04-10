@@ -18,7 +18,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Proviso")
+	FName ProvisoRowName;
 
 };

@@ -16,10 +16,5 @@ void AZeroProvisoActor::BeginPlay()
 	
 }
 
-void AZeroProvisoActor::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
 

@@ -8,25 +8,16 @@ UZeroSingleton::UZeroSingleton()
 	static ConstructorHelpers::FObjectFinder<UDataTable> ProvisoDataTableRef(TEXT("/Game/Data/Proviso/ProvisoDataTable.ProvisoDataTable"));
 	if (ProvisoDataTableRef.Succeeded())
 	{
-		const UDataTable* ProvisoDataTable = ProvisoDataTableRef.Object;
-
-		TArray<uint8*> ValueArray;
-		ProvisoDataTable->GetRowMap().GenerateValueArray(ValueArray);
-
-		for (uint8* Value : ValueArray)
+		const UDataTable* Table = ProvisoDataTableRef.Object;
+		for (const auto& Elem : Table->GetRowMap())
 		{
-			if (Value)
+			const FName& RowName = Elem.Key;
+			const FZeroProvisoDataTable* Data = reinterpret_cast<const FZeroProvisoDataTable*>(Elem.Value);
+			if (Data)
 			{
-				FZeroProvisoDataTable* Data = reinterpret_cast<FZeroProvisoDataTable*>(Value);
+				ProvisoDataMap.Add(RowName, *Data);
 			}
 		}
-
-		Algo::Transform(ValueArray, ProvisoDataList,
-			[](uint8* Value)
-			{
-				return *reinterpret_cast<FZeroProvisoDataTable*>(Value);
-			}
-		);
 	}
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> ZombieSpawnDataRef(TEXT("/Script/Engine.DataTable'/Game/Data/Zombie/ZeroZombieSpawnDataTable.ZeroZombieSpawnDataTable'"));
@@ -55,6 +46,7 @@ void UZeroSingleton::AddCollectedProviso(const FZeroProvisoDataTable& ProvisoDat
 		CollectedProvisos.Add(ProvisoData);
 	}
 }
+
 
 TArray<FZeroProvisoDataTable> UZeroSingleton::GetCollectedProvisos() const
 {

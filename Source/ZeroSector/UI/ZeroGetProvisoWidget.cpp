@@ -3,6 +3,7 @@
 
 #include "UI/ZeroGetProvisoWidget.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
 
 void UZeroGetProvisoWidget::NativeConstruct()
 {
@@ -19,6 +20,14 @@ void UZeroGetProvisoWidget::SetProvisoInfo(const FString& ProvisoName, const FSt
 	if (ProvisoDescriptionText)
 	{
 		ProvisoDescriptionText->SetText(FText::FromString(ProvisoDescription));
+	}
+}
+
+void UZeroGetProvisoWidget::SetProvisoImage(UTexture2D* InImage)
+{
+	if (ProvisoImage && InImage)
+	{
+		ProvisoImage->SetBrushFromTexture(InImage);
 	}
 }
 

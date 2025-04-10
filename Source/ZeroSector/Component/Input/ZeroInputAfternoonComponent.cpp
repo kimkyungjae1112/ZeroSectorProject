@@ -2,11 +2,15 @@
 
 
 #include "Component/Input/ZeroInputAfternoonComponent.h"
+#include "Component/ZeroUIComponent.h"
+#include "Data/ZeroProvisoDataTable.h"
+#include "Data/ZeroSingleton.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputActionValue.h"
 #include "Gimmick/ZeroProvisoActor.h"
 #include "Gimmick/ZeroOperationBoard.h"
+#include "Gimmick/ZeroProvisoNormalActor.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "Interface/ZeroAfternoonInputInterface.h"
 #include "Interface/ZeroOutlineInterface.h"
@@ -83,6 +87,12 @@ void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult
 
 		if (HitActor->ActorHasTag(TEXT("Proviso")))
 		{
+			UZeroUIComponent* UIComp = Player->FindComponentByClass<UZeroUIComponent>();
+			if (UIComp)
+			{
+				UIComp->CurrentGimmick = HitActor;
+			}
+
 			InteractBeamReachedProviso(HitActor);
 		}
 		else if (HitActor->ActorHasTag(TEXT("OperationBoard")))
@@ -97,8 +107,30 @@ void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult
 		IZeroAfternoonInputInterface* Interface = Cast<IZeroAfternoonInputInterface>(Player);
 		if (Interface) Interface->CloseInteractUI();
 
-		IZeroOutlineInterface* OutlineInterface = Cast<IZeroOutlineInterface>(PrevGimmick);
-		if (OutlineInterface) OutlineInterface->SetUnOverlayMaterial();
+		if (PrevGimmick)
+		{
+			AZeroProvisoActor* ProvisoActor = Cast<AZeroProvisoActor>(PrevGimmick);
+			if (ProvisoActor)
+			{
+				FZeroProvisoDataTable ProvisoData = UZeroSingleton::Get().GetProvisoData(ProvisoActor->ProvisoRowName);
+				if (ProvisoData.ProvisoType != EZeroProvisoType::Normal)
+				{
+					IZeroOutlineInterface* OutlineInterface = Cast<IZeroOutlineInterface>(PrevGimmick);
+					if (OutlineInterface)
+					{
+						OutlineInterface->SetUnOverlayMaterial();
+					}
+				}
+			}
+			else
+			{
+				IZeroOutlineInterface* OutlineInterface = Cast<IZeroOutlineInterface>(PrevGimmick);
+				if (OutlineInterface)
+				{
+					OutlineInterface->SetUnOverlayMaterial();
+				}
+			}
+		}
 	}
 }
 

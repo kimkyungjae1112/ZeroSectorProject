@@ -46,6 +46,9 @@ public:
 	void ExcludeResearcherDisplay();
 	void SelectResearcherDisplay();
 
+	UPROPERTY()
+	AActor* CurrentGimmick;
+
 private:
 	void ExcludeAfterOperation();
 	void SelectAfterOperation();
@@ -92,4 +95,6 @@ private:
 
 	bool bIsExclude = true;
 	bool bIsSelect = true;
+
+	
 };

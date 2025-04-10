@@ -2,11 +2,13 @@
 
 
 #include "Component/ZeroUIComponent.h"
+#include "Component/Input/ZeroInputAfternoonComponent.h"
 #include "ZeroHeader/ZeroUIHeader.h"
 #include "Interface/ZeroUIComponentInterface.h"
 #include "Player/ZeroPlayerController.h"
 #include "Data/ZeroSingleton.h"
 #include "Kismet/GameplayStatics.h"
+#include "Gimmick/ZeroProvisoActor.h"
 #include "UI/ZeroPauseMenuWidget.h"
 #include "UI/ZeroExcludeResearcherWidget.h"
 #include "UI/ZeroSelectResearcherWidget.h"
@@ -158,30 +160,44 @@ void UZeroUIComponent::OperationInteract()
 
 void UZeroUIComponent::ProvisoInteract()
 {
+	AZeroProvisoActor* ProvisoActor = Cast<AZeroProvisoActor>(CurrentGimmick);
+	if (!ProvisoActor) return;
+
+	FName RowName = ProvisoActor->ProvisoRowName;
+
 	UZeroGetProvisoWidget* GetProvisoWidgetInstance = CreateWidget<UZeroGetProvisoWidget>(GetWorld(), GetProvisoWidgetClass);
 	if (GetProvisoWidgetInstance)
 	{
 		GetProvisoWidgetInstance->ShowWidget();
 	}
 
-	FZeroProvisoDataTable ProvisoData = UZeroSingleton::Get().GetProvisoData(ProvisoNum);
+	FZeroProvisoDataTable ProvisoData = UZeroSingleton::Get().GetProvisoData(RowName);
 
-	if (!ProvisoData.ProvisoName.IsNone())
+	UTexture2D* Image = ProvisoData.ProvisoImage.LoadSynchronous();
+	if (GetProvisoWidgetInstance && Image)
 	{
-		UZeroSingleton::Get().AddCollectedProviso(ProvisoData);
-
-		GetProvisoWidgetInstance->SetProvisoInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
-
-		if (NoteWidgetPtr)
-		{
-			NoteWidgetPtr->SetNoteInfo(ProvisoData);
-		}
+		GetProvisoWidgetInstance->SetProvisoImage(Image);
 	}
 
+	if (GetProvisoWidgetInstance && !ProvisoData.ProvisoName.IsNone())
+	{
+		GetProvisoWidgetInstance->SetProvisoInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
+	}
 
+	if (ProvisoData.ProvisoType != EZeroProvisoType::Fake)
+	{
+		if (!ProvisoData.ProvisoName.IsNone())
+		{
+			UZeroSingleton::Get().AddCollectedProviso(ProvisoData);
 
-	ProvisoNum = 1;
+			if (NoteWidgetPtr)
+			{
+				NoteWidgetPtr->SetNoteInfo(ProvisoData);
+			}
+		}
+	}
 }
+
 
 void UZeroUIComponent::PauseMenuDisplay()
 {

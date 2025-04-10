@@ -15,23 +15,33 @@ class ZEROSECTOR_API UZeroSingleton : public UObject
 	GENERATED_BODY()
 	
 public:
-	UZeroSingleton();
-	static UZeroSingleton& Get();
+    UZeroSingleton();
+    static UZeroSingleton& Get();
 
-	FORCEINLINE FZeroProvisoDataTable GetProvisoData(int32 RowIndex) const { return ProvisoDataList.IsValidIndex(RowIndex) ? ProvisoDataList[RowIndex] : FZeroProvisoDataTable(); }
-	FORCEINLINE FZeroZombieSpawnDataTable GetZombieSpawnData(uint8 RowIndex) const 
-	{
-		FName Row = *FString::FromInt(RowIndex);
-		return SpawnDataTable[Row];
-	}
+    FORCEINLINE FZeroZombieSpawnDataTable GetZombieSpawnData(uint8 RowIndex) const
+    {
+        FName Row = *FString::FromInt(RowIndex);
+        return SpawnDataTable[Row];
+    }
+        
+    FORCEINLINE FZeroProvisoDataTable GetProvisoData(FName RowName) const
+    {
+        if (const FZeroProvisoDataTable* Found = ProvisoDataMap.Find(RowName))
+        {
+            return *Found;
+        }
+        return FZeroProvisoDataTable();
+    }
+
 
 	/* 단서 데이터 */
 	TArray<FZeroProvisoDataTable> GetCollectedProvisos() const;
 	void AddCollectedProviso(const FZeroProvisoDataTable& ProvisoData);
 
+
 private:
-	UPROPERTY()
-	TArray<FZeroProvisoDataTable> ProvisoDataList;
+    UPROPERTY()
+    TMap<FName, FZeroProvisoDataTable> ProvisoDataMap;
 
 	UPROPERTY()
 	TArray<FZeroProvisoDataTable> CollectedProvisos;

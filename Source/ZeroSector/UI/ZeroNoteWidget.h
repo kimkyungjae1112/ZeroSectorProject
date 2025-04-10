@@ -66,8 +66,6 @@ public:
     UPROPERTY()
     UZeroResearcherData* CurrentInterviewResearcher;
 
-    UPROPERTY()
-    UZeroAfternoonHUDWidget* AfternoonHUDWidget;
 
 private:
     UPROPERTY(meta = (BindWidget))
@@ -99,6 +97,9 @@ protected:
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UTextBlock> DetailDescText;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UImage> DetailImage;
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> CloseButton;
