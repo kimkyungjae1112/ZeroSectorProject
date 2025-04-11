@@ -44,7 +44,7 @@ private:
 private:
 	UPROPERTY(EditAnywhere, Category = "Interact")
 	float DetectDistance;
-
+		
 	UPROPERTY(VisibleAnywhere, Category = "Gimmick")
 	TObjectPtr<AZeroGimmick> InteractedGimmick;
 

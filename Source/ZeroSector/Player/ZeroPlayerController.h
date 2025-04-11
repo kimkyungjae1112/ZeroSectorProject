@@ -9,6 +9,7 @@
 class UZeroHUDWidget;
 class UZeroAfternoonHUDWidget;
 class UZeroLoseScreenWidget;
+class UZeroNoteWidget;
 
 DECLARE_MULTICAST_DELEGATE(FOnClearZombie)
 DECLARE_MULTICAST_DELEGATE(FOnNonClearZombie)
@@ -37,8 +38,7 @@ public:
 	void ATHUD_Display();
 	void NightHUD_Display();
 
-	UFUNCTION(BlueprintCallable)
-	UZeroAfternoonHUDWidget* GetAfternoonHUDWidget() const { return AfternoonHUDWidgetPtr; }
+	FORCEINLINE UZeroAfternoonHUDWidget* GetAfternoonHUDWidget() const { return AfternoonHUDWidgetPtr; }
 
 	UPROPERTY()
 	FString SelectedInterviewName;

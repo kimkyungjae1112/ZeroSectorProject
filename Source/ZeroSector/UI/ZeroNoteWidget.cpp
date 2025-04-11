@@ -127,6 +127,19 @@ void UZeroNoteWidget::ShowClueDetail(const FZeroProvisoDataTable& ProvisoData)
             DetailDescText->SetText(FText::FromString(ProvisoData.Description));
             DetailDescText->SetColorAndOpacity(FSlateColor(FLinearColor::Black));
         }
+
+        if (DetailImage)
+        {
+            UTexture2D* Image = ProvisoData.ProvisoImage.LoadSynchronous();
+            if (Image)
+            {
+                DetailImage->SetBrushFromTexture(Image);
+            }
+            else
+            {
+                DetailImage->SetBrushFromTexture(nullptr);
+            }
+        }
     }
 }
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "Data/ZeroProvisoType.h"
 #include "ZeroProvisoDataTable.generated.h"
 
 USTRUCT(BlueprintType)
@@ -25,6 +26,12 @@ struct FZeroProvisoDataTable : public FTableRowBase
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Proviso")
     FString ResearcherInfo;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Proviso")
+    EZeroProvisoType ProvisoType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Proviso")
+    TSoftObjectPtr<UTexture2D> ProvisoImage;
 
     bool operator==(const FZeroProvisoDataTable& Other) const
     {
