@@ -7,6 +7,8 @@
 #include "Weapon/ZeroWeaponType.h"
 #include "ZeroUIComponent.generated.h"
 
+struct FZeroProvisoDataTable;
+
 class UZeroFadeInAndOutWidget;
 class UZeroOperationWidget;
 class UZeroProvisoWidget;
@@ -89,6 +91,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UZeroSelectResearcherWidget> SelectResearcherWidgetClass;
+
+	UPROPERTY()
+	TArray<FZeroProvisoDataTable> PendingProvisoList;
 
 	int32 ProvisoNum = 0;
 	bool bIsNoteToggle = false;

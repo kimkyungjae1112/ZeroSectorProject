@@ -76,10 +76,4 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TSubclassOf<UZeroLoseScreenWidget> LoseScreenClass;
-
-	UPROPERTY(VisibleAnywhere, Category = "UI")
-	TSubclassOf<UZeroNoteWidget> NoteWidgetClass;
-
-	UPROPERTY(VisibleAnywhere, Category = "UI")
-	TObjectPtr<UZeroNoteWidget> NoteWidgetPtr;
 };

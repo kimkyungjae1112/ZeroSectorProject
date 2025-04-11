@@ -7,6 +7,7 @@
 #include "Interface/ZeroUIComponentInterface.h"
 #include "Player/ZeroPlayerController.h"
 #include "Data/ZeroSingleton.h"
+#include "Data/ZeroProvisoDataTable.h"
 #include "Kismet/GameplayStatics.h"
 #include "Gimmick/ZeroProvisoActor.h"
 #include "UI/ZeroPauseMenuWidget.h"
@@ -58,7 +59,6 @@ void UZeroUIComponent::ToggleNoteDisplay()
 	{
 		if (!NoteWidgetPtr)
 		{
-			// 최초 한 번만 생성
 			NoteWidgetPtr = CreateWidget<UZeroNoteWidget>(GetWorld(), NoteWidgetClass);
 			if (!NoteWidgetPtr)
 			{
@@ -69,6 +69,12 @@ void UZeroUIComponent::ToggleNoteDisplay()
 		if (!NoteWidgetPtr->IsInViewport())
 		{
 			NoteWidgetPtr->AddToViewport();
+
+			for (const FZeroProvisoDataTable& Data : PendingProvisoList)
+			{
+				NoteWidgetPtr->SetNoteInfo(Data);
+			}
+			PendingProvisoList.Empty(); 
 		}
 
 		bIsNoteToggle = true;
@@ -190,9 +196,13 @@ void UZeroUIComponent::ProvisoInteract()
 		{
 			UZeroSingleton::Get().AddCollectedProviso(ProvisoData);
 
-			if (NoteWidgetPtr)
+			if (NoteWidgetPtr && NoteWidgetPtr->IsInViewport())
 			{
 				NoteWidgetPtr->SetNoteInfo(ProvisoData);
+			}
+			else
+			{
+				PendingProvisoList.Add(ProvisoData);
 			}
 		}
 	}
