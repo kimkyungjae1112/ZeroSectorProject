@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Weapon/ZeroWeaponType.h"
 #include "ZeroWeaponBase.generated.h"
 
 class UZeroWeaponAnimInstance;
@@ -60,13 +61,21 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	uint8 CurrentAmmo;
 
+	UPROPERTY(VisibleAnywhere, Category = "Type")
+	EWeaponType WeaponType;
+
 private:
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	AController* GetOwnerController() const;
+	void StartFireTimer();
 	void StopFire();
 	void ApplyRecoil();
 
 
+	void PistolFire();
+	void RifleFire();
+	void ShotgunFire();
+	void CalCrosshairVector(FVector& CrosshairWorldDirection);
 
 private:
 	bool bIsFire = false;

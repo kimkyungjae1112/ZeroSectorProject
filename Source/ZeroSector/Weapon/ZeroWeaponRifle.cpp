@@ -22,6 +22,8 @@ AZeroWeaponRifle::AZeroWeaponRifle()
 		MaxAmmo = StatDataRef.Object->MaxAmmo;
 		CurrentAmmo = MaxAmmo;
 	}
+
+	WeaponType = EWeaponType::ERifle;
 }
 
 void AZeroWeaponRifle::Fire()
