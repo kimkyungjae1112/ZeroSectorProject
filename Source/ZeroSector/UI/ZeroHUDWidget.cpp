@@ -13,12 +13,12 @@ UZeroHUDWidget::UZeroHUDWidget(const FObjectInitializer& ObjectInitializer) : Su
 	MaxHp = -1.f;
 }
 
-void UZeroHUDWidget::UpdateCurrentAmmo(uint8 InCurrentAmmo)
+void UZeroHUDWidget::UpdateCurrentAmmo(int32 InCurrentAmmo)
 {
 	CurrentAmmoText->SetText(FText::FromString(FString::Printf(TEXT("%d"), InCurrentAmmo)));
 }
 
-void UZeroHUDWidget::UpdateMaxAmmo(uint8 InMaxAmmo)
+void UZeroHUDWidget::UpdateMaxAmmo(int32 InMaxAmmo)
 {
 	MaxAmmoText->SetText(FText::FromString(FString::Printf(TEXT("%d"), InMaxAmmo)));
 }

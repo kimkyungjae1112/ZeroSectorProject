@@ -32,5 +32,8 @@ public:
 	float DispersionRate;
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
-	uint16 MaxAmmo;
+	int32 MaxAmmo;
+
+	UPROPERTY(EditAnywhere, Category = "Stat")
+	int32 Magazine;
 };

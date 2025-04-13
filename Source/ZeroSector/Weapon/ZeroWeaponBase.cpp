@@ -39,8 +39,12 @@ void AZeroWeaponBase::Fire()
 }
 
 void AZeroWeaponBase::ReloadingCurrentAmmo()
-{
-	CurrentAmmo = MaxAmmo;
+{							
+	int AddAmmoAmount = Magazine - CurrentAmmo;
+
+	CurrentAmmo = (MaxAmmo - AddAmmoAmount) >= 0 ? CurrentAmmo + AddAmmoAmount : CurrentAmmo + MaxAmmo;
+	MaxAmmo -= AddAmmoAmount;
+	if (MaxAmmo <= 0) MaxAmmo = 0;
 	GunAmmoTextDisplay();
 }
 
@@ -48,7 +52,7 @@ void AZeroWeaponBase::GunAmmoTextDisplay()
 {
 	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
 	OnSetMaxAmmo.ExecuteIfBound(MaxAmmo);
-}
+} 
 
 void AZeroWeaponBase::BeginPlay()
 {

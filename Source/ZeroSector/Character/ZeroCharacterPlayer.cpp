@@ -138,10 +138,10 @@ UZeroHUDWidget* AZeroCharacterPlayer::GetWeaponHUDWidget() const
 void AZeroCharacterPlayer::NightToAfternoon()
 {
 	ChangeInputMode();
-	for (AZeroCharacterBaseZombie* Zombie : TActorRange<AZeroCharacterBaseZombie>(GetWorld()))
+	/*for (AZeroCharacterBaseZombie* Zombie : TActorRange<AZeroCharacterBaseZombie>(GetWorld()))
 	{
 		Zombie->Destroy();
-	}
+	}*/
 }
 #endif
 

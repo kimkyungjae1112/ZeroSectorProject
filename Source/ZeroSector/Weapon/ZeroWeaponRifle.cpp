@@ -20,7 +20,8 @@ AZeroWeaponRifle::AZeroWeaponRifle()
 		RecoilRate = StatDataRef.Object->RecoilRate;
 		DispersionRate = StatDataRef.Object->DispersionRate;
 		MaxAmmo = StatDataRef.Object->MaxAmmo;
-		CurrentAmmo = MaxAmmo;
+		Magazine = StatDataRef.Object->Magazine;
+		CurrentAmmo = Magazine;
 	}
 
 	WeaponType = EWeaponType::ERifle;
