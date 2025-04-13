@@ -18,8 +18,8 @@ class ZEROSECTOR_API UZeroHUDWidget : public UUserWidget
 public:
 	UZeroHUDWidget(const FObjectInitializer& ObjectInitializer);
 
-	void UpdateCurrentAmmo(uint8 InCurrentAmmo);
-	void UpdateMaxAmmo(uint8 InMaxAmmo);
+	void UpdateCurrentAmmo(int32 InCurrentAmmo);
+	void UpdateMaxAmmo(int32 InMaxAmmo);
 	void UpdateRemainTime(int32 InTime);
 	void UpdateRemainWave(uint8 InWave);
 

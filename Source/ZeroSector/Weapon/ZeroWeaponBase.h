@@ -9,8 +9,8 @@
 
 class UZeroWeaponAnimInstance;
 
-DECLARE_DELEGATE_OneParam(FOnChangedAmmo, uint8 /* Current Ammo */)
-DECLARE_DELEGATE_OneParam(FOnSetMaxAmmo, uint8 /* Max Ammo */)
+DECLARE_DELEGATE_OneParam(FOnChangedAmmo, int32 /* Current Ammo */)
+DECLARE_DELEGATE_OneParam(FOnSetMaxAmmo, int32 /* Max Ammo */)
 
 UCLASS(abstract)
 class ZEROSECTOR_API AZeroWeaponBase 
@@ -56,10 +56,13 @@ protected:
 	float DispersionRate;
 
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
-	uint8 MaxAmmo;
+	int32 MaxAmmo;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
-	uint8 CurrentAmmo;
+	int32 Magazine;
+
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	int32 CurrentAmmo;
 
 	UPROPERTY(VisibleAnywhere, Category = "Type")
 	EWeaponType WeaponType;
