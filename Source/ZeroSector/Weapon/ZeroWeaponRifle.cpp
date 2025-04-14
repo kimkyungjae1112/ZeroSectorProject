@@ -2,7 +2,6 @@
 
 
 #include "Weapon/ZeroWeaponRifle.h"
-#include "Data/ZeroWeaponStatData.h"
 
 AZeroWeaponRifle::AZeroWeaponRifle()
 {
@@ -10,18 +9,6 @@ AZeroWeaponRifle::AZeroWeaponRifle()
 	if (GunBodyMeshRef.Object)
 	{
 		GunMeshComp->SetSkeletalMesh(GunBodyMeshRef.Object);
-	}
-	static ConstructorHelpers::FObjectFinder<UZeroWeaponStatData> StatDataRef(TEXT("/Script/ZeroSector.ZeroWeaponStatData'/Game/Data/WeaponStat/DA_RifleBaseStat.DA_RifleBaseStat'"));
-	if (StatDataRef.Object)
-	{
-		MaxRange = StatDataRef.Object->MaxRange;
-		Damage = StatDataRef.Object->Damage;
-		FireRate = StatDataRef.Object->FireRate;
-		RecoilRate = StatDataRef.Object->RecoilRate;
-		DispersionRate = StatDataRef.Object->DispersionRate;
-		MaxAmmo = StatDataRef.Object->MaxAmmo;
-		Magazine = StatDataRef.Object->Magazine;
-		CurrentAmmo = Magazine;
 	}
 
 	WeaponType = EWeaponType::ERifle;

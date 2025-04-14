@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Character/ZeroCharacterPlayer.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Data/ZeroWeaponStatDataTable.h"
 #include "ZeroSector.h"
 
 AZeroWeaponBase::AZeroWeaponBase()
@@ -13,6 +14,22 @@ AZeroWeaponBase::AZeroWeaponBase()
 	GunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Gun Mesh Component"));
 	RootComponent = GunMeshComp;
 	GunMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> PistolDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/WeaponStat/PistolStatDataTable.PistolStatDataTable'"));
+	if (PistolDataTableRef.Succeeded())
+	{
+		DataTableBuffer.Add(EWeaponType::EPistol ,PistolDataTableRef.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<UDataTable> RifleDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/WeaponStat/RifleStatDataTable.RifleStatDataTable'"));
+	if (RifleDataTableRef.Succeeded())
+	{
+		DataTableBuffer.Add(EWeaponType::ERifle ,RifleDataTableRef.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<UDataTable> ShotgunDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/WeaponStat/ShotgunStatDataTable.ShotgunStatDataTable'"));
+	if (ShotgunDataTableRef.Succeeded())
+	{
+		DataTableBuffer.Add(EWeaponType::EShotgun ,ShotgunDataTableRef.Object);
+	}
 }
 
 void AZeroWeaponBase::Fire()
@@ -58,7 +75,8 @@ void AZeroWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-}
+	StatApply();
+}	
 
 bool AZeroWeaponBase::GunTrace(FHitResult& Hit, FVector& ShotDirection)
 {
@@ -173,7 +191,7 @@ void AZeroWeaponBase::ShotgunFire()
 	float SpreadAngleDeg = 20.0f;
 	float SpreadAngleRad = FMath::DegreesToRadians(SpreadAngleDeg);
 
-	for (int i = 0; i < 10; ++i)
+	for (int i = 0; i < 20; ++i)
 	{
 		FVector ShootDir = CrosshairWorldDirection.GetSafeNormal();
 		FMatrix RotMatrix = FRotationMatrix::MakeFromX(ShootDir); 
@@ -225,5 +243,21 @@ void AZeroWeaponBase::CalCrosshairVector(FVector& CrosshairWorldDirection)
 	// 크로스헤어 위치를 월드 공간의 방향으로 변환
 	FVector CrosshairWorldLocation;
 	if (!PC->DeprojectScreenPositionToWorld(ViewportSize.X, ViewportSize.Y, CrosshairWorldLocation, CrosshairWorldDirection)) return;
+}
+
+void AZeroWeaponBase::StatApply()
+{
+	if (Level > MaxLevel) Level = 7;
+
+	FName RowIndex = FName(*FString::Printf(TEXT("%d"), Level));
+	FString Context(TEXT("Weapon Stat"));
+	FZeroWeaponStatDataTable StatDataTable = *DataTableBuffer[WeaponType]->FindRow<FZeroWeaponStatDataTable>(RowIndex, Context);
+	MaxRange = StatDataTable.MaxRange;
+	Damage = StatDataTable.Damage;
+	FireRate = StatDataTable.FireRate;
+	RecoilRate = StatDataTable.RecoilRate;
+	MaxAmmo = StatDataTable.MaxAmmo;
+	Magazine = StatDataTable.Magazine;
+	CurrentAmmo = Magazine;
 }
 

@@ -40,6 +40,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	TObjectPtr<USkeletalMeshComponent> GunMeshComp;
 
+	UPROPERTY(VisibleAnywhere, Category = "Type")
+	EWeaponType WeaponType;
+
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	float MaxRange;
 
@@ -53,9 +56,6 @@ protected:
 	float RecoilRate;
 
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
-	float DispersionRate;
-
-	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	int32 MaxAmmo;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
@@ -64,8 +64,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	int32 CurrentAmmo;
 
-	UPROPERTY(VisibleAnywhere, Category = "Type")
-	EWeaponType WeaponType;
+	UPROPERTY()
+	TMap<EWeaponType, UDataTable*> DataTableBuffer;
+
+	int32 Level = 1;
 
 private:
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
@@ -80,10 +82,12 @@ private:
 	void ShotgunFire();
 	void CalCrosshairVector(FVector& CrosshairWorldDirection);
 
+	void StatApply();
+
 private:
+	int32 MaxLevel = 7;
+
 	bool bIsFire = false;
-	
-	
 	
 	
 	
