@@ -30,6 +30,7 @@ public:
 
 	void ReloadingCurrentAmmo();
 	void GunAmmoTextDisplay();
+	void StatApply();
 
 	FOnChangedAmmo OnChangedAmmo;
 	FOnSetMaxAmmo OnSetMaxAmmo;
@@ -84,7 +85,6 @@ private:
 	void ShotgunFire();
 	void CalCrosshairVector(FVector& CrosshairWorldDirection);
 
-	void StatApply();
 
 private:
 	int32 MaxLevel = 7;

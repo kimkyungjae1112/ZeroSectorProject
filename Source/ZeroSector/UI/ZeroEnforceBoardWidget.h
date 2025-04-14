@@ -25,6 +25,10 @@ protected:
 public:
 	FOnCancelButton OnCancelButton;
 
+	static int32 PistolLevel;
+	static int32 RifleLevel;
+	static int32 ShotgunLevel;
+
 private:
 	UFUNCTION()
 	void PistolEnfoButtonClicked();
@@ -38,20 +42,30 @@ private:
 	UFUNCTION()
 	void CloseEnfoButtonClicked();
 
+	void SetPistolLevelText(int32 InLevel);
+	void SetRifleLevelText(int32 InLevel);
+	void SetShotgunLevelText(int32 InLevel);
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UTextBlock> PistolLevelText;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UTextBlock> RifleLevelText;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UTextBlock> ShotgunLevelText;
 
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UButton> PistolEnfoButton;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UButton> RifleEnfoButton;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UButton> ShotgunEnfoButton;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UButton> CancelEnfoButton;
 };

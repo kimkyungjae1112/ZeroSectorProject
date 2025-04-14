@@ -71,11 +71,26 @@ void AZeroWeaponBase::GunAmmoTextDisplay()
 	OnSetMaxAmmo.ExecuteIfBound(MaxAmmo);
 } 
 
+void AZeroWeaponBase::StatApply()
+{
+	if (Level > MaxLevel) Level = 7;
+
+	FName RowIndex = FName(*FString::Printf(TEXT("%d"), Level));
+	FString Context(TEXT("Weapon Stat"));
+	FZeroWeaponStatDataTable StatDataTable = *DataTableBuffer[WeaponType]->FindRow<FZeroWeaponStatDataTable>(RowIndex, Context);
+	MaxRange = StatDataTable.MaxRange;
+	Damage = StatDataTable.Damage;
+	FireRate = StatDataTable.FireRate;
+	RecoilRate = StatDataTable.RecoilRate;
+	MaxAmmo = StatDataTable.MaxAmmo;
+	Magazine = StatDataTable.Magazine;
+	CurrentAmmo = Magazine;
+}
+
 void AZeroWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StatApply();
 }	
 
 bool AZeroWeaponBase::GunTrace(FHitResult& Hit, FVector& ShotDirection)
@@ -243,21 +258,5 @@ void AZeroWeaponBase::CalCrosshairVector(FVector& CrosshairWorldDirection)
 	// 크로스헤어 위치를 월드 공간의 방향으로 변환
 	FVector CrosshairWorldLocation;
 	if (!PC->DeprojectScreenPositionToWorld(ViewportSize.X, ViewportSize.Y, CrosshairWorldLocation, CrosshairWorldDirection)) return;
-}
-
-void AZeroWeaponBase::StatApply()
-{
-	if (Level > MaxLevel) Level = 7;
-
-	FName RowIndex = FName(*FString::Printf(TEXT("%d"), Level));
-	FString Context(TEXT("Weapon Stat"));
-	FZeroWeaponStatDataTable StatDataTable = *DataTableBuffer[WeaponType]->FindRow<FZeroWeaponStatDataTable>(RowIndex, Context);
-	MaxRange = StatDataTable.MaxRange;
-	Damage = StatDataTable.Damage;
-	FireRate = StatDataTable.FireRate;
-	RecoilRate = StatDataTable.RecoilRate;
-	MaxAmmo = StatDataTable.MaxAmmo;
-	Magazine = StatDataTable.Magazine;
-	CurrentAmmo = Magazine;
 }
 

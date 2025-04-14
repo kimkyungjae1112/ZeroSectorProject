@@ -6,6 +6,7 @@
 #include "Character/ZeroCharacterNPC.h"
 #include "Game/ZeroGameModeBase.h"
 #include "EngineUtils.h"
+#include "UI/ZeroEnforceBoardWidget.h"
 
 UZeroGameInstance::UZeroGameInstance()
 {
@@ -19,6 +20,9 @@ void UZeroGameInstance::Shutdown()
 	}
 
 	AZeroGameModeBase::Day = 1;
+	UZeroEnforceBoardWidget::PistolLevel = 1;
+	UZeroEnforceBoardWidget::RifleLevel = 1;
+	UZeroEnforceBoardWidget::ShotgunLevel = 1;
 
 	Super::Shutdown();
 }

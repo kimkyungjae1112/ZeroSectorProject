@@ -9,7 +9,10 @@
 #include "ZeroHeader/ZeroWeaponHeader.h"
 #include "UI/ZeroHUDWidget.h"
 #include "Interface/ZeroNightInputInterface.h"
+#include "UI/ZeroEnforceBoardWidget.h"
 #include "ZeroSector.h"
+
+FOnEnforceWeapon UZeroInputNightComponent::OnEnforceWeapon;
 
 UZeroInputNightComponent::UZeroInputNightComponent()
 {
@@ -96,6 +99,8 @@ void UZeroInputNightComponent::SetupWeapon(const EWeaponType& WeaponType)
 	case EWeaponType::ERifle:
 		Weapons.Add(EWeaponType::ERifle, GetWorld()->SpawnActor<AZeroWeaponRifle>(AZeroWeaponRifle::StaticClass()));
 		Weapons.Add(EWeaponType::EPistol, GetWorld()->SpawnActor<AZeroWeaponPistol>(AZeroWeaponPistol::StaticClass()));
+		Weapons[EWeaponType::ERifle]->Upgrade(UZeroEnforceBoardWidget::RifleLevel);
+		Weapons[EWeaponType::EPistol]->Upgrade(UZeroEnforceBoardWidget::PistolLevel);
 		Weapons[EWeaponType::ERifle]->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rRifle"));
 		Weapons[EWeaponType::EPistol]->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rPistol"));
 		ChoicedWeapon = EWeaponType::ERifle;
@@ -103,6 +108,8 @@ void UZeroInputNightComponent::SetupWeapon(const EWeaponType& WeaponType)
 	case EWeaponType::EShotgun:
 		Weapons.Add(EWeaponType::EShotgun, GetWorld()->SpawnActor<AZeroWeaponShotgun>(AZeroWeaponShotgun::StaticClass()));
 		Weapons.Add(EWeaponType::EPistol, GetWorld()->SpawnActor<AZeroWeaponPistol>(AZeroWeaponPistol::StaticClass()));
+		Weapons[EWeaponType::EShotgun]->Upgrade(UZeroEnforceBoardWidget::ShotgunLevel);
+		Weapons[EWeaponType::EPistol]->Upgrade(UZeroEnforceBoardWidget::PistolLevel);
 		Weapons[EWeaponType::EShotgun]->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rShotgun"));
 		Weapons[EWeaponType::EPistol]->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("hand_rPistol"));
 		ChoicedWeapon = EWeaponType::EShotgun;
@@ -112,11 +119,13 @@ void UZeroInputNightComponent::SetupWeapon(const EWeaponType& WeaponType)
 		break;
 	}
 
+
 	IZeroNightInputInterface* Interface = Cast<IZeroNightInputInterface>(Player);
 	if (Interface)
 	{
 		for (const auto& Weapon : Weapons)
 		{
+			Weapon.Value->StatApply();
 			Weapon.Value->SetOwner(Player);
 			Weapon.Value->OnSetMaxAmmo.BindUObject(Interface->GetWeaponHUDWidget(), &UZeroHUDWidget::UpdateMaxAmmo);
 			Weapon.Value->OnChangedAmmo.BindUObject(Interface->GetWeaponHUDWidget(), &UZeroHUDWidget::UpdateCurrentAmmo);

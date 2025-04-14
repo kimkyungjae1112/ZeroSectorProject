@@ -8,6 +8,8 @@
 
 class AZeroWeaponBase;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnforceWeapon, int32)
+
 UCLASS()
 class ZEROSECTOR_API UZeroInputNightComponent : public UZeroInputBaseComponent
 {
@@ -29,6 +31,8 @@ public:
 	virtual EWeaponType GetWeaponType() override;
 
 	virtual void PauseMenu() override;
+
+	static FOnEnforceWeapon OnEnforceWeapon;
 	
 protected:
 	virtual void BeginPlay() override;
