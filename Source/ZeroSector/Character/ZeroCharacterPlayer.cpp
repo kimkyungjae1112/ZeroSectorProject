@@ -80,6 +80,7 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::DialogueInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::OperationBoardInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ProvisoInteract);
+	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::EnforceBoardInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Fire, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Fire);
 	EnhancedInputComponent->BindAction(InputConfig->IA_ChangeWeapon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ChangeWeapon);
 	EnhancedInputComponent->BindAction(InputConfig->IA_NightToAfternoon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::NightToAfternoon);
@@ -278,6 +279,14 @@ void AZeroCharacterPlayer::DialogueInteract()
 	}
 }
 
+void AZeroCharacterPlayer::OperationBoardInteract()
+{
+	if (InputComp)
+	{
+		InputComp->OperationBoardInteract();
+	}
+}
+
 void AZeroCharacterPlayer::ProvisoInteract()
 {	
 	if (InputComp)
@@ -287,11 +296,12 @@ void AZeroCharacterPlayer::ProvisoInteract()
 	}
 }
 
-void AZeroCharacterPlayer::OperationBoardInteract()
+void AZeroCharacterPlayer::EnforceBoardInteract()
 {
 	if (InputComp)
 	{
-		InputComp->OperationBoardInteract();
+		InputComp->EnforceBoardInteract();
+		StatComp->UseActivePoint(-10.f);
 	}
 }
 
@@ -375,6 +385,7 @@ void AZeroCharacterPlayer::AfternoonInputDelegate()
 {
 	InputComp->OnOperationInteract.BindUObject(UIComp, &UZeroUIComponent::OperationInteract);
 	InputComp->OnProvisoInteract.BindUObject(UIComp, &UZeroUIComponent::ProvisoInteract);
+	InputComp->OnEnforceInteract.BindUObject(UIComp, &UZeroUIComponent::EnforceBoardInteract);
 	InputComp->OnNoteDisplay.BindUObject(UIComp, &UZeroUIComponent::ToggleNoteDisplay);
 	InputComp->OnPauseMenu.BindUObject(UIComp, &UZeroUIComponent::PauseMenuDisplay);
 	InputComp->OnExcludeResearcher.BindUObject(UIComp, &UZeroUIComponent::ExcludeResearcherDisplay);

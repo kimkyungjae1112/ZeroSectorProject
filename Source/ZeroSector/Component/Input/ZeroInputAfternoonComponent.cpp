@@ -11,6 +11,7 @@
 #include "Gimmick/ZeroProvisoActor.h"
 #include "Gimmick/ZeroOperationBoard.h"
 #include "Gimmick/ZeroProvisoNormalActor.h"
+#include "Gimmick/ZeroEnforceBoard.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "Interface/ZeroAfternoonInputInterface.h"
 #include "Interface/ZeroOutlineInterface.h"
@@ -99,6 +100,10 @@ void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult
 		{
 			InteractedGimmick = Cast<AZeroOperationBoard>(HitActor);
 		}
+		else if (HitActor->ActorHasTag(TEXT("EnforceBoard")))
+		{
+			InteractedGimmick = Cast<AZeroEnforceBoard>(HitActor);
+		}
 	}
 	else
 	{
@@ -163,6 +168,14 @@ void UZeroInputAfternoonComponent::DialogueInteract()
 	}
 }
 
+void UZeroInputAfternoonComponent::OperationBoardInteract()
+{
+	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("OperationBoard")))
+	{
+		OnOperationInteract.ExecuteIfBound();
+	}
+}
+
 void UZeroInputAfternoonComponent::ProvisoInteract()
 {
 	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")))
@@ -171,12 +184,11 @@ void UZeroInputAfternoonComponent::ProvisoInteract()
 	}
 }
 
-void UZeroInputAfternoonComponent::OperationBoardInteract()
+void UZeroInputAfternoonComponent::EnforceBoardInteract()
 {
-	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("OperationBoard")))
+	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("EnforceBoard")))
 	{
-		ZE_LOG(LogZeroSector, Display, TEXT("OperationBoard Interact"));
-		OnOperationInteract.ExecuteIfBound();
+		OnEnforceInteract.ExecuteIfBound();
 	}
 }
 

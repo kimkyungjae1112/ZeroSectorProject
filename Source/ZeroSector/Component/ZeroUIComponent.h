@@ -17,6 +17,7 @@ class UZeroNoteWidget;
 class UZeroPauseMenuWidget;
 class UZeroExcludeResearcherWidget;
 class UZeroSelectResearcherWidget;
+class UZeroEnforceBoardWidget;
 
 DECLARE_DELEGATE_OneParam(FOnClickOperationNextButton, const EWeaponType&)
 
@@ -44,6 +45,8 @@ public:
 	void OperationCancelButtonClick();
 	void OperationInteract();
 	void ProvisoInteract();
+	void EnforceBoardInteract();
+	void EnforceBoardCancelButtonClick();
 	void PauseMenuDisplay();
 	void ExcludeResearcherDisplay();
 	void SelectResearcherDisplay();
@@ -91,6 +94,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UZeroSelectResearcherWidget> SelectResearcherWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UZeroEnforceBoardWidget> EnforceBoardClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UZeroEnforceBoardWidget> EnforceBoardPtr;
 
 	UPROPERTY()
 	TArray<FZeroProvisoDataTable> PendingProvisoList;

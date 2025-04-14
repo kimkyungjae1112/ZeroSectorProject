@@ -102,8 +102,9 @@ private:
 	void Reloading();
 
 	void DialogueInteract();
-	void ProvisoInteract();
 	void OperationBoardInteract();
+	void ProvisoInteract();
+	void EnforceBoardInteract();
 
 	void ToggleNoteDisplay();
 	void PauseMenuDisplay();

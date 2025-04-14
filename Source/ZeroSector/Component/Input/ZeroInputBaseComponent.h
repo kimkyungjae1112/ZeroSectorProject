@@ -11,6 +11,7 @@ struct FInputActionValue;
 
 DECLARE_DELEGATE(FOnOperationInteract)
 DECLARE_DELEGATE(FOnProvisoInteract)
+DECLARE_DELEGATE(FOnEnforceInteract)
 DECLARE_DELEGATE(FOnNoteDisplay)
 DECLARE_DELEGATE(FOnPauseMenu)
 DECLARE_DELEGATE(FOnExcludeResearcher)
@@ -34,14 +35,16 @@ public:
 	virtual void InteractProcess(const FHitResult& InHitResult, bool bIsHit) PURE_VIRTUAL(UZeroInputBaseComponent::InteractProcess, );
 	virtual void InteractBeamReachedProviso(AActor* InHitActor) PURE_VIRTUAL(UZeroInputBaseComponent::InteractBeamReachedProviso, );
 	virtual void DialogueInteract() PURE_VIRTUAL(UZeroInputBaseComponent::DialogueInteract, );
-	virtual void ProvisoInteract() PURE_VIRTUAL(UZeroInputBaseComponent::ProvisoInteract, );
 	virtual void OperationBoardInteract() PURE_VIRTUAL(UZeroInputBaseComponent::OperationBoardInteract, );
+	virtual void ProvisoInteract() PURE_VIRTUAL(UZeroInputBaseComponent::ProvisoInteract, );
+	virtual void EnforceBoardInteract() PURE_VIRTUAL(UZeroInputBaseComponent::EnforceBoardInteract, );
 	virtual void ToggleNote() PURE_VIRTUAL(UZeroInputBaseComponent::ToggleNote, );
 	virtual void ExcludeResearcher() PURE_VIRTUAL(UZeroInputBaseComponent::ExcludeResearcher, );
 	virtual void SelectResearcher() PURE_VIRTUAL(UZeroInputBaseComponent::SelectResearcher, );
-
+	
 	FOnOperationInteract OnOperationInteract;
 	FOnProvisoInteract OnProvisoInteract;
+	FOnEnforceInteract OnEnforceInteract;
 	FOnNoteDisplay OnNoteDisplay;
 	FOnExcludeResearcher OnExcludeResearcher;
 	FOnSelectResearcher OnSelectResearcher;

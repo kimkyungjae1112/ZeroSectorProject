@@ -22,6 +22,8 @@ public:
 	AZeroWeaponBase();
 
 	virtual void Fire();
+	virtual FORCEINLINE void Upgrade(int32 InLevel) {}
+	virtual FORCEINLINE int32 GetLevel() const { return Level; }
 
 public:
 	FORCEINLINE USkeletalMeshComponent* GetGunMeshComp() const { return GunMeshComp; }

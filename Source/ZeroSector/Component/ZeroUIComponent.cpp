@@ -14,6 +14,7 @@
 #include "UI/ZeroExcludeResearcherWidget.h"
 #include "UI/ZeroSelectResearcherWidget.h"
 #include "UI/ZeroAfternoonHUDWidget.h"
+#include "UI/ZeroEnforceBoardWidget.h"
 #include "Game/ZeroGameModeBase.h"
 #include "ZeroSector.h"
 
@@ -205,6 +206,36 @@ void UZeroUIComponent::ProvisoInteract()
 				PendingProvisoList.Add(ProvisoData);
 			}
 		}
+	}
+}
+
+void UZeroUIComponent::EnforceBoardInteract()
+{
+	IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
+	if (Interface)
+	{
+		Interface->GetOwnerController()->InputModeUIOnly();
+	}
+
+	EnforceBoardPtr = CreateWidget<UZeroEnforceBoardWidget>(GetWorld(), EnforceBoardClass);
+	if (EnforceBoardPtr)
+	{
+		EnforceBoardPtr->AddToViewport();
+		EnforceBoardPtr->OnCancelButton.BindUObject(this, &UZeroUIComponent::EnforceBoardCancelButtonClick);
+	}
+}
+
+void UZeroUIComponent::EnforceBoardCancelButtonClick()
+{
+	IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
+	if (Interface)
+	{
+		Interface->GetOwnerController()->InputModeGameOnly();
+	}
+
+	if (EnforceBoardPtr && EnforceBoardPtr->IsInViewport())
+	{
+		EnforceBoardPtr->RemoveFromParent();
 	}
 }
 

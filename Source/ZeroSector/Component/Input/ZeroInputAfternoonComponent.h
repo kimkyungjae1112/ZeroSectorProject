@@ -27,8 +27,9 @@ public:
 	virtual void InteractProcess(const FHitResult& InHitResult, bool bIsHit) override;
 	virtual void InteractBeamReachedProviso(AActor* InHitActor) override;
 	virtual void DialogueInteract() override;
-	virtual void ProvisoInteract() override;
 	virtual void OperationBoardInteract() override;
+	virtual void ProvisoInteract() override;
+	virtual void EnforceBoardInteract() override;
 	virtual void ToggleNote() override;
 	virtual void PauseMenu() override;
 	virtual void ExcludeResearcher() override;

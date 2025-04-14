@@ -15,4 +15,6 @@ public:
 	AZeroWeaponPistol();
 
 	virtual void Fire() override;
+	virtual FORCEINLINE void Upgrade(int32 InLevel) override { Level = InLevel; }
+	virtual FORCEINLINE int32 GetLevel() const override { return Level; }
 };
