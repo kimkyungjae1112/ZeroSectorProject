@@ -6,6 +6,8 @@
 #include "Character/Zombie/ZeroCharacterBaseZombie.h"
 #include "ZeroCharacterRangedZombie.generated.h"
 
+class AZeroAIControllerRangedZombie;
+
 UCLASS()
 class ZEROSECTOR_API AZeroCharacterRangedZombie : public AZeroCharacterBaseZombie
 {
@@ -17,9 +19,14 @@ public:
 	/* IGenericTeamAgentInterface Implement */
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
+	virtual AController* GetAIController() override;
+
 /* Damaged */
 public:
 	/* APawn override */
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+/* Util */
+private:
+	AZeroAIControllerRangedZombie* GetMyController();
 };

@@ -28,6 +28,8 @@ public:
 	virtual void AttackOneByAI() override;
 	virtual void AttackTwoByAI() override;
 
+	virtual AController* GetAIController() override { return nullptr; }
+
 	/* APawn override */
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 

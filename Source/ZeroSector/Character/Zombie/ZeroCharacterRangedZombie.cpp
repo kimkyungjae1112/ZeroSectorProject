@@ -3,6 +3,7 @@
 
 #include "Character/Zombie/ZeroCharacterRangedZombie.h"
 #include "Component/ZeroStatComponent.h"
+#include "AI/Controller/ZeroAIControllerMeleeZombie.h"
 
 AZeroCharacterRangedZombie::AZeroCharacterRangedZombie()
 {
@@ -16,6 +17,11 @@ FGenericTeamId AZeroCharacterRangedZombie::GetGenericTeamId() const
 	return TeamId;
 }
 
+AController* AZeroCharacterRangedZombie::GetAIController()
+{
+	return nullptr;
+}
+
 float AZeroCharacterRangedZombie::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float SuperResult = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
@@ -23,4 +29,9 @@ float AZeroCharacterRangedZombie::TakeDamage(float Damage, FDamageEvent const& D
 	StatComp->ApplyDamage(Damage);
 
 	return 0.0f;
+}
+
+AZeroAIControllerRangedZombie* AZeroCharacterRangedZombie::GetMyController()
+{
+	return nullptr;
 }

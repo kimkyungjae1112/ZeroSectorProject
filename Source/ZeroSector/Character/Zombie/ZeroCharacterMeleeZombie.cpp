@@ -4,8 +4,9 @@
 #include "Character/Zombie/ZeroCharacterMeleeZombie.h"
 #include "Component/ZeroZombieBehaviorComponent.h"
 #include "Component/ZeroStatComponent.h"
-#include "Game/ZeroGameModeBase.h"
 #include "Components/CapsuleComponent.h"
+#include "Game/ZeroGameModeBase.h"
+#include "AI/Controller/ZeroAIControllerMeleeZombie.h"
 #include "ZeroSector.h"
 
 AZeroCharacterMeleeZombie::AZeroCharacterMeleeZombie()
@@ -47,6 +48,11 @@ void AZeroCharacterMeleeZombie::AttackTwoByAI()
 	BeginAttackOne();
 }
 
+AController* AZeroCharacterMeleeZombie::GetAIController()
+{
+	return GetController();
+}
+
 FGenericTeamId AZeroCharacterMeleeZombie::GetGenericTeamId() const
 {
 	return TeamId;
@@ -59,6 +65,11 @@ float AZeroCharacterMeleeZombie::TakeDamage(float Damage, FDamageEvent const& Da
 	StatComp->ApplyDamage(Damage);
 
 	return 0.0f;
+}
+
+AZeroAIControllerMeleeZombie* AZeroCharacterMeleeZombie::GetMyController()
+{
+	return CastChecked<AZeroAIControllerMeleeZombie>(GetController());
 }
 
 void AZeroCharacterMeleeZombie::BeginAttackOne()

@@ -8,6 +8,7 @@
 #include "ZeroCharacterMeleeZombie.generated.h"
 
 class UZeroZombieBehaviorComponent;
+class AZeroAIControllerMeleeZombie;
 
 DECLARE_DELEGATE(FZombieAttackOne)
 DECLARE_DELEGATE(FZombieAttackTwo)
@@ -61,6 +62,8 @@ public:
 	virtual void AttackOneByAI() override;
 	virtual void AttackTwoByAI() override;
 
+	virtual AController* GetAIController() override;
+
 	/* IGenericTeamAgentInterface Implement */
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	
@@ -68,6 +71,10 @@ public:
 public:
 	/* APawn override */
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
+/* Util */
+private:
+	AZeroAIControllerMeleeZombie* GetMyController();
 
 /* Behavior */
 private:

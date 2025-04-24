@@ -9,7 +9,6 @@
 DECLARE_DELEGATE(FOnAttackOneFinished);
 DECLARE_DELEGATE(FOnAttackTwoFinished);
 
-// This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UZeroCharacterAIInterface : public UInterface
 {
@@ -29,4 +28,6 @@ public:
 
 	virtual void AttackOneByAI() = 0;
 	virtual void AttackTwoByAI() = 0;
+
+	virtual AController* GetAIController() = 0;
 };
