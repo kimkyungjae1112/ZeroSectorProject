@@ -76,6 +76,8 @@ void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 		FTimerHandle LoseTimer;
 		GetWorld()->GetTimerManager().SetTimer(LoseTimer, [&]()
 			{
+				// GameModeBase BeginPlay 에서 RestartLevel 함수 바인딩
+				// Player 클래스에서 Player의 체력 초기화 함수 바인딩
 				OnNonClearZmobie.Broadcast();
 			}, 3.f, false);
 	}

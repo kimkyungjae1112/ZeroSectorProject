@@ -51,7 +51,7 @@ void AZeroGameModeBase::InitNight()
 	MaxWave = SpawnDataTable.MaxWave;
 	CurrentWave = 0;
 	ZombieNum = SpawnDataTable.ZombieNum[CurrentWave];
-	MaxTime = 5;
+	MaxTime = 500;
 	bIsProgress = false;
 	ZE_LOG(LogZeroSector, Display, TEXT("MaxWave : %d, ZombieNum : %d"), MaxWave, ZombieNum);
 }

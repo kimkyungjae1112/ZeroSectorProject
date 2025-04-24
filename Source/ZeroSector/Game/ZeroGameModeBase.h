@@ -68,11 +68,18 @@ private:
 	UPROPERTY()
 	FZeroZombieSpawnDataTable SpawnDataTable;
 
+	UPROPERTY(VisibleAnywhere, Category = "Setting")
 	uint8 MaxWave;
+
+	UPROPERTY(VisibleAnywhere, Category = "Setting")
 	uint8 CurrentWave;
+
+	UPROPERTY(VisibleAnywhere, Category = "Setting")
 	uint8 ZombieNum;
 
-	FTimerHandle TimeTimerHandle;
+	UPROPERTY(EditAnywhere, Category = "Setting")
 	int32 MaxTime;
+	
+	FTimerHandle TimeTimerHandle;
 	bool bIsProgress = false;
 };
