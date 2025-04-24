@@ -10,6 +10,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Environment/ZeroDaySequence.h"
 #include "Data/ZeroSingleton.h"
+#include "Game/ZeroNightPlayerStart.h"
+#include "Game/ZeroAfternoonPlayerStart.h"
+#include "Gimmick/ZeroWaveTrigger.h"
 #include "ZeroSector.h"
 
 uint8 AZeroGameModeBase::Day = 1;
@@ -30,6 +33,11 @@ AZeroGameModeBase::AZeroGameModeBase()
 	if (SpawnerClassRef.Class)
 	{
 		SpawnerClass = SpawnerClassRef.Class;
+	}
+	static ConstructorHelpers::FClassFinder<AZeroWaveTrigger> WaveTriggerClassRef(TEXT("/Game/Blueprints/Gimmick/BP_WaveTrigger.BP_WaveTrigger_C"));
+	if (WaveTriggerClassRef.Class)
+	{
+		WaveTriggerClass = WaveTriggerClassRef.Class;
 	}
 
 	CurrentDaySequence = EDaySequence::EAfternoon;
@@ -107,8 +115,6 @@ void AZeroGameModeBase::StartWave()
 	ZombieNum = SpawnDataTable.ZombieNum[CurrentWave];
 	CurrentWave++;
 	Spawner->SpawnZombie(ZombieNum);
-
-	ZE_LOG(LogZeroSector, Display, TEXT("%d"), CurrentWave);
 }
 
 void AZeroGameModeBase::StartTimer()
@@ -122,6 +128,10 @@ void AZeroGameModeBase::RestartLevel()
 	for(AZeroCharacterBaseZombie* Zombie : TActorRange<AZeroCharacterBaseZombie>(GetWorld()))
 	{
 		Zombie->Destroy();
+	}
+	for (AZeroWaveTrigger* Trigger : TActorRange<AZeroWaveTrigger>(GetWorld()))
+	{
+		Trigger->Destroy();
 	}
 	ChangeDayToNight();
 }
@@ -142,8 +152,18 @@ void AZeroGameModeBase::ChangeDayToAfternoon()
 	Day++;
 	OnStartAfternoon.Broadcast(Day);
 	GetWorld()->GetTimerManager().ClearTimer(TimeTimerHandle);
+	ZE_LOG(LogZeroSector, Display, TEXT("Day : %d"), Day);
 
 	CurrentDaySequence = EDaySequence::EAfternoon;
+
+	for (AZeroAfternoonPlayerStart* AfternoonPlayerStart: TActorRange<AZeroAfternoonPlayerStart>(GetWorld()))
+	{
+		if (AfternoonPlayerStart->GetStartDay() == Day)
+		{
+			// Player를 AfternoonPlayerStart 위치로 이동
+			OnAfternoonLocation.ExecuteIfBound(AfternoonPlayerStart->GetActorLocation());
+		}
+	}
 
 	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PC) PC->ATHUD_Display();
@@ -153,6 +173,23 @@ void AZeroGameModeBase::ChangeDayToNight()
 {
 	CurrentDaySequence = EDaySequence::ENight;
 	InitNight();
+
+	// 밤 전투맵 위치를 Player 클래스에 전달
+	for (AZeroNightPlayerStart* NightPlayerStart : TActorRange<AZeroNightPlayerStart>(GetWorld()))
+	{
+		if (NightPlayerStart->GetStartDay() == Day)
+		{
+			// Player를 AfternoonPlayerStart 위치로 이동
+			OnAfternoonLocation.ExecuteIfBound(NightPlayerStart->GetActorLocation());
+
+			for (const FVector& Loc : NightPlayerStart->GetZombieSpawnerLoc())
+			{
+				FRotator Rot(0.0, 0.0, 0.0);
+				ZE_LOG(LogZeroSector, Display, TEXT("Spawn Trigger"));
+				GetWorld()->SpawnActor<AZeroWaveTrigger>(WaveTriggerClass, Loc, Rot);
+			}
+		}
+	}
 
 	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PC) PC->NightHUD_Display();

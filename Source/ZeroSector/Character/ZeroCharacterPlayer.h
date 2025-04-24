@@ -90,6 +90,13 @@ private:
 	APlayerController* GetPlayerController() const;
 	AZeroPlayerController* GetZeroPlayerController() const;
 
+/* 
+낮 -> 밤, 밤 시작 맵의 위치로 이동 
+밤 -> 낮, 낮 시작 맵의 위치로 이동
+*/
+private:
+	void MoveNightStartLoc(const FVector& InLocation);
+	void MoveAfternoonStartLoc(const FVector& InLocation);
 
 /* Input 바인딩 함수 */
 private:
