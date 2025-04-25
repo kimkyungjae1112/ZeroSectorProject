@@ -15,5 +15,8 @@ public:
 	UZeroGameInstance();
 
 	virtual void Shutdown() override;
+	virtual void Init() override;
 	
+	UPROPERTY()
+	class UZeroGameSettingManager* SettingManager;
 };

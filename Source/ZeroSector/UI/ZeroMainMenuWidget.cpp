@@ -2,27 +2,23 @@
 
 
 #include "UI/ZeroMainMenuWidget.h"
-#include "ZeroMainMenuWidget.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanel.h"
 #include "Components/Slider.h"
 #include "Components/ComboBoxString.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Sound/SoundClass.h"
 #include "GameFramework/GameUserSettings.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroGameSettingManager.h"
 
 void UZeroMainMenuWidget::NativeConstruct()
 {
     Super::NativeConstruct();
 
-    // 초기 상태 저장
-    CurrentResolution = "1920x1080";
-    CurrentWindowMode = "Fullscreen";
-    CurrentVolume = 0.5f;
-
-    PendingResolution = CurrentResolution;
-    PendingWindowMode = CurrentWindowMode;
-    PendingVolume = CurrentVolume;
+    UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+    UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
 
     USoundBase* BGM = LoadObject<USoundBase>(nullptr, TEXT("SoundCue'/Game/Sound/FPS_Menu_Music_Vol_1/Cues/juanjo_-_FPS_Menu_Music_Theme_4_Cue.juanjo_-_FPS_Menu_Music_Theme_4_Cue'"));
     if (BGM)
@@ -31,41 +27,35 @@ void UZeroMainMenuWidget::NativeConstruct()
     }
 
     if (StartButton)
-    {
         StartButton->OnClicked.AddDynamic(this, &UZeroMainMenuWidget::OnStartButtonClicked);
-    }
 
     if (QuitButton)
-    {
         QuitButton->OnClicked.AddDynamic(this, &UZeroMainMenuWidget::OnQuitButtonClicked);
-    }
 
     if (OptionButton)
-    {
         OptionButton->OnClicked.AddDynamic(this, &UZeroMainMenuWidget::OnOptionButtonClicked);
-    }
 
     if (OptionExitButton)
-    {
         OptionExitButton->OnClicked.AddDynamic(this, &UZeroMainMenuWidget::OnOptionExitButtonClicked);
-    }
 
-    if (VolumeSlider)
+    if (VolumeSlider && SM)
     {
         VolumeSlider->OnValueChanged.AddDynamic(this, &UZeroMainMenuWidget::OnVolumeChanged);
-        VolumeSlider->SetValue(CurrentVolume);
+        VolumeSlider->SetValue(SM->GetVolume());
     }
 
-    if (ResolutionComboBox)
+    if (ResolutionComboBox && SM)
     {
         ResolutionComboBox->OnSelectionChanged.AddDynamic(this, &UZeroMainMenuWidget::OnResolutionChanged);
         InitializeResolutionOptions();
+        ResolutionComboBox->SetSelectedOption(SM->GetResolution());
     }
 
-    if (WindowModeComboBox)
+    if (WindowModeComboBox && SM)
     {
         WindowModeComboBox->OnSelectionChanged.AddDynamic(this, &UZeroMainMenuWidget::OnWindowModeChanged);
         InitializeWindowModeOptions();
+        WindowModeComboBox->SetSelectedOption(SM->GetWindowMode());
     }
 
     if (ApplySettingButton)
@@ -109,78 +99,53 @@ void UZeroMainMenuWidget::OnOptionExitButtonClicked()
 
 void UZeroMainMenuWidget::OnVolumeChanged(float Value)
 {
-    PendingVolume = Value;
-
-    static const FString Path = TEXT("/Script/Engine.SoundClass'/Game/Sound/BGM_SoundClass.BGM_SoundClass'");
-    if (USoundClass* SoundClass = LoadObject<USoundClass>(nullptr, *Path))
+    if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
     {
-        SoundClass->Properties.Volume = FMath::Clamp(Value, 0.f, 1.f);
-    }
-
-    if (!FMath::IsNearlyEqual(PendingVolume, CurrentVolume, 0.01f) && ApplySettingButton)
-    {
-        ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
+        if (UZeroGameSettingManager* SM = GI->SettingManager)
+        {
+            SM->SetVolume(Value);
+            ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
+        }
     }
 }
 
 void UZeroMainMenuWidget::OnResolutionChanged(FString SelectedItem, ESelectInfo::Type SelectInfo)
 {
-    PendingResolution = SelectedItem;
-
-    if (PendingResolution != CurrentResolution && ApplySettingButton)
+    if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
     {
-        ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
+        if (UZeroGameSettingManager* SM = GI->SettingManager)
+        {
+            SM->SetResolution(SelectedItem);
+            ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
+        }
     }
 }
 
 void UZeroMainMenuWidget::OnWindowModeChanged(FString SelectedItem, ESelectInfo::Type SelectInfo)
 {
-    PendingWindowMode = SelectedItem;
-
-    if (PendingWindowMode != CurrentWindowMode && ApplySettingButton)
+    if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
     {
-        ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
+        if (UZeroGameSettingManager* SM = GI->SettingManager)
+        {
+            SM->SetWindowMode(SelectedItem);
+            ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
+        }
     }
 }
 
 void UZeroMainMenuWidget::OnApplySettingsClicked()
 {
-    if (UGameUserSettings* Settings = GEngine->GetGameUserSettings())
+    if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
     {
-        FString WidthStr, HeightStr;
-        if (PendingResolution.Split("x", &WidthStr, &HeightStr))
+        if (UZeroGameSettingManager* SM = GI->SettingManager)
         {
-            int32 Width = FCString::Atoi(*WidthStr);
-            int32 Height = FCString::Atoi(*HeightStr);
-            Settings->SetScreenResolution(FIntPoint(Width, Height));
+            SM->ApplySettings();
+            ApplySettingButton->SetVisibility(ESlateVisibility::Collapsed);
+
+            UE_LOG(LogTemp, Warning, TEXT("설정 적용 완료: %s / %s / 볼륨 %.2f"),
+                *SM->GetResolution(), *SM->GetWindowMode(), SM->GetVolume());
         }
-
-        if (PendingWindowMode == "Fullscreen")
-            Settings->SetFullscreenMode(EWindowMode::Fullscreen);
-        else if (PendingWindowMode == "Windowed")
-            Settings->SetFullscreenMode(EWindowMode::Windowed);
-        else if (PendingWindowMode == "Borderless")
-            Settings->SetFullscreenMode(EWindowMode::WindowedFullscreen);
-
-        Settings->ApplySettings(true);
     }
-
-    static const FString Path = TEXT("/Script/Engine.SoundClass'/Game/Sound/BGM_SoundClass.BGM_SoundClass'");
-    if (USoundClass* SoundClass = LoadObject<USoundClass>(nullptr, *Path))
-    {
-        SoundClass->Properties.Volume = FMath::Clamp(PendingVolume, 0.f, 1.f);
-    }
-
-    CurrentResolution = PendingResolution;
-    CurrentWindowMode = PendingWindowMode;
-    CurrentVolume = PendingVolume;
-
-    if (ApplySettingButton)
-    {
-        ApplySettingButton->SetVisibility(ESlateVisibility::Collapsed);
-    }
-
-    UE_LOG(LogTemp, Warning, TEXT("설정 적용 완료: %s / %s / 볼륨 %.2f"), *CurrentResolution, *CurrentWindowMode, CurrentVolume);
 }
 
 void UZeroMainMenuWidget::InitializeResolutionOptions()
@@ -199,8 +164,6 @@ void UZeroMainMenuWidget::InitializeResolutionOptions()
     {
         ResolutionComboBox->AddOption(Res);
     }
-
-    ResolutionComboBox->SetSelectedOption("1920x1080");
 }
 
 void UZeroMainMenuWidget::InitializeWindowModeOptions()
@@ -208,15 +171,13 @@ void UZeroMainMenuWidget::InitializeWindowModeOptions()
     if (!WindowModeComboBox) return;
 
     TArray<FString> Modes = {
-     TEXT("Windowed"),
-     TEXT("Fullscreen"),
-     TEXT("Borderless")
+        TEXT("Windowed"),
+        TEXT("Fullscreen"),
+        TEXT("Borderless")
     };
 
     for (const FString& Mode : Modes)
     {
         WindowModeComboBox->AddOption(Mode);
     }
-
-    WindowModeComboBox->SetSelectedOption("Fullscreen");
 }

@@ -5,6 +5,7 @@
 #include "Component/ZeroDialogueComponent.h"
 #include "Character/ZeroCharacterNPC.h"
 #include "Game/ZeroGameModeBase.h"
+#include "Game/ZeroGameSettingManager.h"
 #include "EngineUtils.h"
 #include "UI/ZeroEnforceBoardWidget.h"
 
@@ -25,4 +26,15 @@ void UZeroGameInstance::Shutdown()
 	UZeroEnforceBoardWidget::ShotgunLevel = 1;
 
 	Super::Shutdown();
+}
+
+void UZeroGameInstance::Init()
+{
+	Super::Init();
+
+	SettingManager = NewObject<UZeroGameSettingManager>(this, UZeroGameSettingManager::StaticClass());
+	if (SettingManager)
+	{
+		SettingManager->Init();
+	}
 }
