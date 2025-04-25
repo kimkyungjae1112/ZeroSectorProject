@@ -18,6 +18,7 @@
 #include "UI/ZeroProvisoButtonWidget.h"
 #include "Player/ZeroPlayerController.h"
 #include "UI/ZeroAfternoonHUDWidget.h"
+#include "Game/ZeroGameModeBase.h"
 
 
 void UZeroNoteWidget::NativeConstruct()
@@ -41,7 +42,13 @@ void UZeroNoteWidget::NativeConstruct()
 
 void UZeroNoteWidget::ShowWidget()
 {
-    AddToViewport();
+    if (DayText)
+    {
+        int32 Day = AZeroGameModeBase::Day;
+
+        FString DayString = FString::Printf(TEXT("Day %d"), Day);
+        DayText->SetText(FText::FromString(DayString));
+    }
 }
 
 void UZeroNoteWidget::SetNoteInfo(const FZeroProvisoDataTable& ProvisoData)

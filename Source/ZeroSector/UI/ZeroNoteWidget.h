@@ -27,6 +27,7 @@ class ZEROSECTOR_API UZeroNoteWidget : public UUserWidget
 
 public:
     void SetNoteInfo(const FZeroProvisoDataTable& ProvisoData);
+    void ShowWidget();
 
 protected:
     virtual void NativeConstruct() override;
@@ -34,9 +35,7 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UWrapBox* ProvisoWrapBox;
 
-    int32 CurrentProvisoCount = 0;
-
-    void ShowWidget();
+    int32 CurrentProvisoCount = 0;  
 
     void AddProvisoToUI(const FZeroProvisoDataTable& ProvisoData);
 
@@ -106,6 +105,9 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI", meta = (AllowPrivateAccess = "true"))
     TSubclassOf<class UZeroProvisoButtonWidget> ProvisoButtonClass;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UTextBlock> DayText;
 
     UFUNCTION()
     void ShowClueDetail(const FZeroProvisoDataTable& ProvisoData);

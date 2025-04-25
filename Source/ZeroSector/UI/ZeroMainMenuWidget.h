@@ -76,12 +76,13 @@ protected:
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> ApplySettingButton;
 
+    /*
     FString PendingResolution;
     FString PendingWindowMode;
     float PendingVolume = 0.5f;
 
     FString CurrentResolution;
     FString CurrentWindowMode;
-    float CurrentVolume = 0.5f;
+    float CurrentVolume = 0.5f; */
 };
 

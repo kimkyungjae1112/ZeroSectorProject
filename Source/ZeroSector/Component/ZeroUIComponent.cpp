@@ -70,6 +70,7 @@ void UZeroUIComponent::ToggleNoteDisplay()
 		if (!NoteWidgetPtr->IsInViewport())
 		{
 			NoteWidgetPtr->AddToViewport();
+			NoteWidgetPtr->ShowWidget();
 
 			for (const FZeroProvisoDataTable& Data : PendingProvisoList)
 			{
