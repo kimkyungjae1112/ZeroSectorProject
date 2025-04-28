@@ -8,14 +8,22 @@
 #include "InputActionValue.h"
 #include "ZeroHeader/ZeroWeaponHeader.h"
 #include "UI/ZeroHUDWidget.h"
-#include "Interface/ZeroNightInputInterface.h"
 #include "UI/ZeroEnforceBoardWidget.h"
+#include "Interface/ZeroNightInputInterface.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 #include "ZeroSector.h"
 
 FOnEnforceWeapon UZeroInputNightComponent::OnEnforceWeapon;
 
 UZeroInputNightComponent::UZeroInputNightComponent()
 {
+	static ConstructorHelpers::FObjectFinder<UDataTable> MoveTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/Animation/ZeroPlayerAnimDataTable.ZeroPlayerAnimDataTable'"));
+	if (MoveTableRef.Object)
+	{
+		MoveTable = MoveTableRef.Object;
+	}
+
 	CurrentWeaponType = EWeaponType::EPistol;
 }
 
@@ -53,6 +61,8 @@ void UZeroInputNightComponent::Walk()
 
 void UZeroInputNightComponent::Fire()
 {
+	//Anim->Montage_Play(Fire);
+
 	CurrentWeapon->Fire();
 }
 
@@ -88,6 +98,8 @@ void UZeroInputNightComponent::ChangeWeapon()
 
 void UZeroInputNightComponent::Reloading()
 {
+	//Anim->Montage_Play(Reloading);
+
 	CurrentWeapon->ReloadingCurrentAmmo();
 }
 
@@ -157,6 +169,10 @@ void UZeroInputNightComponent::BeginPlay()
 	Super::BeginPlay();
 
 	check(Player);
+	Anim = Player->GetMesh()->GetAnimInstance();
+	ensure(Anim);
+
+	MontageData = *MoveTable->FindRow<FZeroPlayerAnimDataTable>(TEXT("Player"), FString());
 }
 
 void UZeroInputNightComponent::SetNoWeapon()
@@ -220,3 +236,65 @@ void UZeroInputNightComponent::ChangeWeaponMesh()
 	}
 }
 
+UAnimMontage* UZeroInputNightComponent::GetPistolFireMontage() const
+{
+	if (MontageData.PistolAnim.FireMontage.IsPending())
+	{
+		MontageData.PistolAnim.FireMontage.LoadSynchronous();
+	}
+	return MontageData.PistolAnim.FireMontage.Get();
+}
+
+UAnimMontage* UZeroInputNightComponent::GetPistolReloadingMontage() const
+{
+	if (MontageData.PistolAnim.ReloadingMontage.IsPending())
+	{
+		MontageData.PistolAnim.ReloadingMontage.LoadSynchronous();
+	}
+	return MontageData.PistolAnim.ReloadingMontage.Get();
+}
+
+UAnimMontage* UZeroInputNightComponent::GetRifleFireMontage() const
+{
+	if (MontageData.RifleAnim.FireMontage.IsPending())
+	{
+		MontageData.RifleAnim.FireMontage.LoadSynchronous();
+	}
+	return MontageData.RifleAnim.FireMontage.Get();
+}
+
+UAnimMontage* UZeroInputNightComponent::GetRifleReloadingMontage() const
+{
+	if (MontageData.RifleAnim.ReloadingMontage.IsPending())
+	{
+		MontageData.RifleAnim.ReloadingMontage.LoadSynchronous();
+	}
+	return MontageData.RifleAnim.ReloadingMontage.Get();
+}
+
+UAnimMontage* UZeroInputNightComponent::GetShotgunFireMontage() const
+{
+	if (MontageData.ShotgunAnim.FireMontage.IsPending())
+	{
+		MontageData.ShotgunAnim.FireMontage.LoadSynchronous();
+	}
+	return MontageData.ShotgunAnim.FireMontage.Get();
+}
+
+UAnimMontage* UZeroInputNightComponent::GetShotgunReloadingMontage() const
+{
+	if (MontageData.ShotgunAnim.ReloadingMontage.IsPending())
+	{
+		MontageData.ShotgunAnim.ReloadingMontage.LoadSynchronous();
+	}
+	return MontageData.ShotgunAnim.ReloadingMontage.Get();
+}
+
+UAnimMontage* UZeroInputNightComponent::GetDeadMontage() const
+{
+	if (MontageData.DeadMontage.IsPending())
+	{
+		MontageData.DeadMontage.LoadSynchronous();
+	}
+	return MontageData.DeadMontage.Get();
+}

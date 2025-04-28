@@ -16,19 +16,25 @@ AZeroWeaponBase::AZeroWeaponBase()
 	GunMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> PistolDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/WeaponStat/PistolStatDataTable.PistolStatDataTable'"));
-	if (PistolDataTableRef.Succeeded())
+	if (PistolDataTableRef.Object)
 	{
 		DataTableBuffer.Add(EWeaponType::EPistol ,PistolDataTableRef.Object);
 	}
 	static ConstructorHelpers::FObjectFinder<UDataTable> RifleDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/WeaponStat/RifleStatDataTable.RifleStatDataTable'"));
-	if (RifleDataTableRef.Succeeded())
+	if (RifleDataTableRef.Object)
 	{
 		DataTableBuffer.Add(EWeaponType::ERifle ,RifleDataTableRef.Object);
 	}
 	static ConstructorHelpers::FObjectFinder<UDataTable> ShotgunDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/WeaponStat/ShotgunStatDataTable.ShotgunStatDataTable'"));
-	if (ShotgunDataTableRef.Succeeded())
+	if (ShotgunDataTableRef.Object)
 	{
 		DataTableBuffer.Add(EWeaponType::EShotgun ,ShotgunDataTableRef.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UDataTable> MoveTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/Animation/ZeroWeaponAnimDataTable.ZeroWeaponAnimDataTable'"));
+	if (MoveTableRef.Object)
+	{
+		MoveTable = MoveTableRef.Object;
 	}
 }
 
@@ -91,6 +97,21 @@ void AZeroWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	switch (WeaponType)
+	{
+	case EWeaponType::EPistol:
+		MontageData = *MoveTable->FindRow<FZeroWeaponAnimDataTable>(TEXT("Pistol"), FString());
+		break;
+	case EWeaponType::ERifle:
+		MontageData = *MoveTable->FindRow<FZeroWeaponAnimDataTable>(TEXT("Rifle"), FString());
+		break;
+	case EWeaponType::EShotgun:
+		MontageData = *MoveTable->FindRow<FZeroWeaponAnimDataTable>(TEXT("Shotgun"), FString());
+		break;
+	default:
+		ZE_LOG(LogZeroSector, Display, TEXT("무기 애니메이션 안들어옴"));
+		return;
+	}
 }	
 
 bool AZeroWeaponBase::GunTrace(FHitResult& Hit, FVector& ShotDirection)
@@ -258,5 +279,23 @@ void AZeroWeaponBase::CalCrosshairVector(FVector& CrosshairWorldDirection)
 	// 크로스헤어 위치를 월드 공간의 방향으로 변환
 	FVector CrosshairWorldLocation;
 	if (!PC->DeprojectScreenPositionToWorld(ViewportSize.X, ViewportSize.Y, CrosshairWorldLocation, CrosshairWorldDirection)) return;
+}
+
+UAnimMontage* AZeroWeaponBase::GetFireMontage() const
+{
+	if (MontageData.FireMontage.IsPending())
+	{
+		MontageData.FireMontage.LoadSynchronous();
+	}
+	return MontageData.FireMontage.Get();
+}
+
+UAnimMontage* AZeroWeaponBase::GetReloadingMontage() const
+{
+	if (MontageData.ReloadingMontage.IsPending())
+	{
+		MontageData.ReloadingMontage.LoadSynchronous();
+	}
+	return MontageData.ReloadingMontage.Get();
 }
 

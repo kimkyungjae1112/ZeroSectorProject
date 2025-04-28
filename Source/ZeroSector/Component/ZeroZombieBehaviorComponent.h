@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Data/Zombie/ZeroZombieAnimDataTable.h"
+#include "Data/Animation/ZeroZombieAnimDataTable.h"
 #include "Character/Zombie/ZeroZombieType.h"
 #include "ZeroZombieBehaviorComponent.generated.h"
 
@@ -39,9 +39,9 @@ public:
 	FNotifyFinishedAttackTwo NotifyFinishedAttackTwo;
 
 private:
-	class UAnimMontage* GetAttackOneMontage() const;
-	class UAnimMontage* GetAttackTwoMontage() const;
-	class UAnimMontage* GetDeadMontage() const;
+	UAnimMontage* GetAttackOneMontage() const;
+	UAnimMontage* GetAttackTwoMontage() const;
+	UAnimMontage* GetDeadMontage() const;
 
 private:
 	UPROPERTY()
