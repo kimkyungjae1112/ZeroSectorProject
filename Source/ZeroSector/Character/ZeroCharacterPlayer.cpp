@@ -19,11 +19,6 @@
 #include "UI/ZeroAfternoonHUDWidget.h"
 #include "ZeroSector.h"
 
-#if WITH_EDITOR
-#include "EngineUtils.h"
-#include "Character/Zombie/ZeroCharacterBaseZombie.h"
-#endif
-
 AZeroCharacterPlayer::AZeroCharacterPlayer()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -139,10 +134,6 @@ UZeroHUDWidget* AZeroCharacterPlayer::GetWeaponHUDWidget() const
 void AZeroCharacterPlayer::NightToAfternoon()
 {
 	ChangeInputMode();
-	/*for (AZeroCharacterBaseZombie* Zombie : TActorRange<AZeroCharacterBaseZombie>(GetWorld()))
-	{
-		Zombie->Destroy();
-	}*/
 }
 #endif
 
@@ -198,7 +189,13 @@ void AZeroCharacterPlayer::BeginPlay()
 	GetZeroPlayerController()->OnClearZombie.AddUObject(this, &AZeroCharacterPlayer::ChangeInputMode);
 	GetZeroPlayerController()->OnClearZombie.AddUObject(StatComp, &UZeroPlayerStatComponent::InitActivePoint);
 	GetZeroPlayerController()->OnNonClearZmobie.AddUObject(StatComp, &UZeroPlayerStatComponent::InitHealth);
-	// 총알 갯수도 델리게이트에 바인딩
+	
+	AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GameMode) 
+	{ 
+		GameMode->OnNightLocation.BindUObject(this, &AZeroCharacterPlayer::MoveNightStartLoc); 
+		GameMode->OnAfternoonLocation.BindUObject(this, &AZeroCharacterPlayer::MoveAfternoonStartLoc); 
+	}
 }
 
 APlayerController* AZeroCharacterPlayer::GetPlayerController() const
@@ -209,6 +206,16 @@ APlayerController* AZeroCharacterPlayer::GetPlayerController() const
 AZeroPlayerController* AZeroCharacterPlayer::GetZeroPlayerController() const
 {
 	return CastChecked<AZeroPlayerController>(GetController());
+}
+
+void AZeroCharacterPlayer::MoveNightStartLoc(const FVector& InLocation)
+{
+	SetActorLocation(InLocation);
+}
+
+void AZeroCharacterPlayer::MoveAfternoonStartLoc(const FVector& InLocation)
+{
+	SetActorLocation(InLocation);
 }
 
 void AZeroCharacterPlayer::Move(const FInputActionValue& Value)

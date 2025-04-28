@@ -9,10 +9,13 @@
 #include "ZeroGameModeBase.generated.h"
 
 class AZeroZombieSpawner;
+class AZeroWaveTrigger;
 
 DECLARE_DELEGATE_OneParam(FOnStartNight, uint8)
 DECLARE_DELEGATE_OneParam(FOnStartNightForTime, int32)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnStartAfternoon, uint8)
+DECLARE_DELEGATE_OneParam(FOnNightLocation, const FVector&)
+DECLARE_DELEGATE_OneParam(FOnAfternoonLocation, const FVector&)
 
 UCLASS()
 class ZEROSECTOR_API AZeroGameModeBase : public AGameModeBase
@@ -38,6 +41,12 @@ public:
 	// DialogueComp에서 사용
 	FOnStartAfternoon OnStartAfternoon;
 
+	// 밤이 됐을 때 이동할 위치
+	FOnNightLocation OnNightLocation;
+
+	// 낮이 됐을 때 이동할 위치
+	FOnAfternoonLocation OnAfternoonLocation;
+
 	static uint8 Day;
 
 	void InitNight();
@@ -61,6 +70,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Spawner")
 	TSubclassOf<AZeroZombieSpawner> SpawnerClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "Spawner")
+	TSubclassOf<AZeroWaveTrigger> WaveTriggerClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Env")
 	EDaySequence CurrentDaySequence;
