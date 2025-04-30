@@ -2,6 +2,7 @@
 
 
 #include "Player/ZeroPlayerController.h"
+#include "Data/ZeroSingleton.h"
 #include "UI/ZeroHUDWidget.h"
 #include "UI/ZeroAfternoonHUDWidget.h"
 #include "UI/ZeroLoseScreenWidget.h"
@@ -173,6 +174,7 @@ void AZeroPlayerController::BeginPlay()
 	{
 		HUDWidgetPtr = CreateWidget<UZeroHUDWidget>(this, HUDWidgetClass);
 	}
+
 }
 
 

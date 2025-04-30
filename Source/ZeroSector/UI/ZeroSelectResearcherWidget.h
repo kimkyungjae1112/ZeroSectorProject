@@ -16,10 +16,16 @@ UCLASS()
 class ZEROSECTOR_API UZeroSelectResearcherWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	public:
+	
+public:
 	virtual void NativeConstruct() override;
 
 	FOnCloseSelect OnCloseSelect;
+
+public:
+	UPROPERTY()
+	FString SelectedResearcherName;
+
 
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -89,5 +95,7 @@ private:
 	void HandleResearcherSelection(int32 Index);
 
 	void HideSelectWarningText();
+
+	TArray<FString> ResearcherNames;
 };
 

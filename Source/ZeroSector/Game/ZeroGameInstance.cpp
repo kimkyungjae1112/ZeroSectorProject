@@ -6,6 +6,7 @@
 #include "Character/ZeroCharacterNPC.h"
 #include "Game/ZeroGameModeBase.h"
 #include "Game/ZeroGameSettingManager.h"
+#include "Data/ZeroSingleton.h"
 #include "EngineUtils.h"
 #include "UI/ZeroEnforceBoardWidget.h"
 
@@ -37,4 +38,6 @@ void UZeroGameInstance::Init()
 	{
 		SettingManager->Init();
 	}
+
+	UZeroSingleton::Get().ProvisoDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Data/Proviso/ProvisoDataTable.ProvisoDataTable"));
 }

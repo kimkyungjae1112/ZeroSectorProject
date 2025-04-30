@@ -48,6 +48,49 @@ void UZeroSingleton::AddCollectedProviso(const FZeroProvisoDataTable& ProvisoDat
 }
 
 
+FZeroProvisoDataTable UZeroSingleton::GetRandomProvisoByType(EZeroProvisoType Type)
+{
+	if (!ProvisoDataTable) return FZeroProvisoDataTable();
+
+	TArray<FZeroProvisoDataTable*> AllRows;
+	ProvisoDataTable->GetAllRows(TEXT("GetAllProvisos"), AllRows);
+
+	TArray<FZeroProvisoDataTable*> Matched;
+
+	for (FZeroProvisoDataTable* Row : AllRows)
+	{
+		if (Row && Row->ProvisoType == Type && !Row->ProvisoName.IsNone())
+		{
+			bool bAlreadyCollected = CollectedProvisos.ContainsByPredicate(
+				[&](const FZeroProvisoDataTable& Collected)
+				{
+					return Collected.ProvisoName == Row->ProvisoName;
+				}
+			);
+
+			bool bIsExcludedResearcher = !ExcludedResearcherName.IsEmpty() &&
+				Row->ResearcherInfo.Equals(ExcludedResearcherName, ESearchCase::IgnoreCase);
+
+			if (!bAlreadyCollected && !bIsExcludedResearcher)
+			{
+				Matched.Add(Row);
+			}
+		}
+	}
+
+	if (Matched.Num() == 0) return FZeroProvisoDataTable();
+
+	int32 Index = FMath::RandRange(0, Matched.Num() - 1);
+	return *Matched[Index];
+}
+
+
+void UZeroSingleton::ResetCollectedProvisos()
+{
+	CollectedProvisos.Empty();
+}
+
+
 TArray<FZeroProvisoDataTable> UZeroSingleton::GetCollectedProvisos() const
 {
 	return CollectedProvisos;
@@ -63,3 +106,4 @@ UZeroSingleton& UZeroSingleton::Get()
 
 	return *NewObject<UZeroSingleton>();
 }
+

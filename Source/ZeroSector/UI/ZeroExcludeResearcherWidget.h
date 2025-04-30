@@ -23,6 +23,10 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 
+public:
+	UPROPERTY()
+	FString ExcludedResearcherName;
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> ExcludeButton;
@@ -90,12 +94,15 @@ protected:
 	void OnClickExcludeCancel();
 
 private:
-	int32 SelectedResearcherIndex = -1;
+	int32 ExcludedResearcherIndex = -1;
 
 	void UpdateButtonStyles();
 
 	void HandleResearcherSelection(int32 Index);
 
 	void HideExcludeWarningText();
+
+	UPROPERTY()
+	TArray<FString> ResearcherNames;
 };
 

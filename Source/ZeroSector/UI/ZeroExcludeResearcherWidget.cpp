@@ -1,7 +1,5 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "UI/ZeroExcludeResearcherWidget.h"
+﻿#include "UI/ZeroExcludeResearcherWidget.h"
+#include "Data/ZeroSingleton.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/CanvasPanel.h"
@@ -10,6 +8,8 @@
 void UZeroExcludeResearcherWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	ResearcherNames = { TEXT("Vaccine"), TEXT("Criminal"), TEXT("Normal1"), TEXT("Normal2"), TEXT("Normal3") };
 
 	if (ExRes1Button) ExRes1Button->OnClicked.AddDynamic(this, &UZeroExcludeResearcherWidget::OnClickResearcher1);
 	if (ExRes2Button) ExRes2Button->OnClicked.AddDynamic(this, &UZeroExcludeResearcherWidget::OnClickResearcher2);
@@ -42,13 +42,24 @@ void UZeroExcludeResearcherWidget::OnClickResearcher5() { HandleResearcherSelect
 
 void UZeroExcludeResearcherWidget::HandleResearcherSelection(int32 Index)
 {
-	if (SelectedResearcherIndex == Index)
+	if (ExcludedResearcherIndex == Index)
 	{
-		SelectedResearcherIndex = -1;
+		ExcludedResearcherIndex = -1;
+		ExcludedResearcherName = TEXT("");
 	}
 	else
 	{
-		SelectedResearcherIndex = Index;
+		ExcludedResearcherIndex = Index;
+
+		// 선택한 연구원 이름 저장
+		if (ResearcherNames.IsValidIndex(Index))
+		{
+			ExcludedResearcherName = ResearcherNames[Index];
+		}
+		else
+		{
+			ExcludedResearcherName = TEXT("");
+		}
 	}
 
 	UpdateButtonStyles();
@@ -62,25 +73,18 @@ void UZeroExcludeResearcherWidget::UpdateButtonStyles()
 	{
 		if (Buttons[i])
 		{
-			if (i == SelectedResearcherIndex)
-			{
-				Buttons[i]->SetBackgroundColor(FLinearColor::Green);
-			}
-			else
-			{
-				Buttons[i]->SetBackgroundColor(FLinearColor::White); 
-			}
+			Buttons[i]->SetBackgroundColor(i == ExcludedResearcherIndex ? FLinearColor::Green : FLinearColor::White);
 		}
 	}
 }
 
 void UZeroExcludeResearcherWidget::OnClickExcludeButton()
 {
-	if (SelectedResearcherIndex >= 0)
+	if (!ExcludedResearcherName.IsEmpty())
 	{
 		if (ExcludeCheckPopup && ExcludeCheckText)
 		{
-			FString Message = FString::Printf(TEXT("연구원 %d을(를) 배제하시겠습니까?"), SelectedResearcherIndex + 1);
+			FString Message = FString::Printf(TEXT("연구원 '%s'을(를) 배제하시겠습니까?"), *ExcludedResearcherName);
 			ExcludeCheckText->SetText(FText::FromString(Message));
 			ExcludeCheckPopup->SetVisibility(ESlateVisibility::Visible);
 		}
@@ -103,6 +107,7 @@ void UZeroExcludeResearcherWidget::OnClickExcludeButton()
 	}
 }
 
+
 void UZeroExcludeResearcherWidget::OnClickNotExcludeButton()
 {
 	if (ExcludeCheckPopup && ExcludeCheckText)
@@ -114,6 +119,12 @@ void UZeroExcludeResearcherWidget::OnClickNotExcludeButton()
 
 void UZeroExcludeResearcherWidget::OnClickExcludeOK()
 {
+	if (!ExcludedResearcherName.IsEmpty())
+	{
+		UZeroSingleton::Get().ExcludedResearcherName = ExcludedResearcherName;
+		UE_LOG(LogTemp, Log, TEXT("Excluded researcher saved to singleton: %s"), *ExcludedResearcherName);
+	}
+
 	if (APlayerController* PC = GetOwningPlayer())
 	{
 		if (AZeroPlayerController* ZeroPC = Cast<AZeroPlayerController>(PC))
@@ -123,9 +134,9 @@ void UZeroExcludeResearcherWidget::OnClickExcludeOK()
 		}
 	}
 
-	if (SelectedResearcherIndex >= 0)
+	if (ExcludedResearcherIndex >= 0 && ResearcherNames.IsValidIndex(ExcludedResearcherIndex))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Researcher %d is excluded."), SelectedResearcherIndex + 1);
+		UE_LOG(LogTemp, Log, TEXT("Researcher '%s' is excluded."), *ResearcherNames[ExcludedResearcherIndex]);
 	}
 	else
 	{

@@ -116,8 +116,7 @@ void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult
 			AZeroProvisoActor* ProvisoActor = Cast<AZeroProvisoActor>(PrevGimmick);
 			if (ProvisoActor)
 			{
-				FZeroProvisoDataTable ProvisoData = UZeroSingleton::Get().GetProvisoData(ProvisoActor->ProvisoRowName);
-				if (ProvisoData.ProvisoType != EZeroProvisoType::Normal)
+				if (ProvisoActor->ProvisoType != EZeroProvisoType::Normal)
 				{
 					IZeroOutlineInterface* OutlineInterface = Cast<IZeroOutlineInterface>(PrevGimmick);
 					if (OutlineInterface)

@@ -38,6 +38,18 @@ public:
 	TArray<FZeroProvisoDataTable> GetCollectedProvisos() const;
 	void AddCollectedProviso(const FZeroProvisoDataTable& ProvisoData);
 
+    void ResetCollectedProvisos();
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Data", meta = (AllowPrivateAccess = true))
+    UDataTable* ProvisoDataTable;
+
+    FZeroProvisoDataTable GetRandomProvisoByType(EZeroProvisoType Type);
+
+    UPROPERTY()
+    FString ExcludedResearcherName;
+
+    FString SelectedResearcherName;
+
 
 private:
     UPROPERTY()
@@ -48,4 +60,6 @@ private:
 
 	UPROPERTY()
 	TMap<FName, FZeroZombieSpawnDataTable> SpawnDataTable;
+
+    
 };
