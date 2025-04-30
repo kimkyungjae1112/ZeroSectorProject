@@ -33,6 +33,9 @@ struct FZeroProvisoDataTable : public FTableRowBase
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Proviso")
     TSoftObjectPtr<UTexture2D> ProvisoImage;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FName RowName;
+
     bool operator==(const FZeroProvisoDataTable& Other) const
     {
         return ProvisoName == Other.ProvisoName;

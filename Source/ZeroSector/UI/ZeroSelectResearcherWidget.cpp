@@ -1,15 +1,15 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "UI/ZeroSelectResearcherWidget.h"
+﻿#include "UI/ZeroSelectResearcherWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/CanvasPanel.h"
 #include "Player/ZeroPlayerController.h"
+#include "Data/ZeroSingleton.h"
 
 void UZeroSelectResearcherWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	ResearcherNames = { TEXT("Vaccine"), TEXT("Criminal"), TEXT("Normal1"), TEXT("Normal2"), TEXT("Normal3") };
 
 	if (SelRes1Button) SelRes1Button->OnClicked.AddDynamic(this, &UZeroSelectResearcherWidget::OnClickResearcher1);
 	if (SelRes2Button) SelRes2Button->OnClicked.AddDynamic(this, &UZeroSelectResearcherWidget::OnClickResearcher2);
@@ -18,7 +18,6 @@ void UZeroSelectResearcherWidget::NativeConstruct()
 	if (SelRes5Button) SelRes5Button->OnClicked.AddDynamic(this, &UZeroSelectResearcherWidget::OnClickResearcher5);
 
 	if (SelectButton) SelectButton->OnClicked.AddDynamic(this, &UZeroSelectResearcherWidget::OnClickSelectButton);
-
 	if (SelectOKButton) SelectOKButton->OnClicked.AddDynamic(this, &UZeroSelectResearcherWidget::OnClickSelectOK);
 	if (SelectCancelButton) SelectCancelButton->OnClicked.AddDynamic(this, &UZeroSelectResearcherWidget::OnClickSelectCancel);
 
@@ -44,10 +43,19 @@ void UZeroSelectResearcherWidget::HandleResearcherSelection(int32 Index)
 	if (SelectedResearcherIndex == Index)
 	{
 		SelectedResearcherIndex = -1;
+		SelectedResearcherName = TEXT("");
 	}
 	else
 	{
 		SelectedResearcherIndex = Index;
+		if (ResearcherNames.IsValidIndex(Index))
+		{
+			SelectedResearcherName = ResearcherNames[Index];
+		}
+		else
+		{
+			SelectedResearcherName = TEXT("");
+		}
 	}
 
 	UpdateButtonStyles();
@@ -61,25 +69,18 @@ void UZeroSelectResearcherWidget::UpdateButtonStyles()
 	{
 		if (Buttons[i])
 		{
-			if (i == SelectedResearcherIndex)
-			{
-				Buttons[i]->SetBackgroundColor(FLinearColor::Green);
-			}
-			else
-			{
-				Buttons[i]->SetBackgroundColor(FLinearColor::White);
-			}
+			Buttons[i]->SetBackgroundColor(i == SelectedResearcherIndex ? FLinearColor::Green : FLinearColor::White);
 		}
 	}
 }
 
 void UZeroSelectResearcherWidget::OnClickSelectButton()
 {
-	if (SelectedResearcherIndex >= 0)
+	if (!SelectedResearcherName.IsEmpty())
 	{
 		if (SelectCheckPopup && SelectCheckText)
 		{
-			FString Message = FString::Printf(TEXT("연구원 %d을(를) 선택하시겠습니까?"), SelectedResearcherIndex + 1);
+			FString Message = FString::Printf(TEXT("연구원 '%s'을(를) 선택하시겠습니까?"), *SelectedResearcherName);
 			SelectCheckText->SetText(FText::FromString(Message));
 			SelectCheckPopup->SetVisibility(ESlateVisibility::Visible);
 		}
@@ -102,7 +103,6 @@ void UZeroSelectResearcherWidget::OnClickSelectButton()
 	}
 }
 
-
 void UZeroSelectResearcherWidget::OnClickSelectOK()
 {
 	if (APlayerController* PC = GetOwningPlayer())
@@ -114,16 +114,18 @@ void UZeroSelectResearcherWidget::OnClickSelectOK()
 		}
 	}
 
-	if (SelectedResearcherIndex >= 0)
+	if (!SelectedResearcherName.IsEmpty())
 	{
-		UE_LOG(LogTemp, Log, TEXT("Researcher %d is selected."), SelectedResearcherIndex + 1);
+		UE_LOG(LogTemp, Log, TEXT("Researcher '%s' is selected."), *SelectedResearcherName);
+
+		UZeroSingleton::Get().SelectedResearcherName = SelectedResearcherName;
 	}
 	else
 	{
 		UE_LOG(LogTemp, Log, TEXT("Select cancelled."));
 	}
 
-	RemoveFromParent(); 
+	RemoveFromParent();
 	OnCloseSelect.ExecuteIfBound();
 }
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Gimmick/ZeroGimmick.h"
+#include "Data/ZeroProvisoType.h"
 #include "ZeroProvisoActor.generated.h"
 
 UCLASS()
@@ -19,7 +20,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Proviso")
-	FName ProvisoRowName;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Proviso")
+	EZeroProvisoType ProvisoType;
 
 };

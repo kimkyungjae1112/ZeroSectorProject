@@ -51,6 +51,9 @@ void AZeroGameModeBase::BeginPlay()
 
 	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PC) PC->OnNonClearZmobie.AddUObject(this, &AZeroGameModeBase::RestartLevel);
+
+	UZeroSingleton::Get().ExcludedResearcherName = TEXT("");
+	UZeroSingleton::Get().ResetCollectedProvisos();
 }
 
 void AZeroGameModeBase::InitNight()

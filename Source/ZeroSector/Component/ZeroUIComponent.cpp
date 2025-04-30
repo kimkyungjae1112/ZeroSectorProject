@@ -164,6 +164,7 @@ void UZeroUIComponent::OperationInteract()
 			});
 		OperationWidgetPtr->SetDelegateClickNextButton(OnClickNextButton);
 	}
+
 }
 
 void UZeroUIComponent::ProvisoInteract()
@@ -171,44 +172,43 @@ void UZeroUIComponent::ProvisoInteract()
 	AZeroProvisoActor* ProvisoActor = Cast<AZeroProvisoActor>(CurrentGimmick);
 	if (!ProvisoActor) return;
 
-	FName RowName = ProvisoActor->ProvisoRowName;
+	EZeroProvisoType Type = ProvisoActor->ProvisoType;
+	FZeroProvisoDataTable ProvisoData = UZeroSingleton::Get().GetRandomProvisoByType(Type);
 
 	UZeroGetProvisoWidget* GetProvisoWidgetInstance = CreateWidget<UZeroGetProvisoWidget>(GetWorld(), GetProvisoWidgetClass);
 	if (GetProvisoWidgetInstance)
 	{
 		GetProvisoWidgetInstance->ShowWidget();
-	}
 
-	FZeroProvisoDataTable ProvisoData = UZeroSingleton::Get().GetProvisoData(RowName);
+		UTexture2D* Image = ProvisoData.ProvisoImage.LoadSynchronous();
+		if (Image)
+		{
+			GetProvisoWidgetInstance->SetProvisoImage(Image);
+		}
 
-	UTexture2D* Image = ProvisoData.ProvisoImage.LoadSynchronous();
-	if (GetProvisoWidgetInstance && Image)
-	{
-		GetProvisoWidgetInstance->SetProvisoImage(Image);
-	}
-
-	if (GetProvisoWidgetInstance && !ProvisoData.ProvisoName.IsNone())
-	{
-		GetProvisoWidgetInstance->SetProvisoInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
-	}
-
-	if (ProvisoData.ProvisoType != EZeroProvisoType::Fake)
-	{
 		if (!ProvisoData.ProvisoName.IsNone())
 		{
-			UZeroSingleton::Get().AddCollectedProviso(ProvisoData);
-
-			if (NoteWidgetPtr && NoteWidgetPtr->IsInViewport())
-			{
-				NoteWidgetPtr->SetNoteInfo(ProvisoData);
-			}
-			else
-			{
-				PendingProvisoList.Add(ProvisoData);
-			}
+			GetProvisoWidgetInstance->SetProvisoInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
 		}
 	}
+
+	if (ProvisoData.ProvisoType != EZeroProvisoType::Fake && !ProvisoData.ProvisoName.IsNone())
+	{
+		UZeroSingleton::Get().AddCollectedProviso(ProvisoData);
+
+		if (NoteWidgetPtr && NoteWidgetPtr->IsInViewport())
+		{
+			NoteWidgetPtr->SetNoteInfo(ProvisoData);
+		}
+		else
+		{
+			PendingProvisoList.Add(ProvisoData);
+		}
+	}
+
+	ProvisoActor->Destroy();
 }
+
 
 void UZeroUIComponent::EnforceBoardInteract()
 {
