@@ -119,7 +119,7 @@ bool AZeroWeaponBase::GunTrace(FHitResult& Hit, FVector& ShotDirection)
 	FVector CrosshairWorldDirection;
 	CalCrosshairVector(CrosshairWorldDirection);
 
-	FVector Muzzle = GunMeshComp->GetSocketLocation(TEXT("muzzle_Socket"));
+	FVector Muzzle = GunMeshComp->GetSocketLocation(TEXT("muzzle"));
 	FVector MuzzleEnd = Muzzle + CrosshairWorldDirection * MaxRange;
 
 	ShotDirection = -MuzzleEnd;

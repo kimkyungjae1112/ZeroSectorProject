@@ -23,6 +23,11 @@ UZeroInputNightComponent::UZeroInputNightComponent()
 	{
 		MoveTable = MoveTableRef.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UAnimationAsset> PistolFireRef(TEXT("/Script/Engine.AnimSequence'/Game/Animation/AS/MM_Pistol_Fire.MM_Pistol_Fire'"));
+	if (PistolFireRef.Object)
+	{
+		PistolFire = PistolFireRef.Object;
+	}
 
 	CurrentWeaponType = EWeaponType::EPistol;
 }
@@ -61,7 +66,19 @@ void UZeroInputNightComponent::Walk()
 
 void UZeroInputNightComponent::Fire()
 {
-	//Anim->Montage_Play(Fire);
+	switch (CurrentWeaponType)
+	{
+	case EWeaponType::EPistol:
+		//Player->GetMesh()->PlayAnimation(PistolFire, false);
+		//ZE_LOG(LogZeroSector, Display, TEXT("Pistol Fire"));
+		break;
+	case EWeaponType::ERifle:
+		break;
+	case EWeaponType::EShotgun:
+		break;
+	default:
+		break;
+	}
 
 	CurrentWeapon->Fire();
 }
@@ -238,6 +255,7 @@ void UZeroInputNightComponent::ChangeWeaponMesh()
 
 UAnimMontage* UZeroInputNightComponent::GetPistolFireMontage() const
 {
+	ZE_LOG(LogZeroSector, Display, TEXT("Pistol Montage"));
 	if (MontageData.PistolAnim.FireMontage.IsPending())
 	{
 		MontageData.PistolAnim.FireMontage.LoadSynchronous();

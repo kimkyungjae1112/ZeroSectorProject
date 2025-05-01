@@ -70,6 +70,7 @@ private:
 	UAnimMontage* GetShotgunFireMontage() const;
 	UAnimMontage* GetShotgunReloadingMontage() const;
 	UAnimMontage* GetDeadMontage() const;
+	UAnimationAsset* PistolFire;
 
 	UPROPERTY(VisibleAnywhere, Category = "Anim")
 	TObjectPtr<UAnimInstance> Anim;
