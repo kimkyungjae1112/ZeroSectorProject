@@ -2,36 +2,26 @@
 
 
 #include "Character/Zombie/ZeroCharacterMeleeZombie.h"
-#include "Component/ZeroZombieBehaviorComponent.h"
 #include "Component/ZeroStatComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Game/ZeroGameModeBase.h"
-#include "AI/Controller/ZeroAIControllerMeleeZombie.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 #include "ZeroSector.h"
 
 AZeroCharacterMeleeZombie::AZeroCharacterMeleeZombie()
 {
+	static ConstructorHelpers::FObjectFinder<UDataTable> AnimDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/Animation/ZeroZombieAnimDataTable.ZeroZombieAnimDataTable'"));
+	if (AnimDataTableRef.Succeeded())
+	{
+		DataTableBuffer = AnimDataTableRef.Object;
+	}
+
+	StatComp->OnHpZero.AddUObject(this, &AZeroCharacterMeleeZombie::BeginDead);
+
 	TeamId = FGenericTeamId(1);
 	ClassName = TEXT("Melee");
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Zombie"));
-
-	ZombieAttackOneMaps.Add(EZombieType::EZ_Common, FZombieAttackOneWrapper(FZombieAttackOne::CreateUObject(this, &AZeroCharacterMeleeZombie::BeginAttackOneByCommon)));
-	ZombieAttackOneMaps.Add(EZombieType::EZ_Tanker, FZombieAttackOneWrapper(FZombieAttackOne::CreateUObject(this, &AZeroCharacterMeleeZombie::BeginAttackOneByTanker)));
-	ZombieAttackOneMaps.Add(EZombieType::EZ_Speed, FZombieAttackOneWrapper(FZombieAttackOne::CreateUObject(this, &AZeroCharacterMeleeZombie::BeginAttackOneBySpeed)));
-
-	ZombieAttackTwoMaps.Add(EZombieType::EZ_Common, FZombieAttackTwoWrapper(FZombieAttackTwo::CreateUObject(this, &AZeroCharacterMeleeZombie::BeginAttackTwoByCommon)));
-	ZombieAttackTwoMaps.Add(EZombieType::EZ_Tanker, FZombieAttackTwoWrapper(FZombieAttackTwo::CreateUObject(this, &AZeroCharacterMeleeZombie::BeginAttackTwoByTanker)));
-	ZombieAttackTwoMaps.Add(EZombieType::EZ_Speed, FZombieAttackTwoWrapper(FZombieAttackTwo::CreateUObject(this, &AZeroCharacterMeleeZombie::BeginAttackTwoBySpeed)));
-
-	ZombieDeadMaps.Add(EZombieType::EZ_Common, FZombieDeadWrapper(FZombieDead::CreateUObject(this, &AZeroCharacterMeleeZombie::BeginDeadByCommon)));
-	ZombieDeadMaps.Add(EZombieType::EZ_Tanker, FZombieDeadWrapper(FZombieDead::CreateUObject(this, &AZeroCharacterMeleeZombie::BeginDeadByTanker)));
-	ZombieDeadMaps.Add(EZombieType::EZ_Speed, FZombieDeadWrapper(FZombieDead::CreateUObject(this, &AZeroCharacterMeleeZombie::BeginDeadBySpeed)));
-
-	BehaviorComp = CreateDefaultSubobject<UZeroZombieBehaviorComponent>(TEXT("Behavior Component"));
-	BehaviorComp->NotifyFinishedAttackOne.BindUObject(this, &AZeroCharacterMeleeZombie::EndAttackOne);
-	BehaviorComp->NotifyFinishedAttackTwo.BindUObject(this, &AZeroCharacterMeleeZombie::EndAttackTwo);
-
-	StatComp->OnHpZero.AddUObject(this, &AZeroCharacterMeleeZombie::BeginDead);
 }
 
 void AZeroCharacterMeleeZombie::AttackOneByAI()
@@ -45,7 +35,7 @@ void AZeroCharacterMeleeZombie::AttackTwoByAI()
 {
 	Super::AttackTwoByAI();
 
-	BeginAttackOne();
+	BeginAttackTwo();
 }
 
 AController* AZeroCharacterMeleeZombie::GetAIController()
@@ -67,63 +57,39 @@ float AZeroCharacterMeleeZombie::TakeDamage(float Damage, FDamageEvent const& Da
 	return 0.0f;
 }
 
-AZeroAIControllerMeleeZombie* AZeroCharacterMeleeZombie::GetMyController()
+void AZeroCharacterMeleeZombie::BeginPlay()
 {
-	return CastChecked<AZeroAIControllerMeleeZombie>(GetController());
+	Super::BeginPlay();
+
+	ZeroZombieAnimDataTable = *DataTableBuffer->FindRow<FZeroZombieAnimDataTable>(GetClassName(), FString());
+	
+	Anim = GetMesh()->GetAnimInstance();
 }
 
 void AZeroCharacterMeleeZombie::BeginAttackOne()
 {
-	ZombieAttackOneMaps[CurrentType].ZombieAttackOne.ExecuteIfBound();
+	Anim->Montage_Play(GetAttackOneMontage());
+
+	FOnMontageEnded MontageEnd;
+	MontageEnd.BindUObject(this, &AZeroCharacterMeleeZombie::EndAttackOne);
+	Anim->Montage_SetEndDelegate(MontageEnd, GetAttackOneMontage());
 }
 
-void AZeroCharacterMeleeZombie::BeginAttackOneByCommon()
-{
-	ZE_LOG(LogZeroSector, Display, TEXT("AttackOne By Common"));
-	BehaviorComp->BeginAttackOne();
-}
-
-void AZeroCharacterMeleeZombie::BeginAttackOneByTanker()
-{
-	ZE_LOG(LogZeroSector, Display, TEXT("AttackOne By Tanker"));
-	BehaviorComp->BeginAttackOne();
-}
-
-void AZeroCharacterMeleeZombie::BeginAttackOneBySpeed()
-{
-	ZE_LOG(LogZeroSector, Display, TEXT("AttackOne By Speed"));
-	BehaviorComp->BeginAttackOne();
-}
-
-void AZeroCharacterMeleeZombie::EndAttackOne()
+void AZeroCharacterMeleeZombie::EndAttackOne(UAnimMontage* Target, bool IsProperlyEnded)
 {
 	OnAttackOneFinished.ExecuteIfBound();
 }
 
 void AZeroCharacterMeleeZombie::BeginAttackTwo()
 {
-	ZombieAttackTwoMaps[CurrentType].ZombieAttackTwo.ExecuteIfBound();
+	Anim->Montage_Play(GetAttackTwoMontage());
+
+	FOnMontageEnded MontageEnd;
+	MontageEnd.BindUObject(this, &AZeroCharacterMeleeZombie::EndAttackTwo);
+	Anim->Montage_SetEndDelegate(MontageEnd, GetAttackTwoMontage());
 }
 
-void AZeroCharacterMeleeZombie::BeginAttackTwoByCommon()
-{
-	ZE_LOG(LogZeroSector, Display, TEXT("AttackTwo By Common"));
-	BehaviorComp->BeginAttackTwo();
-}
-
-void AZeroCharacterMeleeZombie::BeginAttackTwoByTanker()
-{
-	ZE_LOG(LogZeroSector, Display, TEXT("AttackTwo By Tanker"));
-	BehaviorComp->BeginAttackTwo();
-}
-
-void AZeroCharacterMeleeZombie::BeginAttackTwoBySpeed()
-{
-	ZE_LOG(LogZeroSector, Display, TEXT("AttackTwo By Speed"));
-	BehaviorComp->BeginAttackTwo();
-}
-
-void AZeroCharacterMeleeZombie::EndAttackTwo()
+void AZeroCharacterMeleeZombie::EndAttackTwo(UAnimMontage* Target, bool IsProperlyEnded)
 {
 	OnAttackTwoFinished.ExecuteIfBound();
 }
@@ -131,8 +97,6 @@ void AZeroCharacterMeleeZombie::EndAttackTwo()
 void AZeroCharacterMeleeZombie::BeginDead()
 {
 	DetachFromControllerPendingDestroy();
-
-	ZombieDeadMaps[CurrentType].ZombieDead.ExecuteIfBound();
 	ZE_LOG(LogZeroSector, Display, TEXT("Zombie Dead"));
 
 	SetActorEnableCollision(false);
@@ -150,17 +114,30 @@ void AZeroCharacterMeleeZombie::BeginDead()
 	}
 }
 
-void AZeroCharacterMeleeZombie::BeginDeadByCommon()
+UAnimMontage* AZeroCharacterMeleeZombie::GetAttackOneMontage() const
 {
-	BehaviorComp->BeginDead();
+	if (ZeroZombieAnimDataTable.AttackOneMontages[AnimPoseType].AttackOneMontage[AnimIndex].IsPending())
+	{
+		ZeroZombieAnimDataTable.AttackOneMontages[AnimPoseType].AttackOneMontage[AnimIndex].LoadSynchronous();
+	}
+	return ZeroZombieAnimDataTable.AttackOneMontages[AnimPoseType].AttackOneMontage[AnimIndex].Get();
 }
 
-void AZeroCharacterMeleeZombie::BeginDeadByTanker()
+UAnimMontage* AZeroCharacterMeleeZombie::GetAttackTwoMontage() const
 {
-	BehaviorComp->BeginDead();
+	if (ZeroZombieAnimDataTable.AttackTwoMontages[AnimPoseType].AttackTwoMontage[AnimIndex].IsPending())
+	{
+		ZeroZombieAnimDataTable.AttackTwoMontages[AnimPoseType].AttackTwoMontage[AnimIndex].LoadSynchronous();
+	}
+	return ZeroZombieAnimDataTable.AttackTwoMontages[AnimPoseType].AttackTwoMontage[AnimIndex].Get();
 }
 
-void AZeroCharacterMeleeZombie::BeginDeadBySpeed()
+UAnimMontage* AZeroCharacterMeleeZombie::GetDeadMontage() const
 {
-	BehaviorComp->BeginDead();
+	/*if (ZeroZombieAnimDataTable.DeadMontage.IsPending())
+	{
+		ZeroZombieAnimDataTable.DeadMontage.LoadSynchronous();
+	}
+	return ZeroZombieAnimDataTable.DeadMontage.Get();*/
+	return nullptr;
 }

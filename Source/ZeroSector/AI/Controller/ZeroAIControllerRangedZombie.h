@@ -23,13 +23,5 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UFUNCTION()
-	void OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
-
-	class UAISenseConfig_Sight* SightConfig;
-	class UAISenseConfig_Damage* DamageConfig;
-
-	FAIStimulus CanSenseActor(AActor* Actor, EAIPerceptionSense AIPerceptionSense);
-	void HandleSenseSight(AActor* Actor, const FAIStimulus& Stimulus);
-	void HandleSenseDamage(AActor* Actor, const FAIStimulus& Stimulus);
+	
 };

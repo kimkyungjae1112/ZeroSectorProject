@@ -36,13 +36,20 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	TObjectPtr<UZeroStatComponent> StatComp;
 
+// 공격 끝 감지
 protected:
 	FOnAttackOneFinished OnAttackOneFinished;
 	FOnAttackTwoFinished OnAttackTwoFinished;
 
+// 애니메이션 타입 결정
+protected:
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	int32 AnimPoseType;
+
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	int32 AnimIndex;
 };

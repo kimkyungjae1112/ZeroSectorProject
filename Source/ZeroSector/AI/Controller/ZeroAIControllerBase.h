@@ -10,6 +10,9 @@
 class UBlackboardData;
 class UBehaviorTree;
 class UAIPerceptionComponent;
+class UAISenseConfig_Sight;
+class UAISenseConfig_Damage;
+struct FAIStimulus;
 
 UENUM()
 enum class EAIPerceptionSense : uint8
@@ -27,7 +30,7 @@ class ZEROSECTOR_API AZeroAIControllerBase : public AAIController
 public:
 	AZeroAIControllerBase();
 
-	virtual bool IsDead() const PURE_VIRTUAL(AZeroAIControllerBase::IsDead, return false;);
+	virtual bool IsDead() const;
 
 
 protected:
@@ -42,14 +45,27 @@ public:
 	void RunAI();
 	void StopAI();
 
+
 protected:
-	UPROPERTY(VisibleAnywhere)
+	UFUNCTION()
+	void OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
+
+	FAIStimulus CanSenseActor(AActor* Actor, EAIPerceptionSense AIPerceptionSense);
+
+	void HandleSenseSight(AActor* Actor, const FAIStimulus& AIStimulus);
+	void HandleSenseDamage(AActor* Actor, const FAIStimulus& AIStimulus);
+
+	TObjectPtr<UAISenseConfig_Sight> SightConfig;
+	TObjectPtr<UAISenseConfig_Damage> DamageConfig;
+
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "AI")
 	TObjectPtr<UAIPerceptionComponent> PerceptionComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TObjectPtr<UBlackboardData> BBData;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	TObjectPtr<UBehaviorTree> BTData;
 
 	FGenericTeamId TeamID;

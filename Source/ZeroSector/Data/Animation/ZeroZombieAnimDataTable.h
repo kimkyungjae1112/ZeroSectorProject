@@ -7,18 +7,36 @@
 class UAnimMontage;
 
 USTRUCT(BlueprintType)
+struct FZeroAttackOneMontageArray
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSoftObjectPtr<UAnimMontage>> AttackOneMontage;
+};
+
+USTRUCT(BlueprintType)
+struct FZeroAttackTwoMontageArray
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSoftObjectPtr<UAnimMontage>> AttackTwoMontage;
+};
+
+USTRUCT(BlueprintType)
 struct FZeroZombieAnimDataTable : public FTableRowBase
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
-	TSoftObjectPtr<UAnimMontage> AttackOneMontage;
+	TArray<FZeroAttackOneMontageArray> AttackOneMontages;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
-	TSoftObjectPtr<UAnimMontage> AttackTwoMontage;
+	TArray<FZeroAttackTwoMontageArray> AttackTwoMontages;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
-	TSoftObjectPtr<UAnimMontage> DeadMontage;
+	TArray<TSoftObjectPtr<UAnimMontage>> DeadMontages;
 
 };

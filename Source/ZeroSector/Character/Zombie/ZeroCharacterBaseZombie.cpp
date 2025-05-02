@@ -3,6 +3,7 @@
 
 #include "Character/Zombie/ZeroCharacterBaseZombie.h"               
 #include "Component/ZeroStatComponent.h"
+#include "Animation/ZeroAnimInstanceZombie.h"
 
 AZeroCharacterBaseZombie::AZeroCharacterBaseZombie()
 {
@@ -16,6 +17,15 @@ void AZeroCharacterBaseZombie::BeginPlay()
 {
     Super::BeginPlay();
 
+    UZeroAnimInstanceZombie* ZombieAnim = Cast<UZeroAnimInstanceZombie>(GetMesh()->GetAnimInstance());
+    if (ZombieAnim)
+    {
+        AnimPoseType = static_cast<int32>(FMath::RandRange(0, 3));
+        AnimIndex = static_cast<int32>(FMath::RandRange(0, 3));
+
+        ZombieAnim->AnimPoseType = AnimPoseType;
+        ZombieAnim->AnimIndex = AnimIndex;
+    }
 }
 
 float AZeroCharacterBaseZombie::GetAIAttackRange()
