@@ -2,7 +2,6 @@
 
 #include "Game/ZeroGameModeBase.h"
 #include "Player/ZeroPlayerController.h"
-#include "AI/Controller/ZeroAIControllerMeleeZombie.h"
 #include "AI/Controller/ZeroAIControllerRangedZombie.h"
 #include "EngineUtils.h"
 #include "Character/Zombie/ZeroCharacterBaseZombie.h"
@@ -90,13 +89,13 @@ void AZeroGameModeBase::PawnKilled(APawn* PawnKilled)
 	APlayerController* PC = Cast<APlayerController>(PawnKilled->GetController());
 	if (PC != nullptr) EndGame(false);
 
-	for (AZeroAIControllerMeleeZombie* AIController : TActorRange<AZeroAIControllerMeleeZombie>(GetWorld()))
+	/*for (AZeroAIControllerMeleeZombie* AIController : TActorRange<AZeroAIControllerMeleeZombie>(GetWorld()))
 	{
 		if (AIController->IsDead())
 		{
 			return;
 		}
-	}
+	}*/
 	for (AZeroAIControllerRangedZombie* AIController : TActorRange<AZeroAIControllerRangedZombie>(GetWorld()))
 	{
 		if (AIController->IsDead())

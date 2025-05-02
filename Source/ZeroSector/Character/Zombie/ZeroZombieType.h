@@ -9,7 +9,7 @@ enum class EZombieType : uint8
 {
 	EZ_Common,
 	EZ_Tanker,
-	EZ_Speed,
+	EZ_Mini,
 	EZ_Ranged,
 	EZ_Boss
 };

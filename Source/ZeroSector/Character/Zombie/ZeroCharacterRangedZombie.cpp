@@ -3,7 +3,6 @@
 
 #include "Character/Zombie/ZeroCharacterRangedZombie.h"
 #include "Component/ZeroStatComponent.h"
-#include "AI/Controller/ZeroAIControllerMeleeZombie.h"
 
 AZeroCharacterRangedZombie::AZeroCharacterRangedZombie()
 {

@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "Character/Zombie/ZeroCharacterBaseZombie.h"
 #include "ZeroZombieType.h"
+#include "Data/Animation/ZeroZombieAnimDataTable.h"
 #include "ZeroCharacterMeleeZombie.generated.h"
 
-class UZeroZombieBehaviorComponent;
-class AZeroAIControllerMeleeZombie;
+class UAnimMontage;
+class UAnimInstance;
 
 DECLARE_DELEGATE(FZombieAttackOne)
 DECLARE_DELEGATE(FZombieAttackTwo)
@@ -72,29 +73,22 @@ public:
 	/* APawn override */
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+protected:
+	virtual void BeginPlay() override;
+
 /* Util */
 private:
-	AZeroAIControllerMeleeZombie* GetMyController();
 
 /* Behavior */
 private:
 	void BeginAttackOne();
-	void BeginAttackOneByCommon();
-	void BeginAttackOneByTanker();
-	void BeginAttackOneBySpeed();
-	void EndAttackOne();
+	void EndAttackOne(UAnimMontage* Target, bool IsProperlyEnded);
 
 	void BeginAttackTwo();
-	void BeginAttackTwoByCommon();
-	void BeginAttackTwoByTanker();
-	void BeginAttackTwoBySpeed();
-	void EndAttackTwo();
-
+	void EndAttackTwo(UAnimMontage* Target, bool IsProperlyEnded);
 
 	void BeginDead();
-	void BeginDeadByCommon();
-	void BeginDeadByTanker();
-	void BeginDeadBySpeed();
+
 	
 	UPROPERTY()
 	TMap<EZombieType, FZombieAttackOneWrapper> ZombieAttackOneMaps;
@@ -105,13 +99,24 @@ private:
 	UPROPERTY()
 	TMap<EZombieType, FZombieDeadWrapper> ZombieDeadMaps;
 
-
-
-
-private:
-	UPROPERTY(VisibleAnywhere, Category = "Data")
-	TObjectPtr<UZeroZombieBehaviorComponent> BehaviorComp;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Type")
 	EZombieType CurrentType;
+
+// 애니메이션 데이터 
+private:
+	UAnimMontage* GetAttackOneMontage() const;
+	UAnimMontage* GetAttackTwoMontage() const;
+	UAnimMontage* GetDeadMontage() const;
+
+	UPROPERTY()
+	FZeroZombieAnimDataTable ZeroZombieAnimDataTable;
+
+	UPROPERTY()
+	TObjectPtr<UDataTable> DataTableBuffer;
+
+	UPROPERTY()
+	TObjectPtr<UAnimInstance> Anim;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UAnimMontage> TempMontage;
 };
