@@ -28,7 +28,7 @@ private:
 	TObjectPtr<USplineComponent> SplineComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Zero")
-	TSubclassOf<AZeroCharacterMeleeZombie> MeleeZombieClass;
+	TArray<TSubclassOf<AZeroCharacterMeleeZombie>> MeleeZombieClass;
 
 	UPROPERTY(EditAnywhere, Category = "Zero")
 	int ZombieNum = 5;

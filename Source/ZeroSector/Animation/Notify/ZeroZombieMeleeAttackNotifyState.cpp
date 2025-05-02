@@ -5,6 +5,7 @@
 #include "Interface/ZeroCharacterAIInterface.h"
 #include "GameFramework/Character.h"
 #include "Engine/DamageEvents.h"
+#include "ZeroSector.h"
 
 UZeroZombieMeleeAttackNotifyState::UZeroZombieMeleeAttackNotifyState()
 {
@@ -36,17 +37,17 @@ void UZeroZombieMeleeAttackNotifyState::NotifyEnd(USkeletalMeshComponent* MeshCo
 void UZeroZombieMeleeAttackNotifyState::MakeSphereTrace(ACharacter* Character)
 {
 	// 본에 소켓 추가 Hand_L, Hand_R
-	FVector LeftHandLoc = Character->GetMesh()->GetSocketLocation(TEXT("Hand_L"));
-	FRotator LeftHandRot = Character->GetMesh()->GetSocketRotation(TEXT("Hand_L"));
+	FVector LeftHandLoc = Character->GetMesh()->GetSocketLocation(TEXT("hand_lSocket"));
+	FRotator LeftHandRot = Character->GetMesh()->GetSocketRotation(TEXT("hand_lSocket"));
 
-	FVector RightHandLoc = Character->GetMesh()->GetSocketLocation(TEXT("Hand_R"));
-	FRotator RightHandRot = Character->GetMesh()->GetSocketRotation(TEXT("Hand_R"));
+	FVector RightHandLoc = Character->GetMesh()->GetSocketLocation(TEXT("hand_rSocket"));
+	FRotator RightHandRot = Character->GetMesh()->GetSocketRotation(TEXT("hand_rSocket"));
 
 	FHitResult HitResult;
 	FCollisionQueryParams Params(NAME_None, true, Character);
 
-	bool bLeftHandHit = Character->GetWorld()->SweepSingleByChannel(HitResult, LeftHandLoc, LeftHandLoc, LeftHandRot.Quaternion(), ECC_GameTraceChannel1, FCollisionShape::MakeBox(FVector(25.f)), Params);
-	bool bRightHandHit = Character->GetWorld()->SweepSingleByChannel(HitResult, RightHandLoc, RightHandLoc, RightHandRot.Quaternion(), ECC_GameTraceChannel1, FCollisionShape::MakeBox(FVector(25.f)), Params);
+	bool bLeftHandHit = Character->GetWorld()->SweepSingleByChannel(HitResult, LeftHandLoc, LeftHandLoc, LeftHandRot.Quaternion(), ECC_GameTraceChannel2, FCollisionShape::MakeBox(FVector(50.f)), Params);
+	bool bRightHandHit = Character->GetWorld()->SweepSingleByChannel(HitResult, RightHandLoc, RightHandLoc, RightHandRot.Quaternion(), ECC_GameTraceChannel2, FCollisionShape::MakeBox(FVector(50.f)), Params);
 
 	DrawDebugBox(Character->GetWorld(), LeftHandLoc, FVector(), FColor::Red, false);
 	DrawDebugBox(Character->GetWorld(), RightHandLoc, FVector(), FColor::Red, false);
@@ -54,6 +55,7 @@ void UZeroZombieMeleeAttackNotifyState::MakeSphereTrace(ACharacter* Character)
 	if ((bLeftHandHit || bRightHandHit) && !HitTarget.Contains(HitResult.GetActor()))
 	{
 		HitTarget.Add(HitResult.GetActor());
+		ZE_LOG(LogZeroSector, Display, TEXT("Attack"));
 
 		FDamageEvent DamageEvent;
 		IZeroCharacterAIInterface* Interface = Cast<IZeroCharacterAIInterface>(Character);
@@ -65,9 +67,4 @@ void UZeroZombieMeleeAttackNotifyState::MakeSphereTrace(ACharacter* Character)
 			}
 		}
 	}
-}
-
-bool UZeroZombieMeleeAttackNotifyState::CanComboAttack(AActor* Owner)
-{
-	return false;
 }

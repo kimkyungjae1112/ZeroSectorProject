@@ -20,7 +20,8 @@ public class ZeroSector : ModuleRules
 				"AIModule",
                 "NavigationSystem",
 				"GameplayTasks",
-                "SlateCore"
+                "SlateCore",
+				"Niagara"
             }
 		);
 

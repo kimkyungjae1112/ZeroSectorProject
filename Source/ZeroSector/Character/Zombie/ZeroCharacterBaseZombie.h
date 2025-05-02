@@ -52,4 +52,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Anim")
 	int32 AnimIndex;
+
+// 넉백 방향
+protected:
+	UPROPERTY()
+	FVector ImpulseDirection;
 };

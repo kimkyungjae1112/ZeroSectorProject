@@ -8,6 +8,8 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Perception/AISenseConfig_Damage.h"
+#include "Kismet/GameplayStatics.h"
+#include "Character/ZeroCharacterPlayer.h"
 #include "ZeroSector.h"
 
 AZeroAIControllerBase::AZeroAIControllerBase()
@@ -51,6 +53,14 @@ void AZeroAIControllerBase::OnPossess(APawn* InPawn)
 	RunAI();
 }
 
+void AZeroAIControllerBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	/*AZeroCharacterPlayer* Player = Cast<AZeroCharacterPlayer>(UGameplayStatics::GetActorOfClass(GetWorld(), AZeroCharacterPlayer::StaticClass()));
+	GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), Player);*/
+}
+
 FGenericTeamId AZeroAIControllerBase::GetGenericTeamId() const
 {
 	return TeamID;
@@ -62,20 +72,19 @@ ETeamAttitude::Type AZeroAIControllerBase::GetTeamAttitudeTowards(const AActor& 
 	if (OtherTeamAgent)
 	{
 		FGenericTeamId OtherTeamId = OtherTeamAgent->GetGenericTeamId();
-		if (OtherTeamId == TeamID)
+		switch (OtherTeamId)
 		{
-			return ETeamAttitude::Friendly; // 아군
-		}
-		else if (OtherTeamId != TeamID)
-		{
+		case 0:
 			return ETeamAttitude::Hostile; // 적군
-		}
-		else
-		{
+		case 1:
+			return ETeamAttitude::Friendly; // 아군
+		case 2:
+			return ETeamAttitude::Neutral;
+		default:
 			return ETeamAttitude::Neutral;
 		}
 	}
-	return ETeamAttitude::Neutral; // 중립
+	return ETeamAttitude::Neutral;
 }
 
 void AZeroAIControllerBase::RunAI()

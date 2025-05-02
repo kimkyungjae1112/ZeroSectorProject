@@ -7,6 +7,8 @@
 #include "Game/ZeroGameModeBase.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
+#include "Engine/DamageEvents.h"
+#include "Perception/AISense_Damage.h"
 #include "ZeroSector.h"
 
 AZeroCharacterMeleeZombie::AZeroCharacterMeleeZombie()
@@ -22,6 +24,16 @@ AZeroCharacterMeleeZombie::AZeroCharacterMeleeZombie()
 	TeamId = FGenericTeamId(1);
 	ClassName = TEXT("Melee");
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Zombie"));
+}
+
+float AZeroCharacterMeleeZombie::GetAIAttackRange()
+{
+	return 300.0f;
+}
+
+float AZeroCharacterMeleeZombie::GetAITurnSpeed()
+{
+	return 2.0f;
 }
 
 void AZeroCharacterMeleeZombie::AttackOneByAI()
@@ -51,6 +63,24 @@ FGenericTeamId AZeroCharacterMeleeZombie::GetGenericTeamId() const
 float AZeroCharacterMeleeZombie::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float SuperResult = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	
+	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+	{
+		const FPointDamageEvent* PointEvent = static_cast<const FPointDamageEvent*>(&DamageEvent);
+		ImpulseDirection = PointEvent->ShotDirection.GetSafeNormal();
+
+		if (PointEvent)
+		{
+			UAISense_Damage::ReportDamageEvent(
+				GetWorld(),
+				this,
+				DamageCauser,
+				Damage,
+				GetActorLocation(),
+				PointEvent->ShotDirection.GetSafeNormal()
+			);
+		}
+	}
 
 	StatComp->ApplyDamage(Damage);
 
@@ -96,16 +126,23 @@ void AZeroCharacterMeleeZombie::EndAttackTwo(UAnimMontage* Target, bool IsProper
 
 void AZeroCharacterMeleeZombie::BeginDead()
 {
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	GetMesh()->SetSimulatePhysics(true);
+
+	const float ImpulseStrength = 3000.0f;
+	FVector FinalImpulse = ImpulseDirection * ImpulseStrength;
+
+	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
+	GetMesh()->AddImpulseToAllBodiesBelow(FinalImpulse, NAME_None);
+
 	DetachFromControllerPendingDestroy();
 	ZE_LOG(LogZeroSector, Display, TEXT("Zombie Dead"));
 
-	SetActorEnableCollision(false);
-	
 	FTimerHandle DestoryTimer;
 	GetWorld()->GetTimerManager().SetTimer(DestoryTimer, [&]()
 		{
 			Destroy();
-		}, 1.5f, false);
+		}, 5.f, false);
 
 	AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GameMode)

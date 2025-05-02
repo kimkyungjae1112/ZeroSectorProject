@@ -98,9 +98,9 @@ void AZeroCharacterPlayer::SetHUDWidget(UZeroHUDWidget* InHUDWidget)
 	HUDWidgetPtr = InHUDWidget;
 	if (HUDWidgetPtr)
 	{
-		HUDWidgetPtr->SetMaxHp(/*StatComp->GetTotalStat().MaxHp*/1000.f);
+		HUDWidgetPtr->SetMaxHp(StatComp->GetTotalStat().MaxHp);
 		StatComp->OnHpChanged.AddUObject(HUDWidgetPtr, &UZeroHUDWidget::UpdateHpBar);
-		HUDWidgetPtr->UpdateHpBar(/*StatComp->GetTotalStat().MaxHp*/1000.f);
+		HUDWidgetPtr->UpdateHpBar(StatComp->GetTotalStat().MaxHp);
 	}
 }
 
@@ -167,6 +167,8 @@ void AZeroCharacterPlayer::ChangeInputMode()
 float AZeroCharacterPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float SuperResult = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	StatComp->ApplyDamage(Damage);
 
 	return 0.0f;
 }

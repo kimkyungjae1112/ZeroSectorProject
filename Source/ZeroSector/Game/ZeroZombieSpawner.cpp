@@ -29,7 +29,7 @@ void AZeroZombieSpawner::SpawnZombie(uint8 InZombieNum)
         FVector Location = SplineComp->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
         FRotator Rotation = SplineComp->GetRotationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
 
-        GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(MeleeZombieClass, Location, Rotation);
+        GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(MeleeZombieClass[static_cast<int>(FMath::RandRange(0.0, 2.0))], Location, Rotation);
     }
 }
 
