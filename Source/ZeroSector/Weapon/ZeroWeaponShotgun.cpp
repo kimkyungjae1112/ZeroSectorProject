@@ -2,6 +2,7 @@
 
 
 #include "Weapon/ZeroWeaponShotgun.h"
+#include "Animation/AnimInstance.h"
 
 AZeroWeaponShotgun::AZeroWeaponShotgun()
 {
@@ -9,6 +10,11 @@ AZeroWeaponShotgun::AZeroWeaponShotgun()
 	if (GunBodyMeshRef.Object)
 	{
 		GunMeshComp->SetSkeletalMesh(GunBodyMeshRef.Object);
+	}
+	static ConstructorHelpers::FClassFinder<UAnimInstance> ShotgunABPRef(TEXT("/Game/Animation/Weapon/Shotgun/ABP_Shotgun.ABP_Shotgun_C"));
+	if (ShotgunABPRef.Class)
+	{
+		GunMeshComp->SetAnimInstanceClass(ShotgunABPRef.Class);
 	}
 
 	WeaponType = EWeaponType::EShotgun;

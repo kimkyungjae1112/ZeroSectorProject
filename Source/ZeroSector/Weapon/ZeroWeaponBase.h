@@ -10,6 +10,8 @@
 
 class UZeroWeaponAnimInstance;
 class UAnimMontage;
+class UAnimInstance;
+class UCameraShakeBase;
 
 DECLARE_DELEGATE_OneParam(FOnChangedAmmo, int32 /* Current Ammo */)
 DECLARE_DELEGATE_OneParam(FOnSetMaxAmmo, int32 /* Max Ammo */)
@@ -100,15 +102,31 @@ private:
 	UAnimMontage* GetReloadingMontage() const;
 
 	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	TObjectPtr<UAnimInstance> Anim;
+
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
 	TObjectPtr<UDataTable> MoveTable;
 
 	UPROPERTY(VisibleAnywhere, Category = "Anim")
 	FZeroWeaponAnimDataTable MontageData;
 	
+
+// 특수 효과 ( 화면 흔들림, 이펙트, 사운드 )
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Shake")
+	TSubclassOf<UCameraShakeBase> PistolShake;
+
+	UPROPERTY(VisibleAnywhere, Category = "Shake")
+	TSubclassOf<UCameraShakeBase> RifleShake;
+
+	UPROPERTY(VisibleAnywhere, Category = "Shake")
+	TSubclassOf<UCameraShakeBase> ShotgunShake;
+
+	UPROPERTY(VisibleAnywhere, Category = "Effect")
+	TObjectPtr<UStaticMeshComponent> EffectComp;
 	/* 
 		SoundComp
 		ParticleComp
-		MeshComp
 	*/
 
 };
