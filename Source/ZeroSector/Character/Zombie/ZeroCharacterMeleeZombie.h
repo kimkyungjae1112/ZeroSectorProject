@@ -62,7 +62,9 @@ public:
 	/* IZeroCharacterAIInterface Implement */
 	virtual float GetAIAttackRange() override;
 	virtual float GetAITurnSpeed() override;
-	
+	virtual float GetRunSpeed() override;
+	virtual float GetWalkSpeed() override;
+
 	virtual void AttackOneByAI() override;
 	virtual void AttackTwoByAI() override;
 

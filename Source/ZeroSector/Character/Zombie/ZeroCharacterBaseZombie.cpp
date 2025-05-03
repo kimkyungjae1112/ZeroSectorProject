@@ -4,11 +4,14 @@
 #include "Character/Zombie/ZeroCharacterBaseZombie.h"               
 #include "Component/ZeroStatComponent.h"
 #include "Animation/ZeroAnimInstanceZombie.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AZeroCharacterBaseZombie::AZeroCharacterBaseZombie()
 {
     GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
     GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+
+    GetCharacterMovement()->MaxWalkSpeed = 0.f;
 
     StatComp = CreateDefaultSubobject<UZeroStatComponent>(TEXT("Stat Component"));
 }
@@ -34,6 +37,16 @@ float AZeroCharacterBaseZombie::GetAIAttackRange()
 }
 
 float AZeroCharacterBaseZombie::GetAITurnSpeed()
+{
+    return 0.0f;
+}
+
+float AZeroCharacterBaseZombie::GetRunSpeed()
+{
+    return 0.0f;
+}
+
+float AZeroCharacterBaseZombie::GetWalkSpeed()
 {
     return 0.0f;
 }

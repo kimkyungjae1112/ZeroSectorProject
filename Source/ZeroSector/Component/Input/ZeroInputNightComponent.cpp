@@ -10,25 +10,12 @@
 #include "UI/ZeroHUDWidget.h"
 #include "UI/ZeroEnforceBoardWidget.h"
 #include "Interface/ZeroNightInputInterface.h"
-#include "Animation/AnimInstance.h"
-#include "Animation/AnimMontage.h"
 #include "ZeroSector.h"
 
 FOnEnforceWeapon UZeroInputNightComponent::OnEnforceWeapon;
 
 UZeroInputNightComponent::UZeroInputNightComponent()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable> MoveTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/Animation/ZeroPlayerAnimDataTable.ZeroPlayerAnimDataTable'"));
-	if (MoveTableRef.Object)
-	{
-		MoveTable = MoveTableRef.Object;
-	}
-	static ConstructorHelpers::FObjectFinder<UAnimationAsset> PistolFireRef(TEXT("/Script/Engine.AnimSequence'/Game/Animation/AS/MM_Pistol_Fire.MM_Pistol_Fire'"));
-	if (PistolFireRef.Object)
-	{
-		PistolFire = PistolFireRef.Object;
-	}
-
 	CurrentWeaponType = EWeaponType::EPistol;
 }
 
@@ -69,8 +56,6 @@ void UZeroInputNightComponent::Fire()
 	switch (CurrentWeaponType)
 	{
 	case EWeaponType::EPistol:
-		//Player->GetMesh()->PlayAnimation(PistolFire, false);
-		//ZE_LOG(LogZeroSector, Display, TEXT("Pistol Fire"));
 		break;
 	case EWeaponType::ERifle:
 		break;
@@ -186,10 +171,6 @@ void UZeroInputNightComponent::BeginPlay()
 	Super::BeginPlay();
 
 	check(Player);
-	Anim = Player->GetMesh()->GetAnimInstance();
-	ensure(Anim);
-
-	MontageData = *MoveTable->FindRow<FZeroPlayerAnimDataTable>(TEXT("Player"), FString());
 }
 
 void UZeroInputNightComponent::SetNoWeapon()
@@ -232,87 +213,16 @@ void UZeroInputNightComponent::SetShotgun()
 
 void UZeroInputNightComponent::SetupTransformWeapon(const FName& SocketName)
 {
-	FVector Loc = Player->GetMesh()->GetSocketLocation(SocketName);
-	FRotator Rot = Player->GetMesh()->GetSocketRotation(SocketName);
-	CurrentWeapon->SetActorLocation(Loc);
-	CurrentWeapon->SetActorRotation(Rot);
+	CurrentWeapon->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
 }
 
 void UZeroInputNightComponent::ChangeWeaponMesh()
 {
-	FVector Loc = Player->GetMesh()->GetSocketLocation(TEXT("WeaponInventory"));
-	FRotator Rot = Player->GetMesh()->GetSocketRotation(TEXT("WeaponInventory"));
-
 	for (const auto& Weapon : Weapons)
 	{
 		if (Weapon.Value != Weapons[CurrentWeaponType])
 		{
-			Weapon.Value->SetActorLocation(Loc);
-			Weapon.Value->SetActorRotation(Rot);
+			Weapon.Value->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponInventory"));
 		}
 	}
-}
-
-UAnimMontage* UZeroInputNightComponent::GetPistolFireMontage() const
-{
-	ZE_LOG(LogZeroSector, Display, TEXT("Pistol Montage"));
-	if (MontageData.PistolAnim.FireMontage.IsPending())
-	{
-		MontageData.PistolAnim.FireMontage.LoadSynchronous();
-	}
-	return MontageData.PistolAnim.FireMontage.Get();
-}
-
-UAnimMontage* UZeroInputNightComponent::GetPistolReloadingMontage() const
-{
-	if (MontageData.PistolAnim.ReloadingMontage.IsPending())
-	{
-		MontageData.PistolAnim.ReloadingMontage.LoadSynchronous();
-	}
-	return MontageData.PistolAnim.ReloadingMontage.Get();
-}
-
-UAnimMontage* UZeroInputNightComponent::GetRifleFireMontage() const
-{
-	if (MontageData.RifleAnim.FireMontage.IsPending())
-	{
-		MontageData.RifleAnim.FireMontage.LoadSynchronous();
-	}
-	return MontageData.RifleAnim.FireMontage.Get();
-}
-
-UAnimMontage* UZeroInputNightComponent::GetRifleReloadingMontage() const
-{
-	if (MontageData.RifleAnim.ReloadingMontage.IsPending())
-	{
-		MontageData.RifleAnim.ReloadingMontage.LoadSynchronous();
-	}
-	return MontageData.RifleAnim.ReloadingMontage.Get();
-}
-
-UAnimMontage* UZeroInputNightComponent::GetShotgunFireMontage() const
-{
-	if (MontageData.ShotgunAnim.FireMontage.IsPending())
-	{
-		MontageData.ShotgunAnim.FireMontage.LoadSynchronous();
-	}
-	return MontageData.ShotgunAnim.FireMontage.Get();
-}
-
-UAnimMontage* UZeroInputNightComponent::GetShotgunReloadingMontage() const
-{
-	if (MontageData.ShotgunAnim.ReloadingMontage.IsPending())
-	{
-		MontageData.ShotgunAnim.ReloadingMontage.LoadSynchronous();
-	}
-	return MontageData.ShotgunAnim.ReloadingMontage.Get();
-}
-
-UAnimMontage* UZeroInputNightComponent::GetDeadMontage() const
-{
-	if (MontageData.DeadMontage.IsPending())
-	{
-		MontageData.DeadMontage.LoadSynchronous();
-	}
-	return MontageData.DeadMontage.Get();
 }

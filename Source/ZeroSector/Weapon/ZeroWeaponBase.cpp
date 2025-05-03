@@ -7,6 +7,9 @@
 #include "Character/ZeroCharacterPlayer.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Data/ZeroWeaponStatDataTable.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
+#include "Camera/CameraShakeBase.h"
 #include "ZeroSector.h"
 
 AZeroWeaponBase::AZeroWeaponBase()
@@ -15,26 +18,52 @@ AZeroWeaponBase::AZeroWeaponBase()
 	RootComponent = GunMeshComp;
 	GunMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 
+	EffectComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Effect Mesh Component"));
+	EffectComp->SetupAttachment(GunMeshComp, TEXT("muzzle"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> EffectRef(TEXT("/Script/Engine.StaticMesh'/Game/Characters/Weapons/Assets/VFX/SM_MuzzleFlash_01.SM_MuzzleFlash_01'"));
+	if (EffectRef.Object)
+	{
+		EffectComp->SetStaticMesh(EffectRef.Object);
+		EffectComp->SetCollisionProfileName(TEXT("NoCollision"));
+		EffectComp->SetVisibility(false);
+	}
+
 	static ConstructorHelpers::FObjectFinder<UDataTable> PistolDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/WeaponStat/PistolStatDataTable.PistolStatDataTable'"));
 	if (PistolDataTableRef.Object)
 	{
-		DataTableBuffer.Add(EWeaponType::EPistol ,PistolDataTableRef.Object);
+		DataTableBuffer.Add(EWeaponType::EPistol, PistolDataTableRef.Object);
 	}
 	static ConstructorHelpers::FObjectFinder<UDataTable> RifleDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/WeaponStat/RifleStatDataTable.RifleStatDataTable'"));
 	if (RifleDataTableRef.Object)
 	{
-		DataTableBuffer.Add(EWeaponType::ERifle ,RifleDataTableRef.Object);
+		DataTableBuffer.Add(EWeaponType::ERifle, RifleDataTableRef.Object);
 	}
 	static ConstructorHelpers::FObjectFinder<UDataTable> ShotgunDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/WeaponStat/ShotgunStatDataTable.ShotgunStatDataTable'"));
 	if (ShotgunDataTableRef.Object)
 	{
-		DataTableBuffer.Add(EWeaponType::EShotgun ,ShotgunDataTableRef.Object);
+		DataTableBuffer.Add(EWeaponType::EShotgun, ShotgunDataTableRef.Object);
 	}
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> MoveTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/Animation/ZeroWeaponAnimDataTable.ZeroWeaponAnimDataTable'"));
 	if (MoveTableRef.Object)
 	{
 		MoveTable = MoveTableRef.Object;
+	}
+
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> PistolShakeRef(TEXT("/Game/Blueprints/Camera/BP_CameraShakePistol.BP_CameraShakePistol_C"));
+	if (PistolShakeRef.Class)
+	{
+		PistolShake = PistolShakeRef.Class;
+	}
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> RifleShakeRef(TEXT("/Game/Blueprints/Camera/BP_CameraShakeRifle.BP_CameraShakeRifle_C"));
+	if (RifleShakeRef.Class)
+	{
+		RifleShake = RifleShakeRef.Class;
+	}
+	static ConstructorHelpers::FClassFinder<UCameraShakeBase> ShotgunShakeRef(TEXT("/Game/Blueprints/Camera/BP_CameraShakeShotgun.BP_CameraShakeShotgun_C"));
+	if (ShotgunShakeRef.Class)
+	{
+		ShotgunShake = ShotgunShakeRef.Class;
 	}
 }
 
@@ -112,6 +141,9 @@ void AZeroWeaponBase::BeginPlay()
 		ZE_LOG(LogZeroSector, Display, TEXT("무기 애니메이션 안들어옴"));
 		return;
 	}
+
+	Anim = GunMeshComp->GetAnimInstance();
+	ensure(Anim);
 }	
 
 bool AZeroWeaponBase::GunTrace(FHitResult& Hit, FVector& ShotDirection)
@@ -144,6 +176,7 @@ void AZeroWeaponBase::StartFireTimer()
 
 void AZeroWeaponBase::StopFire()
 {
+	EffectComp->SetVisibility(false);
 	bIsFire = false;
 }
 
@@ -164,6 +197,10 @@ void AZeroWeaponBase::ApplyRecoil()
 
 void AZeroWeaponBase::PistolFire()
 {
+	Anim->Montage_Play(GetFireMontage());
+	Cast<APlayerController>(GetOwnerController())->ClientStartCameraShake(PistolShake);
+	EffectComp->SetVisibility(true);
+
 	CurrentAmmo -= 1;
 	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
 	StartFireTimer();
@@ -188,6 +225,10 @@ void AZeroWeaponBase::PistolFire()
 
 void AZeroWeaponBase::RifleFire()
 {
+	Anim->Montage_Play(GetFireMontage());
+	Cast<APlayerController>(GetOwnerController())->ClientStartCameraShake(RifleShake);
+	EffectComp->SetVisibility(true);
+
 	CurrentAmmo -= 1;
 	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
 	StartFireTimer();
@@ -212,6 +253,10 @@ void AZeroWeaponBase::RifleFire()
 
 void AZeroWeaponBase::ShotgunFire()
 {
+	Anim->Montage_Play(GetFireMontage());
+	Cast<APlayerController>(GetOwnerController())->ClientStartCameraShake(ShotgunShake);
+	EffectComp->SetVisibility(true);
+
 	CurrentAmmo -= 1;
 	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
 	ApplyRecoil();
@@ -220,7 +265,7 @@ void AZeroWeaponBase::ShotgunFire()
 	FVector CrosshairWorldDirection;
 	CalCrosshairVector(CrosshairWorldDirection);
 
-	FVector Muzzle = GunMeshComp->GetSocketLocation(TEXT("muzzle_Socket"));
+	FVector Muzzle = GunMeshComp->GetSocketLocation(TEXT("muzzle"));
 	FCollisionQueryParams Params(NAME_None, false, GetOwner());
 
 	int32 PelletCount = 10;
@@ -243,9 +288,7 @@ void AZeroWeaponBase::ShotgunFire()
 			+ RightVector * FMath::Tan(SpreadRad) * RandomX
 			+ UpVector * FMath::Tan(SpreadRad) * RandomY;
 
-		SpreadDir = SpreadDir.GetSafeNormal();
-
-		FVector TraceEnd = Muzzle + SpreadDir * MaxRange;
+		FVector TraceEnd = Muzzle + SpreadDir.GetSafeNormal() * MaxRange;
 
 		FHitResult HitResult;
 		FColor Color{ FColor::Red };

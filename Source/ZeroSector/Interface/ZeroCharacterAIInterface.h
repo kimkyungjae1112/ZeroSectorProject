@@ -22,6 +22,8 @@ class ZEROSECTOR_API IZeroCharacterAIInterface
 public:
 	virtual float GetAIAttackRange() = 0;
 	virtual float GetAITurnSpeed() = 0;
+	virtual float GetRunSpeed() = 0;
+	virtual float GetWalkSpeed() = 0;
 
 	virtual void SetAIAttackOneDelegate(const FOnAttackOneFinished& InOnAttackOneFinished) = 0;
 	virtual void SetAIAttackTwoDelegate(const FOnAttackTwoFinished& InOnAttackTwoFinished) = 0;

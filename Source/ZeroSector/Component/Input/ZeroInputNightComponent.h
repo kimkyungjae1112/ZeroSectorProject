@@ -4,11 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Component/Input/ZeroInputBaseComponent.h"
-#include "Data/Animation/ZeroPlayerAnimDataTable.h"
 #include "ZeroInputNightComponent.generated.h"
 
-class UAnimInstance;
-class UAnimMontage;
 class AZeroWeaponBase;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnforceWeapon, int32)
@@ -48,6 +45,7 @@ private:
 	void SetupTransformWeapon(const FName& SocketName);
 	void ChangeWeaponMesh();
 
+// Weapon Data
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
 	TMap<EWeaponType, AZeroWeaponBase*> Weapons;
@@ -60,24 +58,4 @@ private:
 
 	EWeaponType ChoicedWeapon;
 
-// 애니메이션 데이터
-private:
-	// 애셋 경로에서 실제 로딩 도와주는 함수
-	UAnimMontage* GetPistolFireMontage() const;
-	UAnimMontage* GetPistolReloadingMontage() const;
-	UAnimMontage* GetRifleFireMontage() const;
-	UAnimMontage* GetRifleReloadingMontage() const;
-	UAnimMontage* GetShotgunFireMontage() const;
-	UAnimMontage* GetShotgunReloadingMontage() const;
-	UAnimMontage* GetDeadMontage() const;
-	UAnimationAsset* PistolFire;
-
-	UPROPERTY(VisibleAnywhere, Category = "Anim")
-	TObjectPtr<UAnimInstance> Anim;
-
-	UPROPERTY(VisibleAnywhere, Category = "Anim")
-	TObjectPtr<UDataTable> MoveTable;
-
-	UPROPERTY(VisibleAnywhere, Category = "Anim")
-	FZeroPlayerAnimDataTable MontageData;
 };

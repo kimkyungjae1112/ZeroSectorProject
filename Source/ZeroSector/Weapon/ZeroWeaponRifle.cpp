@@ -2,6 +2,7 @@
 
 
 #include "Weapon/ZeroWeaponRifle.h"
+#include "Animation/AnimInstance.h"
 
 AZeroWeaponRifle::AZeroWeaponRifle()
 {
@@ -10,7 +11,11 @@ AZeroWeaponRifle::AZeroWeaponRifle()
 	{
 		GunMeshComp->SetSkeletalMesh(GunBodyMeshRef.Object);
 	}
-
+	static ConstructorHelpers::FClassFinder<UAnimInstance> RifleABPRef(TEXT("/Game/Animation/Weapon/Rifle/ABP_Rifle.ABP_Rifle_C"));
+	if (RifleABPRef.Class)
+	{
+		GunMeshComp->SetAnimInstanceClass(RifleABPRef.Class);
+	}
 	WeaponType = EWeaponType::ERifle;
 }
 

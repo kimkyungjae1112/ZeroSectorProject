@@ -4,19 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "BTService_SetOffsetLocation.generated.h"
+#include "BTService_MoveSpeed.generated.h"
 
 UCLASS()
-class ZEROSECTOR_API UBTService_SetOffsetLocation : public UBTService
+class ZEROSECTOR_API UBTService_MoveSpeed : public UBTService
 {
 	GENERATED_BODY()
-
-	public:
-	UBTService_SetOffsetLocation();
+	
+public:
+	UBTService_MoveSpeed();
 
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-
-	UPROPERTY(EditAnywhere, Category = "AI")
-	float DesiredDistance = 800.f; 
 };

@@ -36,6 +36,16 @@ float AZeroCharacterMeleeZombie::GetAITurnSpeed()
 	return 2.0f;
 }
 
+float AZeroCharacterMeleeZombie::GetRunSpeed()
+{
+	return StatComp->GetTotalStat().RunSpeed;
+}
+
+float AZeroCharacterMeleeZombie::GetWalkSpeed()
+{
+	return StatComp->GetTotalStat().WalkSpeed;
+}
+
 void AZeroCharacterMeleeZombie::AttackOneByAI()
 {
 	Super::AttackOneByAI();

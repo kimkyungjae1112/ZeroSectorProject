@@ -22,6 +22,8 @@ public:
 	/* IZeroCharacterAIInterface Implement */
 	virtual float GetAIAttackRange() override;
 	virtual float GetAITurnSpeed() override;
+	virtual float GetRunSpeed() override;
+	virtual float GetWalkSpeed() override;
 
 	virtual void SetAIAttackOneDelegate(const FOnAttackOneFinished& InOnAttackOneFinished) override;
 	virtual void SetAIAttackTwoDelegate(const FOnAttackOneFinished& InOnAttackTwoFinished) override;
