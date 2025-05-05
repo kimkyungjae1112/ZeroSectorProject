@@ -53,9 +53,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
 	FRotator SpineRotation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
-	FRotator RightHandRotation;
-
 private:
 	void CalSpineRotation();
 };

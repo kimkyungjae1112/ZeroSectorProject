@@ -40,20 +40,6 @@ void UZeroAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			ControlRotation = Character->GetController()->GetControlRotation();
 			CalSpineRotation();
 		}
-
-		//FVector Direction;
-		//UGameViewportClient* GameViewport = GetWorld()->GetGameViewport();
-		//FVector2D ViewportSize;
-		//GameViewport->GetViewportSize(ViewportSize);
-		//ViewportSize /= 2.f;
-
-		//// 크로스헤어 위치를 월드 공간의 방향으로 변환
-		//FVector CrosshairWorldLocation;
-		//if (!GetWorld()->GetFirstPlayerController()->DeprojectScreenPositionToWorld(ViewportSize.X, ViewportSize.Y, CrosshairWorldLocation, Direction)) return;
-
-		//FTransform RightHandTransform = Character->GetMesh()->GetSocketTransform(FName("hand_rRifle"));
-		//RightHandRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - Direction));
-		//ZE_LOG(LogZeroSector, Display, TEXT("Right Hand Rotation : %s"), *RightHandRotation.ToString())
 	}
 }
 
