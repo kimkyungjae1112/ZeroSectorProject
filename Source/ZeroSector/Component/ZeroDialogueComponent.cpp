@@ -27,6 +27,7 @@ UZeroDialogueComponent::UZeroDialogueComponent()
 		DialogueOptionWidgetClass = DialogueOptionWidgetClassRef.Class;
 	}
 
+	P_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_P.DialogueDataTable_P'"));
 	S_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_S.DialogueDataTable_S'"));
 	V_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_V.DialogueDataTable_V'"));
 	C_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_C.DialogueDataTable_C'"));
@@ -34,6 +35,7 @@ UZeroDialogueComponent::UZeroDialogueComponent()
 	N2_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N2.DialogueDataTable_N2'"));
 	N3_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N3.DialogueDataTable_N3'"));
 
+	DialogueTableMap.Add(TEXT("데인"), P_DialogueTable);
 	DialogueTableMap.Add(TEXT("Speedwagon"), S_DialogueTable);
 	DialogueTableMap.Add(TEXT("Vaccine"), V_DialogueTable);
 	DialogueTableMap.Add(TEXT("Criminal"), C_DialogueTable);
@@ -79,11 +81,12 @@ void UZeroDialogueComponent::StartDialogue()
 		PC->GetAfternoonHUDWidget()->HideInterviewText();
 	}
 
+	
 	ZE_LOG(LogZeroSector, Warning, TEXT("Dialogue Loaded: %s"), *DialogueTable.Dialogue.ToString());
 	bIsTalking = true;
 	DialogueWidgetPtr = CreateWidget<UZeroDialogueWidget>(GetWorld(), DialogueWidgetClass);
 	DialogueWidgetPtr->AddToViewport();
-	DialogueWidgetPtr->SetDialogueText(ActorName, DialogueTable.Dialogue);
+	DialogueWidgetPtr->SetDialogueText((DialogueTable.bIsPlayerDialogue ? FText::FromString(TEXT("데인")) : ActorName), DialogueTable.Dialogue);
 
 	if (DialogueTable.bIsOpenOption)
 	{
@@ -144,7 +147,7 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 	DialogueTable = InDialogueTable;
 	ZE_LOG(LogZeroSector, Warning, TEXT("Dialogue Loaded: %s"), *DialogueTable.Dialogue.ToString());
 
-	DialogueWidgetPtr->UpdateDialogue(DialogueTable.Dialogue);
+	DialogueWidgetPtr->SetDialogueText((DialogueTable.bIsPlayerDialogue ? FText::FromString(TEXT("데인")) : ActorName), DialogueTable.Dialogue);
 	if (DialogueTable.bIsOpenOption)
 	{
 		for (const auto& DialogueOptionTable : DialogueTable.OptionDialogues)
@@ -217,7 +220,7 @@ void UZeroDialogueComponent::InProgressDialogue()
 	ZE_LOG(LogZeroSector, Display, TEXT("Progress Dialogue"));
 
 	DialogueWidgetPtr->GetScrollBox()->ClearChildren();
-	DialogueWidgetPtr->UpdateDialogue(DialogueTable.Dialogue);
+	DialogueWidgetPtr->SetDialogueText((DialogueTable.bIsPlayerDialogue ? FText::FromString(TEXT("데인")) : ActorName), DialogueTable.Dialogue);
 
 	if (DialogueTable.bIsEnd)
 	{

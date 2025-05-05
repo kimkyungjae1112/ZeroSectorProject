@@ -99,6 +99,7 @@ private:
 
 	FOnFinishedDialogue OnFinishedDialogue;
 
+	TSoftObjectPtr<UDataTable> P_DialogueTable;
 	TSoftObjectPtr<UDataTable> S_DialogueTable;
 	TSoftObjectPtr<UDataTable> V_DialogueTable;
 	TSoftObjectPtr<UDataTable> C_DialogueTable;

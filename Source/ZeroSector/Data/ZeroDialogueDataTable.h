@@ -27,6 +27,9 @@ public:
 	bool bIsOpenOption;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	bool bIsPlayerDialogue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	FName PrevIndex;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
