@@ -4,6 +4,9 @@
 #include "UI/ZeroDialogueWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/ScrollBox.h"
+#include "Components/Button.h"
+#include "Component/ZeroDialogueComponent.h"
+#include "Component/Input/ZeroInputAfternoonComponent.h"
 #include "ZeroSector.h"
 
 UZeroDialogueWidget::UZeroDialogueWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -17,10 +20,14 @@ void UZeroDialogueWidget::NativeConstruct()
 	SpeakerTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("Speaker")));
 	DialogueTextBlock = Cast<UTextBlock>(GetWidgetFromName(TEXT("Dialogue")));
 	OptionScrollBox = Cast<UScrollBox>(GetWidgetFromName(TEXT("OptionScrollBox")));
+	NextDialogueButton = Cast<UButton>(GetWidgetFromName(TEXT("NextDialogueButton")));
 
 	ensure(SpeakerTextBlock);
 	ensure(DialogueTextBlock);
 	ensure(OptionScrollBox);
+	ensure(NextDialogueButton);
+
+	NextDialogueButton->OnClicked.AddDynamic(this, &UZeroDialogueWidget::NextDialogueButtonClicked);
 }
 
 UScrollBox* UZeroDialogueWidget::GetScrollBox() const
@@ -39,4 +46,23 @@ void UZeroDialogueWidget::SetDialogueText(const FText& InSpeaker, const FText& I
 void UZeroDialogueWidget::UpdateDialogue(const FText& InDialogue)
 {
 	DialogueTextBlock->SetText(InDialogue);
+}
+
+void UZeroDialogueWidget::NextDialogueButtonClicked()
+{
+	if (UZeroInputAfternoonComponent::CurrentDialogueNPC)
+	{
+		UZeroDialogueComponent* DialogueComp = Cast<UZeroDialogueComponent>(UZeroInputAfternoonComponent::CurrentDialogueNPC->GetComponentByClass<UZeroDialogueComponent>());
+		DialogueComp->StartDialogue();
+	}
+}
+
+void UZeroDialogueWidget::DisplayNextDialogueButton()
+{
+	NextDialogueButton->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UZeroDialogueWidget::CloseNextDialogueButton()
+{
+	NextDialogueButton->SetVisibility(ESlateVisibility::Hidden);
 }

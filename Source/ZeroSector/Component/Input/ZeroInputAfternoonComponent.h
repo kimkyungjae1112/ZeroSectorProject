@@ -35,6 +35,8 @@ public:
 	virtual void ExcludeResearcher() override;
 	virtual void SelectResearcher() override;
 
+	static AActor* CurrentDialogueNPC;
+
 protected:
 	virtual void BeginPlay() override;
 

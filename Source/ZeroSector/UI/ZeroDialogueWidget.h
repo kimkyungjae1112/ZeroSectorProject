@@ -8,6 +8,7 @@
 
 class UTextBlock;
 class UScrollBox;
+class UButton;
 
 UCLASS()
 class ZEROSECTOR_API UZeroDialogueWidget : public UUserWidget
@@ -26,6 +27,11 @@ public:
 	void SetDialogueText(const FText& InSpeaker, const FText& InDialogue);
 	void UpdateDialogue(const FText& InDialogue);
 
+	UFUNCTION()
+	void NextDialogueButtonClicked();
+	void DisplayNextDialogueButton();
+	void CloseNextDialogueButton();
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UTextBlock> SpeakerTextBlock;
@@ -35,4 +41,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UScrollBox> OptionScrollBox;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UButton> NextDialogueButton;
 };

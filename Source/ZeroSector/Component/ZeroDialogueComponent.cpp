@@ -59,15 +59,27 @@ UZeroDialogueComponent::UZeroDialogueComponent()
 
 void UZeroDialogueComponent::StartDialogue()
 {
+	ZE_LOG(LogZeroSector, Display, TEXT("Start Dialogue"));
+	
+	InputModeUIOnly();
+
+	if (DialogueTable.bIsOpenOption && bIsTalking)
+	{
+		for (const auto& DialogueOptionTable : DialogueTable.OptionDialogues)
+		{
+			DialogueOptionSpawn(DialogueOptionTable);
+		}
+		return;
+	}
+
 	if (bIsTalking)
 	{
-		InputModeGameAndUI();
+		DialogueDataInit();
 		InProgressDialogue();
 		return;
 	}
 
 	RotationToPlayer();
-
 	FString CurrentActorClassName;
 	if (IZeroClassIdentifierInterface* CII = Cast<IZeroClassIdentifierInterface>(GetOwner()))
 	{
@@ -90,7 +102,6 @@ void UZeroDialogueComponent::StartDialogue()
 
 	if (DialogueTable.bIsOpenOption)
 	{
-		InputModeUIOnly();
 		for (const auto& DialogueOptionTable : DialogueTable.OptionDialogues)
 		{
 			DialogueOptionSpawn(DialogueOptionTable);
@@ -158,6 +169,7 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 	else if (DialogueTable.bIsEnd)
 	{
 		DialogueWidgetPtr->GetScrollBox()->ClearChildren();
+		DialogueWidgetPtr->CloseNextDialogueButton();
 
 		FTimerHandle Timer;
 		GetWorld()->GetTimerManager().SetTimer(Timer, [&]()
@@ -174,6 +186,10 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 		FString ContextString(TEXT("Dialogue Context"));
 		FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(DialogueTable.PrevIndex, ContextString);
 		DialogueTable = *FoundRow;
+	}
+	else
+	{
+		DialogueWidgetPtr->DisplayNextDialogueButton();
 	}
 }
 
@@ -224,7 +240,7 @@ void UZeroDialogueComponent::InProgressDialogue()
 
 	if (DialogueTable.bIsEnd)
 	{
-		InputModeUIOnly();
+		DialogueWidgetPtr->CloseNextDialogueButton();
 
 		FTimerHandle Timer;
 		GetWorld()->GetTimerManager().SetTimer(Timer, [&]()
@@ -271,6 +287,7 @@ void UZeroDialogueComponent::NextDayDialogue(uint8 InDay)
 
 void UZeroDialogueComponent::DialogueOptionSpawn(const FZeroDialogueOptionDataTable& InDialogueOptionTable)
 {
+	DialogueWidgetPtr->CloseNextDialogueButton();
 	DialogueOptionWidgetPtr = CreateWidget<UZeroDialogueOptionWidget>(GetWorld(), DialogueOptionWidgetClass);
 	DialogueOptionWidgetPtr->SetDialogueComp(this);
 	DialogueOptionWidgetPtr->SetReliability(InDialogueOptionTable.Reliability);

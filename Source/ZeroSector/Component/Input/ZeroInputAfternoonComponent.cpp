@@ -17,6 +17,8 @@
 #include "UI/ZeroPauseMenuWidget.h"
 #include "ZeroSector.h"
 
+AActor* UZeroInputAfternoonComponent::CurrentDialogueNPC;
+
 UZeroInputAfternoonComponent::UZeroInputAfternoonComponent()
 {
 	DetectDistance = 800.f;
@@ -82,6 +84,7 @@ void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult
 		for (UActorComponent* ActorComp : InHitResult.GetActor()->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
 		{
 			DialogueInterface = Cast<IZeroDialogueInterface>(ActorComp);
+			CurrentDialogueNPC = PrevGimmick;
 			return;
 		}
 
@@ -108,6 +111,7 @@ void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult
 	{
 		DialogueInterface = nullptr;
 		InteractedGimmick = nullptr;
+		CurrentDialogueNPC = nullptr;
 		IZeroAfternoonInputInterface* Interface = Cast<IZeroAfternoonInputInterface>(Player);
 		if (Interface) Interface->CloseInteractUI();
 
