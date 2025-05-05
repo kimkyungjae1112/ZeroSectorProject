@@ -4,7 +4,9 @@
 #include "Animation/ZeroAnimInstance.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "ZeroSector.h"
 
 UZeroAnimInstance::UZeroAnimInstance()
 {
