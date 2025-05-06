@@ -16,7 +16,7 @@ AZeroWeaponPistol::AZeroWeaponPistol()
 	{
 		GunMeshComp->SetAnimInstanceClass(PistolABPRef.Class);
 	}
-
+	GunMeshComp->SetRelativeScale3D(FVector(1.25f, 1.25f, 1.25f));
 	WeaponType = EWeaponType::EPistol;
 }
 

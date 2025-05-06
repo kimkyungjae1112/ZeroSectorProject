@@ -92,6 +92,8 @@ void AZeroWeaponBase::Fire()
 
 void AZeroWeaponBase::ReloadingCurrentAmmo()
 {							
+	Anim->Montage_Play(GetReloadingMontage());
+
 	int AddAmmoAmount = Magazine - CurrentAmmo;
 
 	CurrentAmmo = (MaxAmmo - AddAmmoAmount) >= 0 ? CurrentAmmo + AddAmmoAmount : CurrentAmmo + MaxAmmo;

@@ -288,6 +288,7 @@ void UZeroDialogueComponent::NextDayDialogue(uint8 InDay)
 void UZeroDialogueComponent::DialogueOptionSpawn(const FZeroDialogueOptionDataTable& InDialogueOptionTable)
 {
 	DialogueWidgetPtr->CloseNextDialogueButton();
+	DialogueWidgetPtr->SetDialogueText((DialogueTable.bIsPlayerDialogue ? FText::FromString(TEXT("데인")) : ActorName), DialogueTable.Dialogue);
 	DialogueOptionWidgetPtr = CreateWidget<UZeroDialogueOptionWidget>(GetWorld(), DialogueOptionWidgetClass);
 	DialogueOptionWidgetPtr->SetDialogueComp(this);
 	DialogueOptionWidgetPtr->SetReliability(InDialogueOptionTable.Reliability);
