@@ -74,12 +74,27 @@ void UZeroInputAfternoonComponent::InteractBeam()
 void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult, bool bIsHit)
 {
 	AActor* HitActor = InHitResult.GetActor();
+	if (PrevGimmick != HitActor)
+	{
+		AZeroProvisoActor* ProvisoActor = Cast<AZeroProvisoActor>(PrevGimmick);
+		if (ProvisoActor)
+		{
+			if (ProvisoActor->ProvisoType != EZeroProvisoType::Normal)
+			{
+				IZeroOutlineInterface* OutlineInterface = Cast<IZeroOutlineInterface>(PrevGimmick);
+				if (OutlineInterface)
+				{
+					OutlineInterface->SetUnOverlayMaterial();
+				}
+			}
+		}
+	}
+	PrevGimmick = HitActor;
 
 	if (bIsHit)
 	{
 		IZeroOutlineInterface* OutlineInterface = Cast<IZeroOutlineInterface>(HitActor);
 		if (OutlineInterface) OutlineInterface->SetOverlayMaterial();
-		PrevGimmick = HitActor;
 
 		for (UActorComponent* ActorComp : InHitResult.GetActor()->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
 		{
@@ -114,30 +129,6 @@ void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult
 		CurrentDialogueNPC = nullptr;
 		IZeroAfternoonInputInterface* Interface = Cast<IZeroAfternoonInputInterface>(Player);
 		if (Interface) Interface->CloseInteractUI();
-
-		if (PrevGimmick)
-		{
-			AZeroProvisoActor* ProvisoActor = Cast<AZeroProvisoActor>(PrevGimmick);
-			if (ProvisoActor)
-			{
-				if (ProvisoActor->ProvisoType != EZeroProvisoType::Normal)
-				{
-					IZeroOutlineInterface* OutlineInterface = Cast<IZeroOutlineInterface>(PrevGimmick);
-					if (OutlineInterface)
-					{
-						OutlineInterface->SetUnOverlayMaterial();
-					}
-				}
-			}
-			else
-			{
-				IZeroOutlineInterface* OutlineInterface = Cast<IZeroOutlineInterface>(PrevGimmick);
-				if (OutlineInterface)
-				{
-					OutlineInterface->SetUnOverlayMaterial();
-				}
-			}
-		}
 	}
 }
 

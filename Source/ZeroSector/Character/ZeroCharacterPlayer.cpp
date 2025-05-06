@@ -212,12 +212,22 @@ AZeroPlayerController* AZeroCharacterPlayer::GetZeroPlayerController() const
 
 void AZeroCharacterPlayer::MoveNightStartLoc(const FVector& InLocation)
 {
-	SetActorLocation(InLocation);
+	MoveLocation = InLocation;
+	FTimerHandle MoveNightHandle;
+	GetWorld()->GetTimerManager().SetTimer(MoveNightHandle, [&]()
+		{
+			SetActorLocation(MoveLocation);
+		}, 2.5f, false);
 }
 
 void AZeroCharacterPlayer::MoveAfternoonStartLoc(const FVector& InLocation)
 {
-	SetActorLocation(InLocation);
+	MoveLocation = InLocation;
+	FTimerHandle MoveAfternoonHandle;
+	GetWorld()->GetTimerManager().SetTimer(MoveAfternoonHandle, [&]()
+		{
+			SetActorLocation(MoveLocation);
+		}, 2.5f, false);
 }
 
 void AZeroCharacterPlayer::Move(const FInputActionValue& Value)

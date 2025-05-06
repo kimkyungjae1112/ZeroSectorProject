@@ -67,7 +67,7 @@ void UZeroMainMenuWidget::NativeConstruct()
 
 void UZeroMainMenuWidget::OnStartButtonClicked()
 {
-    UGameplayStatics::OpenLevel(this, "TestMap");
+    UGameplayStatics::OpenLevel(this, "KJMap");
 }
 
 void UZeroMainMenuWidget::OnQuitButtonClicked()

@@ -82,7 +82,6 @@ void AZeroWeaponBase::Fire()
 		break;
 	case EWeaponType::EShotgun:
 		ShotgunFire();
-		ZE_LOG(LogZeroSector, Display, TEXT("Shotgun Fire"));
 		break;
 	default:
 		return;

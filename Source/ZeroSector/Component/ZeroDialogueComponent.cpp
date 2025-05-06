@@ -283,6 +283,7 @@ void UZeroDialogueComponent::NextDayDialogue(uint8 InDay)
 
 		FString ContextString(TEXT("Dialogue Context"));
 		FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(RowIndex, ContextString);
+		if (FoundRow == nullptr) return;
 		DialogueTable = *FoundRow;
 
 		// 대화 DataTable의 현재 Index의 데이터가 현재 날짜와 동일하게 나온다면

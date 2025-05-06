@@ -97,6 +97,7 @@ private:
 private:
 	void MoveNightStartLoc(const FVector& InLocation);
 	void MoveAfternoonStartLoc(const FVector& InLocation);
+	FVector MoveLocation{ 0 };
 
 /* Input 바인딩 함수 */
 private:
