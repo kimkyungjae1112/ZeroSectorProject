@@ -28,7 +28,7 @@ AZeroAIControllerBase::AZeroAIControllerBase()
 
 	// Base Damaged 설정
 	DamageConfig = CreateDefaultSubobject<UAISenseConfig_Damage>(TEXT("DamageConfig"));
-	DamageConfig->SetMaxAge(5.f);
+	DamageConfig->SetMaxAge(2.f);
 
 	PerceptionComp->ConfigureSense(*SightConfig);
 	PerceptionComp->ConfigureSense(*DamageConfig);
@@ -172,4 +172,12 @@ void AZeroAIControllerBase::HandleSenseSight(AActor* Actor, const FAIStimulus& A
 
 void AZeroAIControllerBase::HandleSenseDamage(AActor* Actor, const FAIStimulus& AIStimulus)
 {
+	if (AIStimulus.WasSuccessfullySensed())
+	{
+		GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), true);
+	}
+	else
+	{
+		GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), false);
+	}
 }

@@ -139,7 +139,7 @@ void AZeroCharacterMeleeZombie::BeginDead()
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 	GetMesh()->SetSimulatePhysics(true);
 
-	const float ImpulseStrength = 3000.0f;
+	const float ImpulseStrength = 1000.0f;
 	FVector FinalImpulse = ImpulseDirection * ImpulseStrength;
 
 	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);

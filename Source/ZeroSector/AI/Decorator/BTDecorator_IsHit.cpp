@@ -13,9 +13,5 @@ bool UBTDecorator_IsHit::CalculateRawConditionValue(UBehaviorTreeComponent& Owne
 {
 	bool SuperResult = Super::CalculateRawConditionValue(OwnerComp, NodeMemory);
 
-	if (const auto* BB = OwnerComp.GetBlackboardComponent())
-	{
-		return BB->GetValueAsBool(IsHitKey);
-	}
-	return false;
+	return OwnerComp.GetBlackboardComponent()->GetValueAsBool(TEXT("IsHit"));
 }
