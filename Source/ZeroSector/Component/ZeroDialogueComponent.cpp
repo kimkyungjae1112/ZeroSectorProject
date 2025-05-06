@@ -12,6 +12,9 @@
 #include "Player/ZeroPlayerController.h"
 #include "Interface/ZeroClassIdentifierInterface.h"
 #include "Game/ZeroGameModeBase.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "AI/Controller/ZeroAIControllerNPC.h"
 #include "ZeroSector.h"
 
 UZeroDialogueComponent::UZeroDialogueComponent()
@@ -80,6 +83,8 @@ void UZeroDialogueComponent::StartDialogue()
 	}
 
 	RotationToPlayer();
+	Character->GetCharacterMovement()->MaxWalkSpeed = 0;
+
 	FString CurrentActorClassName;
 	if (IZeroClassIdentifierInterface* CII = Cast<IZeroClassIdentifierInterface>(GetOwner()))
 	{
@@ -147,6 +152,9 @@ void UZeroDialogueComponent::BeginPlay()
 	{
 		GameMode->OnStartAfternoon.AddUObject(this, &UZeroDialogueComponent::NextDayDialogue);
 	}
+
+	Character = Cast<ACharacter>(GetOwner());
+	ensure(Character);
 }
 
 void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTable, float Reliability)
@@ -177,6 +185,8 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 				DialogueWidgetPtr->RemoveFromParent();
 				OnFinishedDialogue.ExecuteIfBound();
 				InputModeGameOnly();
+				Character->GetCharacterMovement()->MaxWalkSpeed = 300.f;
+				GetAIController()->MoveToNextPoint();
 			}, 3.f, false);
 
 		bIsTalking = false;
@@ -195,12 +205,12 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 
 void UZeroDialogueComponent::RotationToPlayer()
 {
-	AActor* Owner = GetOwner();
+	ZE_LOG(LogZeroSector, Display, TEXT("플레이어로 회전"));
 	APawn* Player = GetWorld()->GetFirstPlayerController()->GetPawn();
-	if (Owner && Player)
+	if (Character && Player)
 	{
-		FVector Dir = Player->GetActorLocation() - Owner->GetActorLocation();
-		Owner->SetActorRotation(Dir.Rotation());
+		FVector Dir = (Player->GetActorLocation() - Character->GetActorLocation()).GetSafeNormal();
+		GetAIController()->SetControlRotation(Dir.Rotation());
 	}
 }
 
@@ -248,6 +258,8 @@ void UZeroDialogueComponent::InProgressDialogue()
 				DialogueWidgetPtr->RemoveFromParent();
 				OnFinishedDialogue.ExecuteIfBound();
 				InputModeGameOnly();
+				Character->GetCharacterMovement()->MaxWalkSpeed = 300.f;
+				GetAIController()->MoveToNextPoint();
 			}, 3.f, false);
 
 		bIsTalking = false;
@@ -283,6 +295,11 @@ void UZeroDialogueComponent::NextDayDialogue(uint8 InDay)
 			return;
 		}
 	}
+}
+
+AZeroAIControllerNPC* UZeroDialogueComponent::GetAIController() const
+{
+	return Cast<AZeroAIControllerNPC>(Character->GetController());
 }
 
 void UZeroDialogueComponent::DialogueOptionSpawn(const FZeroDialogueOptionDataTable& InDialogueOptionTable)

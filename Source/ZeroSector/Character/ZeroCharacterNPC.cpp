@@ -34,6 +34,7 @@ AZeroCharacterNPC::AZeroCharacterNPC()
 		WidgetComp->SetWidgetSpace(EWidgetSpace::Screen);
 		WidgetComp->SetDrawSize(FVector2D(150.f, 15.f));
 		WidgetComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		WidgetComp->SetVisibility(false);
 	}
 
 	TeamId = FGenericTeamId(0);
