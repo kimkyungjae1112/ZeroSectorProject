@@ -33,7 +33,6 @@ public:
 	void MoveToNextPoint();
 
 protected:
-	virtual void OnPossess(APawn* InPawn) override;
 	virtual void BeginPlay() override;
 
 private:

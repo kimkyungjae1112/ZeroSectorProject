@@ -37,14 +37,6 @@ void AZeroAIControllerNPC::MoveToNextPoint()
 	CurrentIndex = (CurrentIndex + 1) % WayPoints[AZeroGameModeBase::Day].WayPoint.Num();
 }
 
-
-void AZeroAIControllerNPC::OnPossess(APawn* InPawn)
-{
-	Super::OnPossess(InPawn);
-
-	//RunAI();
-}
-
 void AZeroAIControllerNPC::BeginPlay()
 {
 	Super::BeginPlay();
