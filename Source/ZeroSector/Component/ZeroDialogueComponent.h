@@ -13,6 +13,8 @@ struct FZeroDialogueOptionDataTable;
 class UZeroDialogueWidget;
 class UZeroDialogueOptionWidget;
 class UZeroResearcherData;
+class ACharacter;
+class AZeroAIControllerNPC;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ZEROSECTOR_API UZeroDialogueComponent 
@@ -55,6 +57,14 @@ private:
 /* 다음 날로 넘어가는 함수 */
 private:
 	void NextDayDialogue(uint8 InDay);
+
+/* Owner */
+private:
+	AZeroAIControllerNPC* GetAIController() const;
+
+	UPROPERTY(VisibleAnywhere, Category = "Owner")
+	TObjectPtr<ACharacter> Character;
+
 
 /* UI */
 private:
