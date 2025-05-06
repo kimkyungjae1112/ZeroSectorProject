@@ -7,6 +7,8 @@
 #include "ZeroCharacterNPC.generated.h"
 
 class UZeroDialogueComponent;
+class UZeroNPCWidgetComponent;
+class UZeroNPCNameWidget;
 
 /*
 	Speedwagon
@@ -25,11 +27,21 @@ class ZEROSECTOR_API AZeroCharacterNPC : public AZeroCharacterBase
 public:
 	AZeroCharacterNPC();
 
+	virtual void Tick(float DeltaTime) override;
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Dialogue")
+	void DisplayName();
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Component")
 	TObjectPtr<UZeroDialogueComponent> DialogueComp;
 
+	UPROPERTY(VisibleAnywhere, Category = "Component")
+	TObjectPtr<UZeroNPCWidgetComponent> WidgetComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TSubclassOf<UZeroNPCNameWidget> NPCNameClass;
 };
