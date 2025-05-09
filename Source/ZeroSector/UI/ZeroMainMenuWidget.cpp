@@ -12,6 +12,7 @@
 #include "GameFramework/GameUserSettings.h"
 #include "Game/ZeroGameInstance.h"
 #include "Game/ZeroGameSettingManager.h"
+#include "GameFramework/GameUserSettings.h"
 
 void UZeroMainMenuWidget::NativeConstruct()
 {
@@ -152,6 +153,11 @@ void UZeroMainMenuWidget::InitializeResolutionOptions()
 {
     if (!ResolutionComboBox) return;
 
+    // 실제 데스크탑 해상도 가져오기
+    FIntPoint DesktopRes = UGameUserSettings::GetGameUserSettings()->GetDesktopResolution();
+    int32 ScreenWidth = DesktopRes.X;
+    int32 ScreenHeight = DesktopRes.Y;
+
     TArray<FString> Resolutions = {
         TEXT("1280x720"),
         TEXT("1600x900"),
@@ -162,7 +168,21 @@ void UZeroMainMenuWidget::InitializeResolutionOptions()
 
     for (const FString& Res : Resolutions)
     {
-        ResolutionComboBox->AddOption(Res);
+        FString WidthStr, HeightStr;
+        if (Res.Split(TEXT("x"), &WidthStr, &HeightStr))
+        {
+            int32 W = FCString::Atoi(*WidthStr);
+            int32 H = FCString::Atoi(*HeightStr);
+
+            if (W <= ScreenWidth && H <= ScreenHeight)
+            {
+                ResolutionComboBox->AddOption(Res);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Log, TEXT("해상도 %s 제외됨: 데스크탑 화면보다 큼 (%d x %d)"), *Res, ScreenWidth, ScreenHeight);
+            }
+        }
     }
 }
 
