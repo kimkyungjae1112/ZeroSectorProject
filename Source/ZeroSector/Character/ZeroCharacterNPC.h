@@ -9,6 +9,7 @@
 class UZeroDialogueComponent;
 class UZeroNPCWidgetComponent;
 class UZeroNPCNameWidget;
+class AZeroAIControllerNPC;
 
 /*
 	Speedwagon
@@ -32,6 +33,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+
+// 유틸리티
+private:
+	AZeroAIControllerNPC* GetAIController() const;
+
+// 다음날 이동 함수 등록
+private:
+	void MoveNextDayStartLoc(const FVector& InLocation);
+
+// NPC 이름 호출
 private:
 	void DisplayName();
 

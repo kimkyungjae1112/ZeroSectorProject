@@ -36,12 +36,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	TObjectPtr<UBlackboardData> BBData;
-
-	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	TObjectPtr<UBehaviorTree> BTData;
-
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TMap<uint8, FWayPoint> WayPoints;
 

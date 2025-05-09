@@ -10,6 +10,7 @@
 #include "Game/ZeroGameModeBase.h"
 #include "Engine/OverlapResult.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "AI/Controller/ZeroAIControllerNPC.h"
 #include "ZeroSector.h"
 
 AZeroCharacterNPC::AZeroCharacterNPC()
@@ -55,6 +56,24 @@ void AZeroCharacterNPC::Tick(float DeltaTime)
 void AZeroCharacterNPC::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AZeroGameModeBase* GameMode = CastChecked<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
+	{
+		GameMode->OnAfternoonLocation.AddUObject(this, &AZeroCharacterNPC::MoveNextDayStartLoc);
+	}
+}
+
+AZeroAIControllerNPC* AZeroCharacterNPC::GetAIController() const
+{
+	return CastChecked<AZeroAIControllerNPC>(GetController());
+}
+
+void AZeroCharacterNPC::MoveNextDayStartLoc(const FVector& InLocation)
+{
+	SetActorLocation(InLocation + FVector(1000.f, 0.f, 0.f));
+
+	GetAIController()->MoveToNextPoint();
 }
 
 void AZeroCharacterNPC::DisplayName()
