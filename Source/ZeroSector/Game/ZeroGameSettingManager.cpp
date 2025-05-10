@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Game/ZeroGameSettingManager.h"
@@ -12,6 +12,8 @@ void UZeroGameSettingManager::Init()
 void UZeroGameSettingManager::SetResolution(const FString& InResolution)
 {
     Resolution = InResolution;
+
+    UE_LOG(LogTemp, Warning, TEXT("SetResolution 호출됨: %s"), *InResolution);
 }
 
 void UZeroGameSettingManager::SetWindowMode(const FString& InWindowMode)
@@ -32,6 +34,7 @@ void UZeroGameSettingManager::SetVolume(float InVolume)
 
 void UZeroGameSettingManager::ApplySettings()
 {
+
     if (UGameUserSettings* Settings = GEngine->GetGameUserSettings())
     {
         FString WidthStr, HeightStr;
@@ -40,6 +43,12 @@ void UZeroGameSettingManager::ApplySettings()
             int32 Width = FCString::Atoi(*WidthStr);
             int32 Height = FCString::Atoi(*HeightStr);
             Settings->SetScreenResolution(FIntPoint(Width, Height));
+
+            if (GEngine && GEngine->GameViewport && GEngine->GameViewport->GetWorld())
+            {
+                FString Command = FString::Printf(TEXT("r.SetRes %dx%df"), Width, Height);
+                GEngine->Exec(GEngine->GameViewport->GetWorld(), *Command);
+            }
         }
 
         if (WindowMode == "Fullscreen")
@@ -49,7 +58,9 @@ void UZeroGameSettingManager::ApplySettings()
         else if (WindowMode == "Borderless")
             Settings->SetFullscreenMode(EWindowMode::WindowedFullscreen);
 
-        Settings->ApplySettings(true);
+        Settings->ApplySettings(false);
+        Settings->SaveSettings();
     }
+
 }
 

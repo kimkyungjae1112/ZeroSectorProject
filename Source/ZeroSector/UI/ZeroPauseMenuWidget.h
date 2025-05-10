@@ -10,6 +10,7 @@ class UButton;
 class USlider;
 class UComboBoxString;
 class UCanvasPanel;
+class UTextBlock;
 
 UCLASS()
 class ZEROSECTOR_API UZeroPauseMenuWidget : public UUserWidget
@@ -46,6 +47,7 @@ class ZEROSECTOR_API UZeroPauseMenuWidget : public UUserWidget
     void InitializeResolutionOptions();
     void InitializeWindowModeOptions();
 
+
 protected:
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> ResumeButton;
@@ -73,5 +75,7 @@ protected:
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UComboBoxString> WindowModeComboBox;
+
+
 };
 
