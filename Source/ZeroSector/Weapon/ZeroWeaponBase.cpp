@@ -10,6 +10,7 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Camera/CameraShakeBase.h"
+#include "Components/AudioComponent.h"
 #include "ZeroSector.h"
 
 AZeroWeaponBase::AZeroWeaponBase()
@@ -27,6 +28,10 @@ AZeroWeaponBase::AZeroWeaponBase()
 		EffectComp->SetCollisionProfileName(TEXT("NoCollision"));
 		EffectComp->SetVisibility(false);
 	}
+
+	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
+	AudioComp->SetupAttachment(GunMeshComp);
+	AudioComp->bAutoActivate = false;
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> PistolDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/WeaponStat/PistolStatDataTable.PistolStatDataTable'"));
 	if (PistolDataTableRef.Object)

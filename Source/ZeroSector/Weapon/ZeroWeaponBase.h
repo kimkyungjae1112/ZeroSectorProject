@@ -12,6 +12,7 @@ class UZeroWeaponAnimInstance;
 class UAnimMontage;
 class UAnimInstance;
 class UCameraShakeBase;
+class UAudioComponent;
 
 DECLARE_DELEGATE_OneParam(FOnChangedAmmo, int32 /* Current Ammo */)
 DECLARE_DELEGATE_OneParam(FOnSetMaxAmmo, int32 /* Max Ammo */)
@@ -76,6 +77,14 @@ protected:
 
 	int32 Level = 1;
 
+// 특수효과 컴포넌트
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "Effect")
+	TObjectPtr<UStaticMeshComponent> EffectComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+	TObjectPtr<UAudioComponent> AudioComp;
+
 // 무기 실제 기능
 private:
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
@@ -121,9 +130,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Shake")
 	TSubclassOf<UCameraShakeBase> ShotgunShake;
-
-	UPROPERTY(VisibleAnywhere, Category = "Effect")
-	TObjectPtr<UStaticMeshComponent> EffectComp;
+	
 	/* 
 		SoundComp
 		ParticleComp

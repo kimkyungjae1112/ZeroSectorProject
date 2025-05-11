@@ -6,6 +6,8 @@
 #include "Weapon/ZeroWeaponBase.h"
 #include "ZeroWeaponRifle.generated.h"
 
+class USoundWave;
+
 UCLASS()
 class ZEROSECTOR_API AZeroWeaponRifle : public AZeroWeaponBase
 {
@@ -17,4 +19,8 @@ public:
 	virtual void Fire() override;
 	virtual FORCEINLINE void Upgrade(int32 InLevel) override { Level = InLevel; }
 	virtual FORCEINLINE int32 GetLevel() const override { return Level; }
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Sound")
+	TObjectPtr<USoundWave> FireSound;
 };

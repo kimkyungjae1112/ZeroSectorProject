@@ -3,6 +3,8 @@
 
 #include "Weapon/ZeroWeaponShotgun.h"
 #include "Animation/AnimInstance.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundWave.h"
 
 AZeroWeaponShotgun::AZeroWeaponShotgun()
 {
@@ -16,6 +18,11 @@ AZeroWeaponShotgun::AZeroWeaponShotgun()
 	{
 		GunMeshComp->SetAnimInstanceClass(ShotgunABPRef.Class);
 	}
+	static ConstructorHelpers::FObjectFinder<USoundWave> FireSoundRef(TEXT("/Script/Engine.SoundWave'/Game/Characters/Weapons/Assets/Audio/GunFire/SW_GunFire_01.SW_GunFire_01'"));
+	if (FireSoundRef.Object)
+	{
+		FireSound = FireSoundRef.Object;
+	}
 
 	WeaponType = EWeaponType::EShotgun;
 }
@@ -24,4 +31,6 @@ void AZeroWeaponShotgun::Fire()
 {
 	Super::Fire();
 
+	AudioComp->SetSound(FireSound);
+	AudioComp->Play();
 }
