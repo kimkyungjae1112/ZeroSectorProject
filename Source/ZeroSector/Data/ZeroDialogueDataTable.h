@@ -36,5 +36,8 @@ public:
 	uint8 Day;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	uint8 ReliabilityLevel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	TArray<FZeroDialogueOptionDataTable> OptionDialogues;
 };

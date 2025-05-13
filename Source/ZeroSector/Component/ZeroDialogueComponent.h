@@ -15,6 +15,7 @@ class UZeroDialogueOptionWidget;
 class UZeroResearcherData;
 class ACharacter;
 class AZeroAIControllerNPC;
+class AZeroPlayerController;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ZEROSECTOR_API UZeroDialogueComponent 
@@ -40,6 +41,10 @@ public:
 	/* Editor 에서 실행한 후 데이터 초기화 해주는 함수 */
 	void ShutdownGame();
 
+/* Util */
+private:
+	AZeroPlayerController* GetPlayerController() const;
+
 /* Owner Actor Rotation */
 private:
 	void RotationToPlayer();
@@ -57,6 +62,10 @@ private:
 /* 다음 날로 넘어가는 함수 */
 private:
 	void NextDayDialogue(uint8 InDay);
+
+/* 인터뷰로 넘어가는 함수 */
+private:
+	void StartInterviewDialogue(uint8 InReliabilityLevel);
 
 /* Owner */
 private:
@@ -106,6 +115,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	FName PrevIndex;
+
+	UPROPERTY(EditAnywhere, Category = "Level")
+	uint8 ReliabilityLevel;
 
 	FOnFinishedDialogue OnFinishedDialogue;
 
