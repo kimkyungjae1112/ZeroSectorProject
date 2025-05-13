@@ -33,7 +33,7 @@ UZeroDialogueComponent::UZeroDialogueComponent()
 	P_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_P.DialogueDataTable_P'"));
 	S_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_S.DialogueDataTable_S'"));
 	V_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_V.DialogueDataTable_V'"));
-	C_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_C.DialogueDataTable_C'"));
+	C_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_C1.DialogueDataTable_C1'"));
 	N1_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N1.DialogueDataTable_N1'"));
 	N2_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N2.DialogueDataTable_N2'"));
 	N3_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N3.DialogueDataTable_N3'"));
@@ -58,6 +58,8 @@ UZeroDialogueComponent::UZeroDialogueComponent()
 	ResearcherDataMap.Add(TEXT("Normal1"), N1_Researcher);
 	ResearcherDataMap.Add(TEXT("Normal2"), N2_Researcher);
 	ResearcherDataMap.Add(TEXT("Normal3"), N3_Researcher);
+
+	PrevIndex = TEXT("1");
 }
 
 void UZeroDialogueComponent::StartDialogue()
@@ -91,11 +93,12 @@ void UZeroDialogueComponent::StartDialogue()
 		CurrentActorClassName = CII->GetClassName().ToString();
 	}
 
-	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
+	AZeroPlayerController* PC = GetPlayerController();
 	if (PC && PC->SelectedInterviewName == CurrentActorClassName && PC->GetAfternoonHUDWidget())
 	{
 		bIsInterview = true;
 		PC->GetAfternoonHUDWidget()->HideInterviewText();
+		StartInterviewDialogue(ReliabilityLevel);
 	}
 
 	
@@ -114,7 +117,7 @@ void UZeroDialogueComponent::StartDialogue()
 		return;
 	}
 
-	DialogueDataInit();
+	if(!bIsInterview) DialogueDataInit();
 }
 
 void UZeroDialogueComponent::SetupFinishedDialogueDelegate(const FOnFinishedDialogue& InOnFinishedDialogue)
@@ -125,6 +128,11 @@ void UZeroDialogueComponent::SetupFinishedDialogueDelegate(const FOnFinishedDial
 void UZeroDialogueComponent::ShutdownGame()
 {
 	ResearcherData->Trust = 0.f;
+}
+
+AZeroPlayerController* UZeroDialogueComponent::GetPlayerController() const
+{
+	return Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
 }
 
 void UZeroDialogueComponent::BeginPlay()
@@ -160,7 +168,13 @@ void UZeroDialogueComponent::BeginPlay()
 void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTable, float Reliability)
 {
 	ResearcherData->Trust += Reliability;
-	ZE_LOG(LogZeroSector, Display, TEXT("신뢰도 : %f"), ResearcherData->Trust)
+
+	// 임시 신뢰 단계
+	if (ResearcherData->Trust < 100.f) ReliabilityLevel = 0;
+	else if (ResearcherData->Trust >= 100.f && ResearcherData->Trust < 300.f) ReliabilityLevel = 1;
+	else if (ResearcherData->Trust >= 300.f) ReliabilityLevel = 2;
+
+	ZE_LOG(LogZeroSector, Display, TEXT("신뢰도 : %f, 신뢰 레벨 : %d"), ResearcherData->Trust, ReliabilityLevel);
 	DialogueWidgetPtr->GetScrollBox()->ClearChildren();
 
 	DialogueTable = InDialogueTable;
@@ -189,13 +203,15 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 				GetAIController()->MoveToNextPoint();
 			}, 3.f, false);
 
+
+		FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(PrevIndex, FString());
+		DialogueTable = *FoundRow;
+		
 		bIsTalking = false;
 		bIsInterview = false;
-		if (AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController())) PC->SelectedInterviewName = "";
+		GetPlayerController()->SelectedInterviewName = "";
 
-		FString ContextString(TEXT("Dialogue Context"));
-		FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(DialogueTable.PrevIndex, ContextString);
-		DialogueTable = *FoundRow;
+		
 	}
 	else
 	{
@@ -262,11 +278,12 @@ void UZeroDialogueComponent::InProgressDialogue()
 				GetAIController()->MoveToNextPoint();
 			}, 3.f, false);
 
-		bIsTalking = false;
-
-		FString ContextString(TEXT("Dialogue Context"));
-		FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(DialogueTable.PrevIndex, ContextString);
+		FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(PrevIndex, FString());
 		DialogueTable = *FoundRow;
+
+		bIsTalking = false;
+		bIsInterview = false;
+		GetPlayerController()->SelectedInterviewName = "";
 	}
 
 	DialogueDataInit();
@@ -293,6 +310,19 @@ void UZeroDialogueComponent::NextDayDialogue(uint8 InDay)
 			RowIndex = DialogueTable.RowIndex;
 			bIsEnd = DialogueTable.bIsEnd;
 			PrevIndex = DialogueTable.PrevIndex;
+			return;
+		}
+	}
+}
+
+void UZeroDialogueComponent::StartInterviewDialogue(uint8 InReliabilityLevel)
+{
+	for (int i = -2; i <= 0; ++i)
+	{
+		FName TempIndex = FName(*FString::Printf(TEXT("%d"), i));
+		if (DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(TempIndex, FString())->ReliabilityLevel == InReliabilityLevel)
+		{
+			DialogueTable = *DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(TempIndex, FString())->DataTable->FindRow<FZeroDialogueDataTable>(TEXT("1"), FString());
 			return;
 		}
 	}
@@ -343,12 +373,9 @@ void UZeroDialogueComponent::DialogueDataInit()
 		return;
 	}
 
-	// 3. FindRow 호출
+	// 3. 데이터 할당
 	FString ContextString(TEXT("Dialogue Context"));
-	FZeroDialogueDataTable* FoundRow = DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(RowIndex, ContextString);
-
-	// 4. 데이터 할당
-	DialogueTable = *FoundRow;
+	DialogueTable = *DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(RowIndex, ContextString);
 	ZE_LOG(LogZeroSector, Warning, TEXT("Dialogue Loaded: %s"), *DialogueTable.Dialogue.ToString());
 }
 
@@ -366,16 +393,11 @@ void UZeroDialogueComponent::DialogueOptionDataInit(TSoftObjectPtr<UDataTable> I
 		return;
 	}
 
-	// 3. FindRow 호출
+	// 3. 데이터 할당
 	FString ContextString(TEXT("Dialogue Context"));
-	FZeroDialogueDataTable* FoundRow = InDataTable->FindRow<FZeroDialogueDataTable>(InRowIndex, ContextString);
-
-	// 4. 데이터 할당
-	DialogueOptionWidgetPtr->DialogueTableInOption = *FoundRow;
+	DialogueOptionWidgetPtr->DialogueTableInOption = *InDataTable->FindRow<FZeroDialogueDataTable>(InRowIndex, ContextString);
 	ZE_LOG(LogZeroSector, Warning, TEXT("Dialogue Loaded: %s"), *DialogueOptionWidgetPtr->DialogueTableInOption.Dialogue.ToString());
 }
-
-
 
 
 
