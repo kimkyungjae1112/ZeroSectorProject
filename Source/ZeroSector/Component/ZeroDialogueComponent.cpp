@@ -322,6 +322,11 @@ void UZeroDialogueComponent::StartInterviewDialogue(uint8 InReliabilityLevel)
 		FName TempIndex = FName(*FString::Printf(TEXT("%d"), i));
 		if (DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(TempIndex, FString())->ReliabilityLevel == InReliabilityLevel)
 		{
+			if (DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(TempIndex, FString())->DataTable.IsPending())
+			{
+				DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(TempIndex, FString())->DataTable.LoadSynchronous();
+			}
+
 			DialogueTable = *DialogueTable.DataTable->FindRow<FZeroDialogueDataTable>(TempIndex, FString())->DataTable->FindRow<FZeroDialogueDataTable>(TEXT("1"), FString());
 			return;
 		}
