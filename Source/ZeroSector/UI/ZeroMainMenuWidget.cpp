@@ -45,6 +45,12 @@ void UZeroMainMenuWidget::NativeConstruct()
         VolumeSlider->SetValue(SM->GetVolume());
     }
 
+    if (SFXSlider && SM)
+    {
+        SFXSlider->OnValueChanged.AddDynamic(this, &UZeroMainMenuWidget::OnSFXChanged);
+        SFXSlider->SetValue(SM->GetSFXVolume());
+    }
+
     if (ResolutionComboBox && SM)
     {
         ResolutionComboBox->OnSelectionChanged.AddDynamic(this, &UZeroMainMenuWidget::OnResolutionChanged);
@@ -80,8 +86,22 @@ void UZeroMainMenuWidget::OnOptionButtonClicked()
 {
     if (OptionPanel)
     {
-        const bool bIsVisible = OptionPanel->GetVisibility() == ESlateVisibility::Visible;
-        OptionPanel->SetVisibility(bIsVisible ? ESlateVisibility::Collapsed : ESlateVisibility::Visible);
+        const bool bVisible = OptionPanel->GetVisibility() == ESlateVisibility::Visible;
+        OptionPanel->SetVisibility(bVisible ? ESlateVisibility::Collapsed : ESlateVisibility::Visible);
+
+        if (!bVisible)
+        {
+            if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
+            {
+                if (UZeroGameSettingManager* SM = GI->SettingManager)
+                {
+                    if (VolumeSlider) VolumeSlider->SetValue(SM->GetTempVolume());
+                    if (SFXSlider) SFXSlider->SetValue(SM->GetTempSFXVolume());
+                    if (ResolutionComboBox) ResolutionComboBox->SetSelectedOption(SM->GetTempResolution());
+                    if (WindowModeComboBox) WindowModeComboBox->SetSelectedOption(SM->GetTempWindowMode());
+                }
+            }
+        }
     }
 
     if (ApplySettingButton)
@@ -96,6 +116,10 @@ void UZeroMainMenuWidget::OnOptionExitButtonClicked()
     {
         OptionPanel->SetVisibility(ESlateVisibility::Collapsed);
     }
+
+    UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+    UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
+    SM->ResetTempSettings();
 }
 
 void UZeroMainMenuWidget::OnVolumeChanged(float Value)
@@ -104,7 +128,19 @@ void UZeroMainMenuWidget::OnVolumeChanged(float Value)
     {
         if (UZeroGameSettingManager* SM = GI->SettingManager)
         {
-            SM->SetVolume(Value);
+            SM->PreviewTempVolume(Value);
+            ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
+        }
+    }
+}
+
+void UZeroMainMenuWidget::OnSFXChanged(float Value)
+{
+    if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
+    {
+        if (UZeroGameSettingManager* SM = GI->SettingManager)
+        {
+            SM->PreviewTempSFX(Value);
             ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
         }
     }
@@ -116,7 +152,7 @@ void UZeroMainMenuWidget::OnResolutionChanged(FString SelectedItem, ESelectInfo:
     {
         if (UZeroGameSettingManager* SM = GI->SettingManager)
         {
-            SM->SetResolution(SelectedItem);
+            SM->SetTempResolution(SelectedItem);
             ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
         }
     }
@@ -128,7 +164,7 @@ void UZeroMainMenuWidget::OnWindowModeChanged(FString SelectedItem, ESelectInfo:
     {
         if (UZeroGameSettingManager* SM = GI->SettingManager)
         {
-            SM->SetWindowMode(SelectedItem);
+            SM->SetTempWindowMode(SelectedItem);
             ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
         }
     }

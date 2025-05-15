@@ -19,4 +19,9 @@ public:
 	
 	UPROPERTY()
 	class UZeroGameSettingManager* SettingManager;
+
+	UPROPERTY()
+	class UZeroSoundManager* SoundManager;
+
+	UZeroSoundManager* GetSoundManager() const { return SoundManager; }
 };

@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Game/ZeroGameInstance.h"
 #include "Game/ZeroGameSettingManager.h"
+#include "Game/ZeroSoundManager.h"
 #include "Player/ZeroPlayerController.h"
 #include "GameFramework/GameUserSettings.h"
 
@@ -18,6 +19,7 @@ void UZeroPauseMenuWidget::NativeOnInitialized()
 
     UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
     UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
+
 
     if (ResumeButton)
         ResumeButton->OnClicked.AddDynamic(this, &UZeroPauseMenuWidget::OnResumeButtonClicked);
@@ -42,6 +44,13 @@ void UZeroPauseMenuWidget::NativeOnInitialized()
         VolumeSlider->OnValueChanged.AddDynamic(this, &UZeroPauseMenuWidget::OnVolumeChanged);
         VolumeSlider->SetValue(SM->GetVolume());
     }
+
+    if (SFXSlider && SM)
+    {
+        SFXSlider->OnValueChanged.AddDynamic(this, &UZeroPauseMenuWidget::OnSFXChanged);
+        SFXSlider->SetValue(SM->GetSFXVolume());
+    }
+
 
     if (ResolutionComboBox && SM)
     {
@@ -72,12 +81,24 @@ void UZeroPauseMenuWidget::OnResumeButtonClicked()
     {
         PC->InputModeGameOnly();
     }
+
+    UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+    }
 }
 
 void UZeroPauseMenuWidget::OnMainMenuButtonClicked()
 {
     UGameplayStatics::SetGamePaused(GetWorld(), false);
     UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
+
+    UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+    }
 }
 
 void UZeroPauseMenuWidget::OnOptionButtonClicked()
@@ -86,6 +107,26 @@ void UZeroPauseMenuWidget::OnOptionButtonClicked()
     {
         const bool bVisible = OptionPanel->GetVisibility() == ESlateVisibility::Visible;
         OptionPanel->SetVisibility(bVisible ? ESlateVisibility::Collapsed : ESlateVisibility::Visible);
+
+        if (!bVisible)  
+        {
+            if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
+            {
+                if (UZeroGameSettingManager* SM = GI->SettingManager)
+                {
+                    if (VolumeSlider) VolumeSlider->SetValue(SM->GetTempVolume());
+                    if (SFXSlider) SFXSlider->SetValue(SM->GetTempSFXVolume());
+                    if (ResolutionComboBox) ResolutionComboBox->SetSelectedOption(SM->GetTempResolution());
+                    if (WindowModeComboBox) WindowModeComboBox->SetSelectedOption(SM->GetTempWindowMode());
+                }
+            }
+        }
+
+        UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+        if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+        {
+            UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+        }
     }
 
     if (ApplySettingButton)
@@ -94,12 +135,18 @@ void UZeroPauseMenuWidget::OnOptionButtonClicked()
     }
 }
 
+
 void UZeroPauseMenuWidget::OnOptionExitButtonClicked()
 {
     if (OptionPanel)
     {
         OptionPanel->SetVisibility(ESlateVisibility::Collapsed);
     }
+
+    UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+    UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
+    SM->ResetTempSettings();
+
 }
 
 void UZeroPauseMenuWidget::OnVolumeChanged(float Value)
@@ -108,7 +155,19 @@ void UZeroPauseMenuWidget::OnVolumeChanged(float Value)
     {
         if (UZeroGameSettingManager* SM = GI->SettingManager)
         {
-            SM->SetVolume(Value);
+            SM->PreviewTempVolume(Value);
+            ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
+        }
+    }
+}
+
+void UZeroPauseMenuWidget::OnSFXChanged(float Value)
+{
+    if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
+    {
+        if (UZeroGameSettingManager* SM = GI->SettingManager)
+        {
+            SM->PreviewTempSFX(Value);
             ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
         }
     }
@@ -120,7 +179,7 @@ void UZeroPauseMenuWidget::OnResolutionChanged(FString SelectedItem, ESelectInfo
     {
         if (UZeroGameSettingManager* SM = GI->SettingManager)
         {
-            SM->SetResolution(SelectedItem);
+            SM->SetTempResolution(SelectedItem);
             ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
         }
     }
@@ -132,7 +191,7 @@ void UZeroPauseMenuWidget::OnWindowModeChanged(FString SelectedItem, ESelectInfo
     {
         if (UZeroGameSettingManager* SM = GI->SettingManager)
         {
-            SM->SetWindowMode(SelectedItem);
+            SM->SetTempWindowMode(SelectedItem);
             ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
         }
     }
@@ -147,8 +206,8 @@ void UZeroPauseMenuWidget::OnApplySettingsClicked()
             SM->ApplySettings();
             ApplySettingButton->SetVisibility(ESlateVisibility::Collapsed);
 
-            UE_LOG(LogTemp, Log, TEXT("퍼즈 메뉴 설정 적용됨: %s / %s / 볼륨 %.2f"),
-                *SM->GetResolution(), *SM->GetWindowMode(), SM->GetVolume());
+            UE_LOG(LogTemp, Log, TEXT("퍼즈 메뉴 설정 적용됨: %s / %s / 볼륨 %.2f / 효과음 %.2f"),
+                *SM->GetResolution(), *SM->GetWindowMode(), SM->GetVolume(), SM->GetSFXVolume());
         }
     }
 }

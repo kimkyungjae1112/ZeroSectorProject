@@ -12,6 +12,10 @@
 #include "Game/ZeroNightPlayerStart.h"
 #include "Game/ZeroAfternoonPlayerStart.h"
 #include "Gimmick/ZeroWaveTrigger.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroGameSettingManager.h"
+#include "Sound/SoundClass.h"
+#include "Components/AudioComponent.h"
 #include "ZeroSector.h"
 
 uint8 AZeroGameModeBase::Day = 1;
@@ -40,6 +44,7 @@ AZeroGameModeBase::AZeroGameModeBase()
 	}
 
 	CurrentDaySequence = EDaySequence::EAfternoon;
+
 }
 
 void AZeroGameModeBase::BeginPlay()
@@ -53,6 +58,19 @@ void AZeroGameModeBase::BeginPlay()
 
 	UZeroSingleton::Get().ExcludedResearcherName = TEXT("");
 	UZeroSingleton::Get().ResetCollectedProvisos();
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+	UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
+
+	USoundBase* AfternoonBGM = LoadObject<USoundBase>(nullptr, TEXT("/Script/Engine.SoundCue'/Game/Sound/RPG_Lite_Edition/Cues/The_Wandering_Hero_Exploration_Theme/CUE_The_Wandering_Hero_Version_02_Fade_Out_Cue.CUE_The_Wandering_Hero_Version_02_Fade_Out_Cue'"));
+	if (AfternoonBGM && SM)
+	{
+		BGMAudioComponent = UGameplayStatics::SpawnSound2D(this, AfternoonBGM);
+		if (BGMAudioComponent)
+		{
+			BGMAudioComponent->SetVolumeMultiplier(SM->GetVolume());
+		}
+	}
 }
 
 void AZeroGameModeBase::InitNight()
@@ -191,6 +209,26 @@ void AZeroGameModeBase::ChangeDayToNight()
 
 	DecreaseTime();
 	OnStartNight.ExecuteIfBound(MaxWave);
+
+	if (BGMAudioComponent)
+	{
+		BGMAudioComponent->Stop();
+		BGMAudioComponent = nullptr;
+	}
+
+	// 새로운 밤 브금 재생
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+	UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
+
+	USoundBase* NightBGM = LoadObject<USoundBase>(nullptr, TEXT("SoundCue'/Game/Sound/FPS_Menu_Music_Vol_1/Cues/juanjo_-_FPS_Menu_Music_Theme_4_Cue.juanjo_-_FPS_Menu_Music_Theme_4_Cue'"));
+	if (NightBGM && SM)
+	{
+		BGMAudioComponent = UGameplayStatics::SpawnSound2D(this, NightBGM);
+		if (BGMAudioComponent)
+		{
+			BGMAudioComponent->SetVolumeMultiplier(SM->GetVolume());
+		}
+	}
 }
 
 void AZeroGameModeBase::DecreaseTime()

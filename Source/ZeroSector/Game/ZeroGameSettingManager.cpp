@@ -3,6 +3,8 @@
 
 #include "Game/ZeroGameSettingManager.h"
 #include "Sound/SoundClass.h"
+#include "Game/ZeroGameModeBase.h"
+#include "Components/AudioComponent.h"
 #include "GameFramework/GameUserSettings.h"
 
 void UZeroGameSettingManager::Init()
@@ -30,10 +32,106 @@ void UZeroGameSettingManager::SetVolume(float InVolume)
     {
         SoundClass->Properties.Volume = Volume;
     }
+
+    if (UWorld* World = GEngine->GetWorld())
+    {
+        AZeroGameModeBase* GM = Cast<AZeroGameModeBase>(World->GetAuthGameMode());
+        if (GM && GM->BGMAudioComponent)
+        {
+            GM->BGMAudioComponent->SetVolumeMultiplier(Volume);
+        }
+    }
 }
+
+void UZeroGameSettingManager::SetSFX(float InSFX)
+{
+    SFXVolume = FMath::Clamp(InSFX, 0.f, 1.f);
+
+    static const FString Path = TEXT("/Script/Engine.SoundClass'/Game/Sound/SFX_SoundClass.SFX_SoundClass'");
+    if (USoundClass* SoundClass = LoadObject<USoundClass>(nullptr, *Path))
+    {
+        SoundClass->Properties.Volume = SFXVolume;
+    }
+
+    if (UWorld* World = GEngine->GetWorld())
+    {
+        AZeroGameModeBase* GM = Cast<AZeroGameModeBase>(World->GetAuthGameMode());
+        if (GM && GM->SFXAudioComponent)
+        {
+            GM->SFXAudioComponent->SetVolumeMultiplier(SFXVolume);
+        }
+    }
+}
+
+void UZeroGameSettingManager::SetTempVolume(float InVolume)
+{
+    TempVolume = FMath::Clamp(InVolume, 0.f, 1.f);
+}
+
+void UZeroGameSettingManager::SetTempSFX(float InSFX)
+{
+    TempSFXVolume = FMath::Clamp(InSFX, 0.f, 1.f);
+}
+
+void UZeroGameSettingManager::SetTempResolution(const FString& InRes)
+{
+    TempResolution = InRes;
+}
+
+void UZeroGameSettingManager::SetTempWindowMode(const FString& InMode)
+{
+    TempWindowMode = InMode;
+}
+
+void UZeroGameSettingManager::PreviewTempVolume(float InVolume)
+{
+    TempVolume = FMath::Clamp(InVolume, 0.f, 1.f);
+
+    // 실제로 반영 (SoundClass)
+    static const FString Path = TEXT("/Script/Engine.SoundClass'/Game/Sound/BGM_SoundClass.BGM_SoundClass'");
+    if (USoundClass* SoundClass = LoadObject<USoundClass>(nullptr, *Path))
+    {
+        SoundClass->Properties.Volume = TempVolume;
+    }
+
+    if (UWorld* World = GEngine->GetWorld())
+    {
+        AZeroGameModeBase* GM = Cast<AZeroGameModeBase>(World->GetAuthGameMode());
+        if (GM && GM->BGMAudioComponent)
+        {
+            GM->BGMAudioComponent->SetVolumeMultiplier(TempVolume);
+        }
+    }
+}
+
+void UZeroGameSettingManager::PreviewTempSFX(float InSFX)
+{
+    TempSFXVolume = FMath::Clamp(InSFX, 0.f, 1.f);
+
+    static const FString Path = TEXT("/Script/Engine.SoundClass'/Game/Sound/SFX_SoundClass.SFX_SoundClass'");
+    if (USoundClass* SoundClass = LoadObject<USoundClass>(nullptr, *Path))
+    {
+        SoundClass->Properties.Volume = TempSFXVolume;
+    }
+
+    if (UWorld* World = GEngine->GetWorld())
+    {
+        AZeroGameModeBase* GM = Cast<AZeroGameModeBase>(World->GetAuthGameMode());
+        if (GM && GM->SFXAudioComponent)
+        {
+            GM->SFXAudioComponent->SetVolumeMultiplier(TempSFXVolume);
+        }
+    }
+}
+
+
 
 void UZeroGameSettingManager::ApplySettings()
 {
+    Resolution = TempResolution;
+    WindowMode = TempWindowMode;
+    Volume = TempVolume;
+    SFXVolume = TempSFXVolume;
 
     if (UGameUserSettings* Settings = GEngine->GetGameUserSettings())
     {
@@ -62,5 +160,54 @@ void UZeroGameSettingManager::ApplySettings()
         Settings->SaveSettings();
     }
 
+    {
+        static const FString BGMPath = TEXT("/Script/Engine.SoundClass'/Game/Sound/BGM_SoundClass.BGM_SoundClass'");
+        if (USoundClass* BGM = LoadObject<USoundClass>(nullptr, *BGMPath))
+        {
+            BGM->Properties.Volume = Volume;
+        }
+
+        static const FString SFXPath = TEXT("/Script/Engine.SoundClass'/Game/Sound/SFX_SoundClass.SFX_SoundClass'");
+        if (USoundClass* SFX = LoadObject<USoundClass>(nullptr, *SFXPath))
+        {
+            SFX->Properties.Volume = SFXVolume;
+        }
+    }
 }
+
+void UZeroGameSettingManager::ResetTempSettings()
+{
+    TempVolume = Volume;
+    TempSFXVolume = SFXVolume;
+
+    TempResolution = Resolution;
+    TempWindowMode = WindowMode;
+
+    static const FString BGMPath = TEXT("/Script/Engine.SoundClass'/Game/Sound/BGM_SoundClass.BGM_SoundClass'");
+    if (USoundClass* BGM = LoadObject<USoundClass>(nullptr, *BGMPath))
+    {
+        BGM->Properties.Volume = Volume;  
+    }
+
+    static const FString SFXPath = TEXT("/Script/Engine.SoundClass'/Game/Sound/SFX_SoundClass.SFX_SoundClass'");
+    if (USoundClass* SFX = LoadObject<USoundClass>(nullptr, *SFXPath))
+    {
+        SFX->Properties.Volume = SFXVolume;  
+    }
+
+    if (UWorld* World = GEngine->GetWorld())
+    {
+        AZeroGameModeBase* GM = Cast<AZeroGameModeBase>(World->GetAuthGameMode());
+        if (GM)
+        {
+            if (GM->BGMAudioComponent)
+                GM->BGMAudioComponent->SetVolumeMultiplier(Volume);
+
+            if (GM->SFXAudioComponent)
+                GM->SFXAudioComponent->SetVolumeMultiplier(SFXVolume);
+        }
+    }
+}
+
+
 
