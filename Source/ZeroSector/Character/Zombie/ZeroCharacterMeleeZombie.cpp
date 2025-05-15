@@ -28,7 +28,7 @@ AZeroCharacterMeleeZombie::AZeroCharacterMeleeZombie()
 
 float AZeroCharacterMeleeZombie::GetAIAttackRange()
 {
-	return 300.0f;
+	return 500.0f;
 }
 
 float AZeroCharacterMeleeZombie::GetAITurnSpeed()
