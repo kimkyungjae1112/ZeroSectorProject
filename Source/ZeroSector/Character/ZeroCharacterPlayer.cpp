@@ -14,9 +14,12 @@
 #include "Component/ZeroPlayerStatComponent.h"
 #include "Player/ZeroPlayerController.h"
 #include "Game/ZeroGameModeBase.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
 #include "Weapon/ZeroWeaponBase.h"
 #include "UI/ZeroHUDWidget.h"
 #include "UI/ZeroAfternoonHUDWidget.h"
+#include "Kismet/GameplayStatics.h"
 #include "ZeroSector.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer()
@@ -313,6 +316,12 @@ void AZeroCharacterPlayer::ProvisoInteract()
 		InputComp->ProvisoInteract();
 		StatComp->UseActivePoint(-10.f);
 	}
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ProvisoInteractSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ProvisoInteractSFX);
+	}
 }
 
 void AZeroCharacterPlayer::EnforceBoardInteract()
@@ -337,6 +346,12 @@ void AZeroCharacterPlayer::PauseMenuDisplay()
 	if (InputComp)
 	{	
 		InputComp->PauseMenu();
+	}
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->PauseSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->PauseSFX);
 	}
 }
 

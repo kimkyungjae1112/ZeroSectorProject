@@ -36,6 +36,9 @@ protected:
     void OnVolumeChanged(float Value);
 
     UFUNCTION()
+    void OnSFXChanged(float Value);
+
+    UFUNCTION()
     void OnResolutionChanged(FString SelectedItem, ESelectInfo::Type SelectInfo);
 
     UFUNCTION()
@@ -66,6 +69,9 @@ protected:
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<USlider> VolumeSlider;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<USlider> SFXSlider;
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UComboBoxString> ResolutionComboBox;

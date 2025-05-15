@@ -6,6 +6,7 @@
 #include "Character/ZeroCharacterNPC.h"
 #include "Game/ZeroGameModeBase.h"
 #include "Game/ZeroGameSettingManager.h"
+#include "Game/ZeroSoundManager.h"
 #include "Data/ZeroSingleton.h"
 #include "EngineUtils.h"
 #include "UI/ZeroEnforceBoardWidget.h"
@@ -37,6 +38,12 @@ void UZeroGameInstance::Init()
 	if (SettingManager)
 	{
 		SettingManager->Init();
+	}
+
+	SoundManager = NewObject<UZeroSoundManager>(this, UZeroSoundManager::StaticClass());
+	if (SoundManager)
+	{
+		SoundManager->Init(); 
 	}
 
 	UZeroSingleton::Get().ProvisoDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Data/Proviso/ProvisoDataTable.ProvisoDataTable"));

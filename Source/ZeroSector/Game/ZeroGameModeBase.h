@@ -57,6 +57,12 @@ public:
 	void StartTimer();
 	void RestartLevel();
 
+	UPROPERTY()
+	UAudioComponent* BGMAudioComponent = nullptr;
+
+	UPROPERTY()
+	UAudioComponent* SFXAudioComponent = nullptr;
+
 private:
 	void EndGame(bool bIsPlayerWinner);
 	
@@ -94,4 +100,6 @@ private:
 	
 	FTimerHandle TimeTimerHandle;
 	bool bIsProgress = false;
+
+	
 };
