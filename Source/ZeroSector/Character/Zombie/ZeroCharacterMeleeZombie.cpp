@@ -178,13 +178,3 @@ UAnimMontage* AZeroCharacterMeleeZombie::GetAttackTwoMontage() const
 	}
 	return ZeroZombieAnimDataTable.AttackTwoMontages[AnimPoseType].AttackTwoMontage[AnimIndex].Get();
 }
-
-UAnimMontage* AZeroCharacterMeleeZombie::GetDeadMontage() const
-{
-	/*if (ZeroZombieAnimDataTable.DeadMontage.IsPending())
-	{
-		ZeroZombieAnimDataTable.DeadMontage.LoadSynchronous();
-	}
-	return ZeroZombieAnimDataTable.DeadMontage.Get();*/
-	return nullptr;
-}

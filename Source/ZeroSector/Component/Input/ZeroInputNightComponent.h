@@ -59,7 +59,8 @@ private:
 	EWeaponType CurrentWeaponType;
 
 	EWeaponType ChoicedWeapon;
-
+	
+// Anim Data
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Anim")
 	TObjectPtr<UAnimInstance> Anim;
