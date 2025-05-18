@@ -6,6 +6,8 @@
 #include "Component/Input/ZeroInputBaseComponent.h"
 #include "ZeroInputNightComponent.generated.h"
 
+class UAnimInstance;
+class UAnimMontage;
 class AZeroWeaponBase;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEnforceWeapon, int32)
@@ -58,4 +60,16 @@ private:
 
 	EWeaponType ChoicedWeapon;
 
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	TObjectPtr<UAnimInstance> Anim;
+
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	TObjectPtr<UAnimMontage> PistolMontage;
+
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	TObjectPtr<UAnimMontage> RifleMontage;
+
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	TObjectPtr<UAnimMontage> ShotgunMontage;
 };
