@@ -36,7 +36,9 @@ void AZeroCharacterRangedZombie::SpawnProjectile()
 {
 	FVector SpawnLoc = GetMesh()->GetSocketLocation(TEXT("hand_rSocket"));
 	Projectile = GetWorld()->SpawnActor<AZeroRangedZombieProjectile>(ProjectileClass, SpawnLoc, FRotator());
+	Projectile->SetOwner(this);
 	Projectile->InitDirection(GetActorForwardVector());
+	Projectile->InitController(GetController());
 }
 
 AController* AZeroCharacterRangedZombie::GetAIController()

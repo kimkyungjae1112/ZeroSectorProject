@@ -9,6 +9,7 @@
 class UProjectileMovementComponent;
 class UNiagaraComponent;
 class USphereComponent;
+class AController;
 
 UCLASS()
 class ZEROSECTOR_API AZeroRangedZombieProjectile : public AActor
@@ -19,6 +20,7 @@ public:
 	AZeroRangedZombieProjectile();
 
 	void InitDirection(const FVector& Direction);
+	void InitController(AController* Controller);
 
 protected:
 	virtual void BeginPlay() override;
@@ -27,6 +29,7 @@ private:
 	UFUNCTION()
 	void ProjectileOnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+// Component
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
 	TObjectPtr<USphereComponent> CollisionComp;
@@ -37,4 +40,8 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
 	TObjectPtr<UProjectileMovementComponent> ProjectileComp;
 
+// Controller
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Controller")
+	TObjectPtr<AController> ZombieController;
 };
