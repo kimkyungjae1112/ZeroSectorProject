@@ -4,7 +4,9 @@
 #include "Character/Zombie/ZeroRangedZombieProjectile.h"
 #include "NiagaraComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
+#include "Engine/DamageEvents.h"
 
 AZeroRangedZombieProjectile::AZeroRangedZombieProjectile()
 {
@@ -31,6 +33,11 @@ void AZeroRangedZombieProjectile::InitDirection(const FVector& Direction)
 	ProjectileComp->Activate();
 }
 
+void AZeroRangedZombieProjectile::InitController(AController* Controller)
+{
+	ZombieController = Controller;
+}
+
 void AZeroRangedZombieProjectile::BeginPlay()
 {
 	Super::BeginPlay();
@@ -44,6 +51,7 @@ void AZeroRangedZombieProjectile::ProjectileOnHit(UPrimitiveComponent* HitCompon
 		if (OtherActor->ActorHasTag(TEXT("Player")))
 		{
 			// 터지는 이펙트 및 대미지 적용
+			OtherActor->TakeDamage(100.f, FDamageEvent(), ZombieController, GetOwner());
 
 			Destroy();
 			return;
@@ -52,7 +60,16 @@ void AZeroRangedZombieProjectile::ProjectileOnHit(UPrimitiveComponent* HitCompon
 		FTimerHandle BoomTimer;
 		GetWorld()->GetTimerManager().SetTimer(BoomTimer, [&]()
 			{
-				// 터지는 이펙트 및 대미지 적용
+				UGameplayStatics::ApplyRadialDamage(
+					GetWorld(), 
+					50.f, 
+					GetActorLocation(), 
+					500.f, 
+					TSubclassOf<UDamageType>(), 
+					TArray<AActor*>(), 
+					GetOwner(), 
+					ZombieController);
+
 				Destroy();
 			}, 3.f, false);
 	}
