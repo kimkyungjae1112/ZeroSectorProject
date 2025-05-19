@@ -5,6 +5,7 @@
 #include "AI/Controller/ZeroAIControllerBase.h"
 #include "EngineUtils.h"
 #include "Character/Zombie/ZeroCharacterBaseZombie.h"
+#include "Character/Zombie/ZeroZombieType.h"
 #include "Game/ZeroZombieSpawner.h"
 #include "Kismet/GameplayStatics.h"
 #include "Environment/ZeroDaySequence.h"
@@ -32,11 +33,6 @@ AZeroGameModeBase::AZeroGameModeBase()
 	{
 		PlayerControllerClass = PlayerControllerClassRef.Class;
 	}
-	static ConstructorHelpers::FClassFinder<AZeroZombieSpawner> SpawnerClassRef(TEXT("/Game/Blueprints/Game/BP_ZombieSpawner.BP_ZombieSpawner_C"));
-	if (SpawnerClassRef.Class)
-	{
-		SpawnerClass = SpawnerClassRef.Class;
-	}
 	static ConstructorHelpers::FClassFinder<AZeroWaveTrigger> WaveTriggerClassRef(TEXT("/Game/Blueprints/Gimmick/BP_WaveTrigger.BP_WaveTrigger_C"));
 	if (WaveTriggerClassRef.Class)
 	{
@@ -50,8 +46,6 @@ AZeroGameModeBase::AZeroGameModeBase()
 void AZeroGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Spawner = Cast<AZeroZombieSpawner>(UGameplayStatics::GetActorOfClass(this, SpawnerClass));
 
 	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PC) PC->OnNonClearZmobie.AddUObject(this, &AZeroGameModeBase::RestartLevel);
@@ -78,10 +72,14 @@ void AZeroGameModeBase::InitNight()
 	SpawnDataTable = UZeroSingleton::Get().GetZombieSpawnData(Day);
 	MaxWave = SpawnDataTable.MaxWave;
 	CurrentWave = 0;
-	ZombieNum = SpawnDataTable.ZombieNum[CurrentWave];
-	MaxTime = 500;
+	CommonZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Common].ZombieNum[CurrentWave];
+	RangedZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Ranged].ZombieNum[CurrentWave];
+	MiniZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Mini].ZombieNum[CurrentWave];
+	TankerZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Tanker].ZombieNum[CurrentWave];
+	BossZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Boss].ZombieNum[CurrentWave];
+	MaxTime = SpawnDataTable.MaxTime;
 	bIsProgress = false;
-	ZE_LOG(LogZeroSector, Display, TEXT("MaxWave : %d, ZombieNum : %d"), MaxWave, ZombieNum);
+	ZE_LOG(LogZeroSector, Display, TEXT("MaxWave : %d, ZombieNum : %d"), MaxWave, CommonZombieNum);
 }
 
 void AZeroGameModeBase::ChangeDay()
@@ -125,9 +123,20 @@ void AZeroGameModeBase::StartWave()
 	// Wave 수 표시
 	OnStartNight.ExecuteIfBound(MaxWave - CurrentWave - 1);
 
-	ZombieNum = SpawnDataTable.ZombieNum[CurrentWave];
+	CommonZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Common].ZombieNum[CurrentWave];
+	RangedZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Ranged].ZombieNum[CurrentWave];
+	MiniZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Mini].ZombieNum[CurrentWave];
+	TankerZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Tanker].ZombieNum[CurrentWave];
+	BossZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Boss].ZombieNum[CurrentWave];
 	CurrentWave++;
-	Spawner->SpawnZombie(ZombieNum);
+
+	for (AZeroZombieSpawner* ZombieSpawner: TActorRange<AZeroZombieSpawner>(GetWorld()))
+	{
+		if (ZombieSpawner->GetStartDay() == Day)
+		{
+			ZombieSpawner->SpawnZombie(CommonZombieNum, RangedZombieNum, MiniZombieNum, TankerZombieNum, BossZombieNum);
+		}
+	}
 }
 
 void AZeroGameModeBase::StartTimer()
