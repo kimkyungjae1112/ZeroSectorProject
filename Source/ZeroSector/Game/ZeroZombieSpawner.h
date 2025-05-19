@@ -8,6 +8,8 @@
 
 class USplineComponent;
 class AZeroCharacterMeleeZombie;
+class AZeroCharacterRangedZombie;
+class AZeroCharacterBossZombie;
 
 UCLASS()
 class ZEROSECTOR_API AZeroZombieSpawner : public AActor
@@ -17,11 +19,14 @@ class ZEROSECTOR_API AZeroZombieSpawner : public AActor
 public:	
 	AZeroZombieSpawner();
 
+	FORCEINLINE uint8 GetStartDay() const { return StartDay; }
+
+
 protected:
 	virtual void BeginPlay() override;
 
 public:
-	void SpawnZombie(uint8 InZombieNum);
+	void SpawnZombie(uint8 CommonZombieNum, uint8 RangedZombieNum, uint8 MiniZombieNum, uint8 TankerZombieNum, uint8 BossZombieNum);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Zero")
@@ -30,10 +35,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Zero")
 	TArray<TSubclassOf<AZeroCharacterMeleeZombie>> MeleeZombieClass;
 
-	UPROPERTY(EditAnywhere, Category = "Zero")
-	int ZombieNum = 5;
+	UPROPERTY(EditDefaultsOnly, Category = "Zero")	
+	TSubclassOf<AZeroCharacterRangedZombie> RangedZombieClass;
 
-	UPROPERTY(EditAnywhere, Category = "Zero")
-	float Spacing = 200.f;
+	UPROPERTY(EditDefaultsOnly, Category = "Zero")
+	TSubclassOf<AZeroCharacterBossZombie> BossZombieClass;
+
+	UPROPERTY(EditAnywhere, Category = "Start", meta = (AllowPrivateAccess = "true"))
+	uint8 StartDay;
 
 };
