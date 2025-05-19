@@ -36,6 +36,9 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	void InitIndex(uint8 Day);
+
+private:
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TMap<uint8, FWayPoint> WayPoints;
 
