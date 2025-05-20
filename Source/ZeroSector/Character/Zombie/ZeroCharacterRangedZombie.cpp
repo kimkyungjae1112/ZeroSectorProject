@@ -143,6 +143,8 @@ void AZeroCharacterRangedZombie::EndAttackTwo(UAnimMontage* Target, bool IsPrope
 
 void AZeroCharacterRangedZombie::BeginDead()
 {
+	if (bIsDead) return;
+	bIsDead = true;
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 	GetMesh()->SetSimulatePhysics(true);
 

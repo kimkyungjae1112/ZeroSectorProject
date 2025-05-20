@@ -124,6 +124,8 @@ void AZeroCharacterBossZombie::EndAttackTwo(UAnimMontage* Target, bool IsProperl
 void AZeroCharacterBossZombie::BeginDead()
 {
 	// Ragdoll 보단 AnimMontage 로 하는게 나을듯 보스니까
+	if (bIsDead) return;
+	bIsDead = true;
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 	GetMesh()->SetSimulatePhysics(true);
 
