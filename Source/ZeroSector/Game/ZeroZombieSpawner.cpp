@@ -6,6 +6,7 @@
 #include "Character/Zombie/ZeroCharacterMeleeZombie.h"
 #include "Character/Zombie/ZeroCharacterRangedZombie.h"
 #include "Character/Zombie/ZeroCharacterBossZombie.h"
+#include "ZeroSector.h"
 
 AZeroZombieSpawner::AZeroZombieSpawner()
 {
@@ -21,6 +22,7 @@ void AZeroZombieSpawner::BeginPlay()
 
 void AZeroZombieSpawner::SpawnZombie(uint8 CommonZombieNum, uint8 RangedZombieNum, uint8 MiniZombieNum, uint8 TankerZombieNum, uint8 BossZombieNum)
 {
+    ZE_LOG(LogZeroSector, Display, TEXT("Spawn Zombie"));
     uint8 SumOfZombieNum = CommonZombieNum + RangedZombieNum + MiniZombieNum + TankerZombieNum + BossZombieNum;
     const float SplineLength = SplineComp->GetSplineLength();
     const float Spacing = SplineLength / SumOfZombieNum;

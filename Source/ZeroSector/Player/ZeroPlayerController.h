@@ -24,6 +24,8 @@ public:
 
 	virtual void GameHasEnded(class AActor* EndGameFocus = nullptr, bool bIsWinner = false) override;
 
+	FORCEINLINE void SetPrologFlag(bool InPrologFlag) { PrologFlag = InPrologFlag; }
+
 public:
 	FOnClearZombie OnClearZombie;
 	FOnNonClearZombie OnNonClearZmobie;
@@ -76,4 +78,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TSubclassOf<UZeroLoseScreenWidget> LoseScreenClass;
+
+private:
+	bool PrologFlag{ false };
 };

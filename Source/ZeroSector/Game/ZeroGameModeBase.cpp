@@ -17,6 +17,7 @@
 #include "Game/ZeroGameSettingManager.h"
 #include "Sound/SoundClass.h"
 #include "Components/AudioComponent.h"
+#include "UI/ZeroPrologVideoWidget.h"
 #include "ZeroSector.h"
 
 uint8 AZeroGameModeBase::Day = 1;
@@ -38,8 +39,13 @@ AZeroGameModeBase::AZeroGameModeBase()
 	{
 		WaveTriggerClass = WaveTriggerClassRef.Class;
 	}
+	static ConstructorHelpers::FClassFinder<UZeroPrologVideoWidget> PrologWidgetClassRef(TEXT("/Game/Cinematic/VideoWidget.VideoWidget_C"));
+	if (PrologWidgetClassRef.Class)
+	{
+		PrologWidgetClass = PrologWidgetClassRef.Class;
+	}
 
-	CurrentDaySequence = EDaySequence::EAfternoon;
+	CurrentDaySequence = EDaySequence::ENight;
 
 }
 
@@ -49,6 +55,19 @@ void AZeroGameModeBase::BeginPlay()
 
 	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PC) PC->OnNonClearZmobie.AddUObject(this, &AZeroGameModeBase::RestartLevel);
+	
+	PC->SetPrologFlag(PrologFlag);
+	if (PrologFlag)
+	{
+		UZeroPrologVideoWidget* PrologWidget = CreateWidget<UZeroPrologVideoWidget>(GetWorld(), PrologWidgetClass);
+		if (PrologWidget)
+		{
+			PrologWidget->AddToViewport();
+		}
+	}
+
+
+	InitNight();
 
 	UZeroSingleton::Get().ExcludedResearcherName = TEXT("");
 	UZeroSingleton::Get().ResetCollectedProvisos();
@@ -94,6 +113,7 @@ void AZeroGameModeBase::ChangeDay()
 		}
 		else
 		{
+			ZE_LOG(LogZeroSector, Display, TEXT("Night To Afternoon"));
 			DaySequence->AfternoonToNightfall();
 			ChangeDayToNight();
 		}

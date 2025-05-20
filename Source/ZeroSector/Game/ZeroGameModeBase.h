@@ -8,6 +8,7 @@
 #include "Data/ZeroZombieSpawnDataTable.h"
 #include "ZeroGameModeBase.generated.h"
 
+class UZeroPrologVideoWidget;
 class AZeroZombieSpawner;
 class AZeroWaveTrigger;
 
@@ -110,4 +111,11 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Audio")
 	TObjectPtr<UAudioComponent> SFXAudioComponent;
 	
+// Cinematic
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Cinematic")
+	TSubclassOf<UZeroPrologVideoWidget> PrologWidgetClass;
+
+	UPROPERTY(EditAnywhere, Category = "Cinematic")
+	bool PrologFlag{ false };
 };

@@ -136,6 +136,9 @@ void AZeroCharacterMeleeZombie::EndAttackTwo(UAnimMontage* Target, bool IsProper
 
 void AZeroCharacterMeleeZombie::BeginDead()
 {
+	if (bIsDead) return;
+	bIsDead = true;
+	ZE_LOG(LogZeroSector, Display, TEXT("BeginDead"));
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 	GetMesh()->SetSimulatePhysics(true);
 

@@ -21,7 +21,8 @@ public class ZeroSector : ModuleRules
                 "NavigationSystem",
 				"GameplayTasks",
                 "SlateCore",
-				"Niagara"
+				"Niagara",
+                "MediaAssets"
             }
 		);
 

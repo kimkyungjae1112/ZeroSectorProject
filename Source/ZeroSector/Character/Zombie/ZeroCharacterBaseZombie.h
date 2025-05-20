@@ -70,4 +70,8 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Sound")
 	TObjectPtr<UAudioComponent> AudioComp;
+
+// Flag
+protected:
+	bool bIsDead{ false };
 };

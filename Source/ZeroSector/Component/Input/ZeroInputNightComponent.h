@@ -59,7 +59,8 @@ private:
 	EWeaponType CurrentWeaponType;
 
 	EWeaponType ChoicedWeapon;
-	
+	EWeaponType TempWeaponType;
+
 // Anim Data
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Anim")

@@ -165,14 +165,14 @@ void AZeroPlayerController::BeginPlay()
 	if (AfternoonHUDWidgetClass)
 	{
 		AfternoonHUDWidgetPtr = CreateWidget<UZeroAfternoonHUDWidget>(this, AfternoonHUDWidgetClass);
-		if (AfternoonHUDWidgetPtr)
-		{
-			AfternoonHUDWidgetPtr->AddToViewport();
-		}
 	}
 	if (HUDWidgetClass)
 	{
 		HUDWidgetPtr = CreateWidget<UZeroHUDWidget>(this, HUDWidgetClass);
+		if (HUDWidgetPtr && !PrologFlag)
+		{
+			HUDWidgetPtr->AddToViewport();
+		}
 	}
 
 }

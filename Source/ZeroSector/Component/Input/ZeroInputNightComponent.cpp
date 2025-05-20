@@ -12,6 +12,7 @@
 #include "Interface/ZeroNightInputInterface.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
+#include "Game/ZeroGameModeBase.h"
 #include "ZeroSector.h"
 
 FOnEnforceWeapon UZeroInputNightComponent::OnEnforceWeapon;
@@ -132,7 +133,7 @@ void UZeroInputNightComponent::Reloading()
 void UZeroInputNightComponent::SetupWeapon(const EWeaponType& WeaponType)
 {
 	ZE_LOG(LogZeroSector, Warning, TEXT("SetupWeapon"));
-	switch (WeaponType)
+	switch (TempWeaponType)
 	{
 	case EWeaponType::ERifle:
 		Weapons.Add(EWeaponType::ERifle, GetWorld()->SpawnActor<AZeroWeaponRifle>(AZeroWeaponRifle::StaticClass()));
@@ -196,7 +197,7 @@ void UZeroInputNightComponent::BeginPlay()
 
 	check(Player);
 	Anim = Player->GetMesh()->GetAnimInstance();
-	
+	TempWeaponType = EWeaponType::ERifle;
 }
 
 void UZeroInputNightComponent::SetNoWeapon()

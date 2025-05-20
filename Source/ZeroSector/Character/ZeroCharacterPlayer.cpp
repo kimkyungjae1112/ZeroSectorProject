@@ -101,9 +101,9 @@ void AZeroCharacterPlayer::SetHUDWidget(UZeroHUDWidget* InHUDWidget)
 	HUDWidgetPtr = InHUDWidget;
 	if (HUDWidgetPtr)
 	{
-		HUDWidgetPtr->SetMaxHp(StatComp->GetTotalStat().MaxHp);
+		HUDWidgetPtr->SetMaxHp(/*StatComp->GetTotalStat().MaxHp*/1000.f);
 		StatComp->OnHpChanged.AddUObject(HUDWidgetPtr, &UZeroHUDWidget::UpdateHpBar);
-		HUDWidgetPtr->UpdateHpBar(StatComp->GetTotalStat().MaxHp);
+		HUDWidgetPtr->UpdateHpBar(/*StatComp->GetTotalStat().MaxHp*/1000.f);
 	}
 }
 
@@ -153,6 +153,7 @@ void AZeroCharacterPlayer::ChangeInputMode()
 	GameMode->ChangeDay();
 	if (InputComp && InputComp->IsA(UZeroInputAfternoonComponent::StaticClass()))
 	{
+		// 낮 -> 저녁
 		SetInputByDaySequence(GameMode->GetDaySequence());
 		UIComp->FadeInAndOutDisplay();
 		UIComp->OnClickOperationNextButton.BindUObject(InputComp, &UZeroInputBaseComponent::SetupWeapon);
@@ -160,6 +161,7 @@ void AZeroCharacterPlayer::ChangeInputMode()
 	}
 	else
 	{
+		// 저녁 -> 낮
 		InputComp->SetUnequipWeapon();
 		UIComp->FadeInAndOutDisplay();
 		CurrentWeaponType = InputComp->GetWeaponType();
@@ -189,8 +191,9 @@ void AZeroCharacterPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	Walk();
-	SetInputAfternoonMode();
-	AfternoonInputDelegate();
+	SetInputNightMode();
+	InputComp->SetupWeapon(EWeaponType::ERifle);
+	CurrentWeaponType = InputComp->GetWeaponType();
 	GetZeroPlayerController()->OnClearZombie.AddUObject(this, &AZeroCharacterPlayer::ChangeInputMode);
 	GetZeroPlayerController()->OnClearZombie.AddUObject(StatComp, &UZeroPlayerStatComponent::InitActivePoint);
 	GetZeroPlayerController()->OnNonClearZmobie.AddUObject(StatComp, &UZeroPlayerStatComponent::InitHealth);
