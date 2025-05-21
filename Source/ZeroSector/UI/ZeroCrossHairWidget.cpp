@@ -54,3 +54,19 @@ void UZeroCrossHairWidget::IncreaseSpread(float Amount)
 {
     CrosshairSpread = FMath::Clamp(CrosshairSpread + Amount, 0.0f, MaxCrosshairSpread);
 }
+
+void UZeroCrossHairWidget::HitCrosshair()
+{
+    CrosshairLeft->SetColorAndOpacity(FLinearColor(1.f, 0.f, 0.f, 1.f));
+    CrosshairRight->SetColorAndOpacity(FLinearColor(1.f, 0.f, 0.f, 1.f));
+    CrosshairTop->SetColorAndOpacity(FLinearColor(1.f, 0.f, 0.f, 1.f));
+    CrosshairBottom->SetColorAndOpacity(FLinearColor(1.f, 0.f, 0.f, 1.f));
+}
+
+void UZeroCrossHairWidget::UnHitCrosshair()
+{
+    CrosshairLeft->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
+    CrosshairRight->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
+    CrosshairTop->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
+    CrosshairBottom->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, 1.f));
+}

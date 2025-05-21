@@ -19,4 +19,5 @@ class ZEROSECTOR_API IZeroClassIdentifierInterface
 
 public:
 	virtual FName GetClassName() const = 0;
+	virtual FName GetNPCName() const { return FName(); }
 };

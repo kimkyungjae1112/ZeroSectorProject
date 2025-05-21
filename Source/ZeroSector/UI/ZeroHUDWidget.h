@@ -26,6 +26,11 @@ public:
 	void SetMaxHp(float InMaxHp);
 	void UpdateHpBar(float InHp);
 
+	void IncreaseSpread(float Amount) const;
+	void HitCrosshair() const;
+	void UnHitCrosshair() const;
+
+
 protected:
 	virtual void NativeConstruct() override;
 

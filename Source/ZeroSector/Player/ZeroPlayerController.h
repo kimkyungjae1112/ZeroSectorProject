@@ -24,6 +24,9 @@ public:
 
 	virtual void GameHasEnded(class AActor* EndGameFocus = nullptr, bool bIsWinner = false) override;
 
+	FORCEINLINE void SetPrologFlag(bool InPrologFlag) { PrologFlag = InPrologFlag; }
+	FORCEINLINE UZeroAfternoonHUDWidget* GetAfternoonHUDWidget() const { return AfternoonHUDWidgetPtr; }
+
 public:
 	FOnClearZombie OnClearZombie;
 	FOnNonClearZombie OnNonClearZmobie;
@@ -38,7 +41,11 @@ public:
 	void ATHUD_Display();
 	void NightHUD_Display();
 
-	FORCEINLINE UZeroAfternoonHUDWidget* GetAfternoonHUDWidget() const { return AfternoonHUDWidgetPtr; }
+	// 크로스 헤어
+	void CrosshairSpread(float Amount) const;
+	void HitCrosshair() const;
+	void UnHitCrosshair() const;
+
 
 	UPROPERTY()
 	FString SelectedInterviewName;
@@ -76,4 +83,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TSubclassOf<UZeroLoseScreenWidget> LoseScreenClass;
+
+private:
+	bool PrologFlag{ false };
 };

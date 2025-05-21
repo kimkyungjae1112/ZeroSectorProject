@@ -33,6 +33,7 @@ public:
 
 public:
 	FORCEINLINE USkeletalMeshComponent* GetGunMeshComp() const { return GunMeshComp; }
+	FORCEINLINE bool IsVaildFire() const { return CurrentAmmo > 0; }
 
 	void ReloadingCurrentAmmo();
 	void GunAmmoTextDisplay();
@@ -98,7 +99,11 @@ private:
 	void PistolFire();
 	void RifleFire();
 	void ShotgunFire();
+	void PartialFire();
 	void CalCrosshairVector(FVector& CrosshairWorldDirection);
+	void HitCheck(const FHitResult& InHitResult, const FVector& TraceDir, bool bHit);
+	void HitCheckTimer();
+	void UnHitCheck();
 
 // 기타 데이터
 private:

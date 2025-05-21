@@ -8,6 +8,7 @@
 #include "Data/ZeroZombieSpawnDataTable.h"
 #include "ZeroGameModeBase.generated.h"
 
+class UZeroPrologVideoWidget;
 class AZeroZombieSpawner;
 class AZeroWaveTrigger;
 
@@ -57,12 +58,6 @@ public:
 	void StartTimer();
 	void RestartLevel();
 
-	UPROPERTY()
-	UAudioComponent* BGMAudioComponent = nullptr;
-
-	UPROPERTY()
-	UAudioComponent* SFXAudioComponent = nullptr;
-
 private:
 	void EndGame(bool bIsPlayerWinner);
 	
@@ -70,17 +65,14 @@ private:
 	void ChangeDayToNight();
 	void DecreaseTime();
 
+// 드사운드
+private:
 	void PlayAfternoonBGM();
 	void PlayNightBGM();
 	void StopBGM();
 
+// 좀비 스폰 데이터 및 전투 스테이지 데이터
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Spawner")
-	TObjectPtr<AZeroZombieSpawner> Spawner;
-
-	UPROPERTY(VisibleAnywhere, Category = "Spawner")
-	TSubclassOf<AZeroZombieSpawner> SpawnerClass;
-
 	UPROPERTY(VisibleAnywhere, Category = "Spawner")
 	TSubclassOf<AZeroWaveTrigger> WaveTriggerClass;
 
@@ -97,7 +89,19 @@ private:
 	uint8 CurrentWave;
 
 	UPROPERTY(VisibleAnywhere, Category = "Setting")
-	uint8 ZombieNum;
+	uint8 CommonZombieNum;
+
+	UPROPERTY(VisibleAnywhere, Category = "Setting")
+	uint8 RangedZombieNum;
+
+	UPROPERTY(VisibleAnywhere, Category = "Setting")
+	uint8 MiniZombieNum;
+
+	UPROPERTY(VisibleAnywhere, Category = "Setting")
+	uint8 TankerZombieNum;
+
+	UPROPERTY(VisibleAnywhere, Category = "Setting")
+	uint8 BossZombieNum;
 
 	UPROPERTY(EditAnywhere, Category = "Setting")
 	int32 MaxTime;
@@ -105,5 +109,19 @@ private:
 	FTimerHandle TimeTimerHandle;
 	bool bIsProgress = false;
 
+// Sound
+public:
+	UPROPERTY(VisibleAnywhere, Category = "Audio")
+	TObjectPtr<UAudioComponent> BGMAudioComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Audio")
+	TObjectPtr<UAudioComponent> SFXAudioComponent;
 	
+// Cinematic
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Cinematic")
+	TSubclassOf<UZeroPrologVideoWidget> PrologWidgetClass;
+
+	UPROPERTY(EditAnywhere, Category = "Cinematic")
+	bool PrologFlag{ false };
 };

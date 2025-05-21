@@ -16,6 +16,7 @@ struct FInputActionValue;
 class UZeroInputConfig;
 class USpringArmComponent;
 class UCameraComponent;
+class UCapsuleComponent;
 class UZeroAfternoonHUDWidget;
 class UZeroHUDWidget;
 class UZeroInputBaseComponent;
@@ -172,4 +173,9 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	TObjectPtr<UZeroPlayerStatComponent> StatComp;
+
+/* Capsule */
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Capsule")
+	TObjectPtr<UCapsuleComponent> ProtectCapsuleComp;
 };

@@ -3,7 +3,20 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "Character/Zombie/ZeroZombieType.h"
 #include "ZeroZombieSpawnDataTable.generated.h"
+
+USTRUCT(BlueprintType)
+struct FZeroZombieNum
+{
+	GENERATED_BODY()
+
+public:
+	FZeroZombieNum() {}
+
+	UPROPERTY(EditAnywhere, Category = "Spawn")
+	TArray<uint8> ZombieNum;
+};
 
 USTRUCT(BlueprintType)
 struct FZeroZombieSpawnDataTable : public FTableRowBase
@@ -15,5 +28,11 @@ public:
 	uint8 MaxWave;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
-	TArray<uint8> ZombieNum;
+	int32 MaxTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
+	TMap<EZombieType, FZeroZombieNum> ZombieNums;
+
+
+
 };

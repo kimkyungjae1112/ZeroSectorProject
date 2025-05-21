@@ -4,6 +4,9 @@
 #include "Game/ZeroZombieSpawner.h"
 #include "Components/SplineComponent.h"
 #include "Character/Zombie/ZeroCharacterMeleeZombie.h"
+#include "Character/Zombie/ZeroCharacterRangedZombie.h"
+#include "Character/Zombie/ZeroCharacterBossZombie.h"
+#include "ZeroSector.h"
 
 AZeroZombieSpawner::AZeroZombieSpawner()
 {
@@ -17,11 +20,14 @@ void AZeroZombieSpawner::BeginPlay()
 	
 }
 
-void AZeroZombieSpawner::SpawnZombie(uint8 InZombieNum)
+void AZeroZombieSpawner::SpawnZombie(uint8 CommonZombieNum, uint8 RangedZombieNum, uint8 MiniZombieNum, uint8 TankerZombieNum, uint8 BossZombieNum)
 {
+    ZE_LOG(LogZeroSector, Display, TEXT("Spawn Zombie"));
+    uint8 SumOfZombieNum = CommonZombieNum + RangedZombieNum + MiniZombieNum + TankerZombieNum + BossZombieNum;
     const float SplineLength = SplineComp->GetSplineLength();
+    const float Spacing = SplineLength / SumOfZombieNum;
 
-    for (int32 i = 0; i < InZombieNum; ++i)
+    for (int32 i = 0; i < SumOfZombieNum; ++i)
     {
         float Distance = i * Spacing;
         if (Distance > SplineLength) break;
@@ -29,7 +35,31 @@ void AZeroZombieSpawner::SpawnZombie(uint8 InZombieNum)
         FVector Location = SplineComp->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
         FRotator Rotation = SplineComp->GetRotationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
 
-        GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(MeleeZombieClass[static_cast<int>(FMath::RandRange(0.0, 3.0))], Location, Rotation);
+        if (i < CommonZombieNum)
+        {
+            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(MeleeZombieClass[0], Location, Rotation);
+            continue;
+        }
+        else if (i > CommonZombieNum && i < CommonZombieNum + RangedZombieNum)
+        {
+            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(RangedZombieClass, Location, Rotation);
+            continue;
+        }
+        else if (i > CommonZombieNum + RangedZombieNum && i < CommonZombieNum + RangedZombieNum + MiniZombieNum)
+        {
+            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(MeleeZombieClass[1], Location, Rotation);
+            continue;
+        }
+        else if (i > CommonZombieNum + RangedZombieNum + MiniZombieNum && i < CommonZombieNum + RangedZombieNum + MiniZombieNum + TankerZombieNum)
+        {
+            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(MeleeZombieClass[2], Location, Rotation);
+            continue;
+        }
+        else if (i > CommonZombieNum + RangedZombieNum + MiniZombieNum + TankerZombieNum)
+        {
+            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(BossZombieClass, Location, Rotation);
+            continue;
+        }
     }
 }
 

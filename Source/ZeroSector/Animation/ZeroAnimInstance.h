@@ -33,7 +33,7 @@ public:
 	uint8 bIsFalling : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
-	uint8 bIsCrouch : 1;
+	uint8 bIsFire : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
 	float GroundSpeed;

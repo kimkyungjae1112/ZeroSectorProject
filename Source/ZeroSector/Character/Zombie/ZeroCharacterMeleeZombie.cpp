@@ -139,6 +139,9 @@ void AZeroCharacterMeleeZombie::EndAttackTwo(UAnimMontage* Target, bool IsProper
 
 void AZeroCharacterMeleeZombie::BeginDead()
 {
+	if (bIsDead) return;
+	bIsDead = true;
+	ZE_LOG(LogZeroSector, Display, TEXT("BeginDead"));
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 	GetMesh()->SetSimulatePhysics(true);
 
@@ -187,14 +190,4 @@ UAnimMontage* AZeroCharacterMeleeZombie::GetAttackTwoMontage() const
 		ZeroZombieAnimDataTable.AttackTwoMontages[AnimPoseType].AttackTwoMontage[AnimIndex].LoadSynchronous();
 	}
 	return ZeroZombieAnimDataTable.AttackTwoMontages[AnimPoseType].AttackTwoMontage[AnimIndex].Get();
-}
-
-UAnimMontage* AZeroCharacterMeleeZombie::GetDeadMontage() const
-{
-	/*if (ZeroZombieAnimDataTable.DeadMontage.IsPending())
-	{
-		ZeroZombieAnimDataTable.DeadMontage.LoadSynchronous();
-	}
-	return ZeroZombieAnimDataTable.DeadMontage.Get();*/
-	return nullptr;
 }

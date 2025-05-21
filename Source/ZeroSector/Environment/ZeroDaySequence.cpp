@@ -11,9 +11,9 @@ AZeroDaySequence::AZeroDaySequence(const FObjectInitializer& Init) : Super(Init)
 void AZeroDaySequence::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	Pause();
-	SetTimeOfDay(12.f);
+	SetTimeOfDay(0.f);
 }
 
 void AZeroDaySequence::AfternoonToNightfall()

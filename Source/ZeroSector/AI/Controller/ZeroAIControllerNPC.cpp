@@ -42,6 +42,15 @@ void AZeroAIControllerNPC::BeginPlay()
 	Super::BeginPlay();
 
 	MoveToNextPoint();
+	if (AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->OnStartAfternoon.AddUObject(this, &AZeroAIControllerNPC::InitIndex);
+	}
+}
+
+void AZeroAIControllerNPC::InitIndex(uint8 Day)
+{
+	CurrentIndex = 0;
 }
 
 

@@ -13,6 +13,9 @@
 #include "UI/ZeroHUDWidget.h"
 #include "UI/ZeroEnforceBoardWidget.h"
 #include "Interface/ZeroNightInputInterface.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
+#include "Game/ZeroGameModeBase.h"
 #include "ZeroSector.h"
 
 FOnEnforceWeapon UZeroInputNightComponent::OnEnforceWeapon;
@@ -20,6 +23,23 @@ FOnEnforceWeapon UZeroInputNightComponent::OnEnforceWeapon;
 UZeroInputNightComponent::UZeroInputNightComponent()
 {
 	CurrentWeaponType = EWeaponType::EPistol;
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> PistolMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/Player/AM/AM_PistolFire.AM_PistolFire'"));
+	if (PistolMontageRef.Object)
+	{
+		PistolMontage = PistolMontageRef.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> RifleMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/Player/AM/AM_RifleFire.AM_RifleFire'"));
+	if (RifleMontageRef.Object)
+	{
+		RifleMontage = RifleMontageRef.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ShotgunMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/Player/AM/AM_ShotgunFire.AM_ShotgunFire'"));
+	if (ShotgunMontageRef.Object)
+	{
+		ShotgunMontage = ShotgunMontageRef.Object;
+	}
+
 }
 
 void UZeroInputNightComponent::Move(const FInputActionValue& Value)
@@ -60,13 +80,18 @@ void UZeroInputNightComponent::Walk()
 
 void UZeroInputNightComponent::Fire()
 {
+	if (!CurrentWeapon->IsVaildFire()) return;
+
 	switch (CurrentWeaponType)
 	{
 	case EWeaponType::EPistol:
+		Anim->Montage_Play(PistolMontage);
 		break;
 	case EWeaponType::ERifle:
+		Anim->Montage_Play(RifleMontage);
 		break;
 	case EWeaponType::EShotgun:
+		Anim->Montage_Play(ShotgunMontage);
 		break;
 	default:
 		break;
@@ -121,7 +146,7 @@ void UZeroInputNightComponent::Reloading()
 void UZeroInputNightComponent::SetupWeapon(const EWeaponType& WeaponType)
 {
 	ZE_LOG(LogZeroSector, Warning, TEXT("SetupWeapon"));
-	switch (WeaponType)
+	switch (TempWeaponType)
 	{
 	case EWeaponType::ERifle:
 		Weapons.Add(EWeaponType::ERifle, GetWorld()->SpawnActor<AZeroWeaponRifle>(AZeroWeaponRifle::StaticClass()));
@@ -184,6 +209,8 @@ void UZeroInputNightComponent::BeginPlay()
 	Super::BeginPlay();
 
 	check(Player);
+	Anim = Player->GetMesh()->GetAnimInstance();
+	TempWeaponType = EWeaponType::ERifle;
 }
 
 void UZeroInputNightComponent::SetNoWeapon()

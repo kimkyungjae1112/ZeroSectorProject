@@ -13,7 +13,6 @@ class UAnimInstance;
 
 DECLARE_DELEGATE(FZombieAttackOne)
 DECLARE_DELEGATE(FZombieAttackTwo)
-DECLARE_DELEGATE(FZombieDead)
 
 USTRUCT()
 struct FZombieAttackOneWrapper
@@ -37,18 +36,6 @@ public:
 	FZombieAttackTwoWrapper(const FZombieAttackTwo& InZombieAttackTwo) : ZombieAttackTwo(InZombieAttackTwo) {}
 
 	FZombieAttackTwo ZombieAttackTwo;
-};
-
-USTRUCT()
-struct FZombieDeadWrapper
-{
-	GENERATED_BODY()
-
-public:
-	FZombieDeadWrapper() {}
-	FZombieDeadWrapper(const FZombieDead& InZombieDead) : ZombieDead(InZombieDead) {}
-
-	FZombieDead ZombieDead;
 };
 
 UCLASS()
@@ -81,9 +68,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-/* Util */
-private:
-
 /* Behavior */
 private:
 	void BeginAttackOne();
@@ -93,16 +77,12 @@ private:
 	void EndAttackTwo(UAnimMontage* Target, bool IsProperlyEnded);
 
 	void BeginDead();
-
 	
 	UPROPERTY()
 	TMap<EZombieType, FZombieAttackOneWrapper> ZombieAttackOneMaps;
 
 	UPROPERTY()
 	TMap<EZombieType, FZombieAttackTwoWrapper> ZombieAttackTwoMaps;
-
-	UPROPERTY()
-	TMap<EZombieType, FZombieDeadWrapper> ZombieDeadMaps;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Type")
 	EZombieType CurrentType;
@@ -111,7 +91,6 @@ private:
 private:
 	UAnimMontage* GetAttackOneMontage() const;
 	UAnimMontage* GetAttackTwoMontage() const;
-	UAnimMontage* GetDeadMontage() const;
 
 	UPROPERTY()
 	FZeroZombieAnimDataTable ZeroZombieAnimDataTable;

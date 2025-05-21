@@ -28,6 +28,9 @@ class ZEROSECTOR_API AZeroCharacterNPC : public AZeroCharacterBase
 public:
 	AZeroCharacterNPC();
 
+	/* IZeroClassIdentifierInterface Implement */
+	FORCEINLINE virtual FName GetNPCName() const override { return DisplayNPCName; }
+
 	virtual void Tick(float DeltaTime) override;
 
 protected:
@@ -55,4 +58,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TSubclassOf<UZeroNPCNameWidget> NPCNameClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Name")
+	FName DisplayNPCName;
 };

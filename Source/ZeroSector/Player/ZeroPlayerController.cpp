@@ -155,6 +155,20 @@ void AZeroPlayerController::NightHUD_Display()
 	}
 }
 
+void AZeroPlayerController::CrosshairSpread(float Amount) const
+{
+	HUDWidgetPtr->IncreaseSpread(Amount);
+}
+
+void AZeroPlayerController::HitCrosshair() const
+{
+	HUDWidgetPtr->HitCrosshair();
+}
+
+void AZeroPlayerController::UnHitCrosshair() const
+{
+	HUDWidgetPtr->UnHitCrosshair();
+}
 
 void AZeroPlayerController::BeginPlay()
 {
@@ -165,14 +179,14 @@ void AZeroPlayerController::BeginPlay()
 	if (AfternoonHUDWidgetClass)
 	{
 		AfternoonHUDWidgetPtr = CreateWidget<UZeroAfternoonHUDWidget>(this, AfternoonHUDWidgetClass);
-		if (AfternoonHUDWidgetPtr)
-		{
-			AfternoonHUDWidgetPtr->AddToViewport();
-		}
 	}
 	if (HUDWidgetClass)
 	{
 		HUDWidgetPtr = CreateWidget<UZeroHUDWidget>(this, HUDWidgetClass);
+		if (HUDWidgetPtr && !PrologFlag)
+		{
+			HUDWidgetPtr->AddToViewport();
+		}
 	}
 
 }

@@ -24,6 +24,9 @@ public:
     // 총 발사 시 스프레드를 증가시키는 함수
     void IncreaseSpread(float Amount);
 
+    void HitCrosshair();
+    void UnHitCrosshair();
+
 private:
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UImage> CrosshairLeft;
