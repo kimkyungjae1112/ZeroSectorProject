@@ -2,6 +2,7 @@
 
 
 #include "UI/ZeroHUDWidget.h"
+#include "UI/ZeroCrossHairWidget.h"
 #include "Components/TextBlock.h"
 #include "Interface/ZeroHUDInterface.h"
 #include "Game/ZeroGameModeBase.h"
@@ -47,6 +48,21 @@ void UZeroHUDWidget::UpdateHpBar(float InHp)
 	ZE_LOG(LogZeroSector, Display, TEXT("체력 : %f"), InHp / MaxHp);
 }
 
+void UZeroHUDWidget::IncreaseSpread(float Amount) const
+{
+	CrosshairWidget->IncreaseSpread(Amount);
+}
+
+void UZeroHUDWidget::HitCrosshair() const
+{
+	CrosshairWidget->HitCrosshair();
+}
+
+void UZeroHUDWidget::UnHitCrosshair() const
+{
+	CrosshairWidget->UnHitCrosshair();
+}
+
 void UZeroHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -57,6 +73,7 @@ void UZeroHUDWidget::NativeConstruct()
 	RemainSecondText = Cast<UTextBlock>(GetWidgetFromName(TEXT("RemainSecond")));
 	RemainWaveText = Cast<UTextBlock>(GetWidgetFromName(TEXT("RemainWave")));
 	HpBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HpBar")));
+	CrosshairWidget = Cast<UZeroCrossHairWidget>(GetWidgetFromName(TEXT("WBP_CrossHair")));
 
 	ensure(CurrentAmmoText);
 	ensure(MaxAmmoText);

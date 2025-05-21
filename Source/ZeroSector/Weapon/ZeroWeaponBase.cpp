@@ -3,7 +3,7 @@
 
 #include "Weapon/ZeroWeaponBase.h"
 #include "Engine/DamageEvents.h"
-#include "GameFramework/PlayerController.h"
+#include "Player/ZeroPlayerController.h"
 #include "Character/ZeroCharacterPlayer.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Data/ZeroWeaponStatDataTable.h"
@@ -76,6 +76,11 @@ void AZeroWeaponBase::Fire()
 {
 	if (bIsFire || CurrentAmmo <= 0) return;
 	bIsFire = true;
+
+	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetOwnerController());
+	if (PC == nullptr) return;
+	
+	PC->CrosshairSpread(50.f);
 
 	switch (WeaponType)
 	{
@@ -192,8 +197,8 @@ void AZeroWeaponBase::ApplyRecoil()
 	{
 		FRotator ControlRotation = GetOwnerController()->GetControlRotation();
 
-		float RecoilPitch = FMath::RandRange(-3.f, 3.f);
-		float RecoilYaw = FMath::RandRange(-3.f, 3.f);
+		float RecoilPitch = FMath::RandRange(-RecoilRate, RecoilRate);
+		float RecoilYaw = FMath::RandRange(-RecoilRate, RecoilRate);
 		ControlRotation.Pitch += RecoilPitch;
 		ControlRotation.Yaw += RecoilYaw;
 
@@ -209,24 +214,14 @@ void AZeroWeaponBase::PistolFire()
 
 	CurrentAmmo -= 1;
 	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
+	ApplyRecoil();
 	StartFireTimer();
 
 	FHitResult HitResult;
 	FVector ShotDirection;
-	ApplyRecoil();
 
 	bool Hit = GunTrace(HitResult, ShotDirection);
-	if (Hit)
-	{
-		AActor* HitActor = HitResult.GetActor();
-		if (HitActor)
-		{
-			FPointDamageEvent DamageEvent(Damage, HitResult, ShotDirection, nullptr);
-			AController* OwnerController = GetOwnerController();
-			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
-			ZE_LOG(LogZeroSector, Display, TEXT("Actor Name : %s"), *HitActor->GetActorNameOrLabel());
-		}
-	}
+	HitCheck(HitResult, ShotDirection, Hit);
 }
 
 void AZeroWeaponBase::RifleFire()
@@ -237,24 +232,14 @@ void AZeroWeaponBase::RifleFire()
 
 	CurrentAmmo -= 1;
 	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
+	ApplyRecoil();
 	StartFireTimer();
 
 	FHitResult HitResult;
 	FVector ShotDirection;
-	ApplyRecoil();
 
 	bool Hit = GunTrace(HitResult, ShotDirection);
-	if (Hit)
-	{
-		AActor* HitActor = HitResult.GetActor();
-		if (HitActor)
-		{
-			FPointDamageEvent DamageEvent(Damage, HitResult, ShotDirection, nullptr);
-			AController* OwnerController = GetOwnerController();
-			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
-			ZE_LOG(LogZeroSector, Display, TEXT("Actor Name : %s"), *HitActor->GetActorNameOrLabel());
-		}
-	}
+	HitCheck(HitResult, ShotDirection, Hit);
 }
 
 void AZeroWeaponBase::ShotgunFire()
@@ -263,10 +248,7 @@ void AZeroWeaponBase::ShotgunFire()
 	Cast<APlayerController>(GetOwnerController())->ClientStartCameraShake(ShotgunShake);
 	EffectComp->SetVisibility(true);
 
-	CurrentAmmo -= 1;
-	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
-	ApplyRecoil();
-	StartFireTimer();
+	PartialFire();
 
 	FVector CrosshairWorldDirection;
 	CalCrosshairVector(CrosshairWorldDirection);
@@ -295,24 +277,18 @@ void AZeroWeaponBase::ShotgunFire()
 			+ UpVector * FMath::Tan(SpreadRad) * RandomY;
 
 		FVector TraceEnd = Muzzle + SpreadDir.GetSafeNormal() * MaxRange;
-
 		FHitResult HitResult;
-		FColor Color{ FColor::Red };
 		bool Hit = GetWorld()->LineTraceSingleByChannel(HitResult, Muzzle, TraceEnd, ECollisionChannel::ECC_GameTraceChannel3, Params);
-		if (Hit)
-		{
-			AActor* HitActor = HitResult.GetActor();
-			if (HitActor)
-			{
-				FPointDamageEvent DamageEvent(Damage, HitResult, -TraceEnd, nullptr);
-				AController* OwnerController = GetOwnerController();
-				HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
-				ZE_LOG(LogZeroSector, Display, TEXT("Actor Name : %s"), *HitActor->GetActorNameOrLabel());
-				Color = FColor::Green;
-			}
-		}
-		DrawDebugLine(GetOwner()->GetWorld(), Muzzle, TraceEnd, Color, false, 5.f);
+		HitCheck(HitResult, -TraceEnd, Hit);
 	}
+}
+
+void AZeroWeaponBase::PartialFire()
+{
+	CurrentAmmo -= 1;
+	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
+	ApplyRecoil();
+	StartFireTimer();
 }
 
 void AZeroWeaponBase::CalCrosshairVector(FVector& CrosshairWorldDirection)
@@ -328,6 +304,41 @@ void AZeroWeaponBase::CalCrosshairVector(FVector& CrosshairWorldDirection)
 	// 크로스헤어 위치를 월드 공간의 방향으로 변환
 	FVector CrosshairWorldLocation;
 	if (!PC->DeprojectScreenPositionToWorld(ViewportSize.X, ViewportSize.Y, CrosshairWorldLocation, CrosshairWorldDirection)) return;
+}
+
+void AZeroWeaponBase::HitCheck(const FHitResult& InHitResult, const FVector& TraceDir, bool bHit)
+{
+	if (bHit)
+	{
+		AActor* HitActor = InHitResult.GetActor();
+		if (HitActor)
+		{
+			HitCheckTimer();
+
+			FPointDamageEvent DamageEvent(Damage, InHitResult, TraceDir, nullptr);
+			AController* OwnerController = GetOwnerController();
+			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
+			ZE_LOG(LogZeroSector, Display, TEXT("Actor Name : %s"), *HitActor->GetActorNameOrLabel());
+		}
+	}
+}
+
+void AZeroWeaponBase::HitCheckTimer()
+{
+	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetOwnerController());
+	if (PC == nullptr) return;
+	PC->HitCrosshair();
+	
+	FTimerHandle HitCrosshairTimer;
+	GetWorld()->GetTimerManager().SetTimer(HitCrosshairTimer, this, &AZeroWeaponBase::UnHitCheck, 0.2f, false);
+}
+
+void AZeroWeaponBase::UnHitCheck()
+{
+	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetOwnerController());
+	if (PC == nullptr) return;
+
+	PC->UnHitCrosshair();
 }
 
 UAnimMontage* AZeroWeaponBase::GetFireMontage() const
