@@ -4,6 +4,9 @@
 #include "AI/Task/BTTask_Death.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 
 UBTTask_Death::UBTTask_Death()
 {

@@ -4,6 +4,9 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Interface/ZeroCharacterAIInterface.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 
 UBTTask_Attack::UBTTask_Attack()
 {
@@ -36,6 +39,13 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	);
 
 	AIPawn->SetAIAttackOneDelegate(OnAttackFinished);
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(ControllingPawn->GetWorld()->GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ZombieBiteSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ZombieBiteSFX);
+	}
+
 	AIPawn->AttackOneByAI();
 	return EBTNodeResult::InProgress;
 }

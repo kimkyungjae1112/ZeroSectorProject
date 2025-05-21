@@ -11,6 +11,7 @@ class USlider;
 class UComboBoxString;
 class UCanvasPanel;
 class UTextBlock;
+class UZeroGameInstance;
 
 UCLASS()
 class ZEROSECTOR_API UZeroPauseMenuWidget : public UUserWidget
@@ -82,6 +83,7 @@ protected:
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UComboBoxString> WindowModeComboBox;
 
-
+    UPROPERTY()
+    UZeroGameInstance* GI;
 };
 

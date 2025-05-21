@@ -11,10 +11,13 @@
 #include "Gimmick/ZeroProvisoActor.h"
 #include "Gimmick/ZeroOperationBoard.h"
 #include "Gimmick/ZeroEnforceBoard.h"
+#include "Game/ZeroSoundManager.h"
+#include "Game/ZeroGameInstance.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "Interface/ZeroAfternoonInputInterface.h"
 #include "Interface/ZeroOutlineInterface.h"
 #include "UI/ZeroPauseMenuWidget.h"
+#include "Kismet/GameplayStatics.h"
 #include "ZeroSector.h"
 
 AActor* UZeroInputAfternoonComponent::CurrentDialogueNPC;
@@ -49,11 +52,15 @@ void UZeroInputAfternoonComponent::Look(const FInputActionValue& Value)
 void UZeroInputAfternoonComponent::Run()
 {
 	Player->GetCharacterMovement()->MaxWalkSpeed = 500.f;
+
+	SetFootstepInterval(0.3f);
 }
 
 void UZeroInputAfternoonComponent::Walk()
 {
 	Player->GetCharacterMovement()->MaxWalkSpeed = 300.f;
+
+	SetFootstepInterval(0.5f);
 }
 
 void UZeroInputAfternoonComponent::InteractBeam()
@@ -166,6 +173,12 @@ void UZeroInputAfternoonComponent::OperationBoardInteract()
 	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("OperationBoard")))
 	{
 		OnOperationInteract.ExecuteIfBound();
+
+		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->OperationSFX)
+		{
+			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->OperationSFX);
+		}
 	}
 }
 
@@ -174,7 +187,15 @@ void UZeroInputAfternoonComponent::ProvisoInteract()
 	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")))
 	{
 		OnProvisoInteract.ExecuteIfBound();
+
+		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ProvisoInteractSFX)
+		{
+			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ProvisoInteractSFX);
+		}
 	}
+
+	
 }
 
 void UZeroInputAfternoonComponent::EnforceBoardInteract()
@@ -182,6 +203,12 @@ void UZeroInputAfternoonComponent::EnforceBoardInteract()
 	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("EnforceBoard")))
 	{
 		OnEnforceInteract.ExecuteIfBound();
+
+		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->EnforceSFX)
+		{
+			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->EnforceSFX);
+		}
 	}
 }
 
@@ -210,6 +237,8 @@ void UZeroInputAfternoonComponent::BeginPlay()
 	Super::BeginPlay();
 	
 	check(Player);
+
+	GetWorld()->GetTimerManager().SetTimer(FootstepTimerHandle, this, &UZeroInputAfternoonComponent::TryPlayFootstepSound, 0.5f, true);
 }
 
 void UZeroInputAfternoonComponent::SetDefaultMovement()
@@ -220,4 +249,27 @@ void UZeroInputAfternoonComponent::SetDefaultMovement()
 void UZeroInputAfternoonComponent::SetDialogueMovement()
 {
 	Player->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
+}
+
+void UZeroInputAfternoonComponent::TryPlayFootstepSound()
+{
+	if (!Player) return;
+
+	if (Player->GetVelocity().Size() > 10.f)
+	{
+		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->FootstepSFX)
+		{
+			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->FootstepSFX);
+		}
+	}
+}
+
+void UZeroInputAfternoonComponent::SetFootstepInterval(float NewInterval)
+{
+	if (FMath::IsNearlyEqual(CurrentFootstepInterval, NewInterval, 0.01f)) return;
+
+	CurrentFootstepInterval = NewInterval;
+	GetWorld()->GetTimerManager().ClearTimer(FootstepTimerHandle);
+	GetWorld()->GetTimerManager().SetTimer(FootstepTimerHandle, this, &UZeroInputAfternoonComponent::TryPlayFootstepSound, NewInterval, true);
 }

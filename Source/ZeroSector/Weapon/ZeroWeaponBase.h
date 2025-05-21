@@ -13,6 +13,7 @@ class UAnimMontage;
 class UAnimInstance;
 class UCameraShakeBase;
 class UAudioComponent;
+class UZeroGameInstance;
 
 DECLARE_DELEGATE_OneParam(FOnChangedAmmo, int32 /* Current Ammo */)
 DECLARE_DELEGATE_OneParam(FOnSetMaxAmmo, int32 /* Max Ammo */)
@@ -130,6 +131,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Shake")
 	TSubclassOf<UCameraShakeBase> ShotgunShake;
+
+	UPROPERTY()
+	TObjectPtr<UZeroGameInstance> GI;
 	
 	/* 
 		SoundComp

@@ -8,6 +8,7 @@
 #include "ZeroOperationWidget.generated.h"
 
 class UButton;
+class UZeroGameInstance;
 
 DECLARE_DELEGATE(FOnClickNextButton)
 DECLARE_DELEGATE(FOnCancelButton)
@@ -61,4 +62,8 @@ private:
 	TObjectPtr<UButton> CancelButton;
 
 	bool bIsSeleteced{ false };
+
+	UPROPERTY()
+	TObjectPtr<UZeroGameInstance> GI;
+
 };

@@ -317,11 +317,6 @@ void AZeroCharacterPlayer::ProvisoInteract()
 		StatComp->UseActivePoint(-10.f);
 	}
 
-	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ProvisoInteractSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ProvisoInteractSFX);
-	}
 }
 
 void AZeroCharacterPlayer::EnforceBoardInteract()
@@ -338,6 +333,12 @@ void AZeroCharacterPlayer::ToggleNoteDisplay()
 	if (InputComp)
 	{
 		InputComp->ToggleNote();
+	}
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->NoteSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->NoteSFX);
 	}
 }
 

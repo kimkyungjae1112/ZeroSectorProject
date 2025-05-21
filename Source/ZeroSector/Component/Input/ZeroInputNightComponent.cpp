@@ -5,6 +5,9 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "InputActionValue.h"
 #include "ZeroHeader/ZeroWeaponHeader.h"
 #include "UI/ZeroHUDWidget.h"
@@ -44,11 +47,15 @@ void UZeroInputNightComponent::Look(const FInputActionValue& Value)
 void UZeroInputNightComponent::Run()
 {
 	Player->GetCharacterMovement()->MaxWalkSpeed = 500.f;
+
+	SetFootstepInterval(0.3f);
 }
 
 void UZeroInputNightComponent::Walk()
 {
 	Player->GetCharacterMovement()->MaxWalkSpeed = 300.f;
+
+	SetFootstepInterval(0.5f);
 }
 
 void UZeroInputNightComponent::Fire()
@@ -95,6 +102,12 @@ void UZeroInputNightComponent::ChangeWeapon()
 			SetPistol();
 			CurrentWeapon->GunAmmoTextDisplay();
 		}
+	}
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ChangeWeaponSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ChangeWeaponSFX);
 	}
 }
 
@@ -225,4 +238,27 @@ void UZeroInputNightComponent::ChangeWeaponMesh()
 			Weapon.Value->AttachToComponent(Player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("WeaponInventory"));
 		}
 	}
+}
+
+void UZeroInputNightComponent::TryPlayFootstepSound()
+{
+	if (!Player) return;
+
+	if (Player->GetVelocity().Size() > 10.f)
+	{
+		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->FootstepSFX)
+		{
+			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->FootstepSFX);
+		}
+	}
+}
+
+void UZeroInputNightComponent::SetFootstepInterval(float NewInterval)
+{
+	if (FMath::IsNearlyEqual(CurrentFootstepInterval, NewInterval, 0.01f)) return;
+
+	CurrentFootstepInterval = NewInterval;
+	GetWorld()->GetTimerManager().ClearTimer(FootstepTimerHandle);
+	GetWorld()->GetTimerManager().SetTimer(FootstepTimerHandle, this, &UZeroInputNightComponent::TryPlayFootstepSound, NewInterval, true);
 }

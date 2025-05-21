@@ -45,6 +45,9 @@ private:
 	void SetupTransformWeapon(const FName& SocketName);
 	void ChangeWeaponMesh();
 
+	void TryPlayFootstepSound();
+	void SetFootstepInterval(float NewInterval);
+
 // Weapon Data
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
@@ -57,5 +60,8 @@ private:
 	EWeaponType CurrentWeaponType;
 
 	EWeaponType ChoicedWeapon;
+
+	FTimerHandle FootstepTimerHandle;
+	float CurrentFootstepInterval = 0.5f;
 
 };

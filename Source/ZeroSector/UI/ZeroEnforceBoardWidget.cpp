@@ -5,6 +5,9 @@
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "Component/Input/ZeroInputNightComponent.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 
 int32 UZeroEnforceBoardWidget::PistolLevel = 1;
 int32 UZeroEnforceBoardWidget::RifleLevel = 1;
@@ -17,6 +20,8 @@ UZeroEnforceBoardWidget::UZeroEnforceBoardWidget(const FObjectInitializer& Objec
 void UZeroEnforceBoardWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	GI = Cast<UZeroGameInstance>(GetGameInstance());
 
 	PistolLevelText = Cast<UTextBlock>(GetWidgetFromName(TEXT("PistolLevel")));
 	RifleLevelText = Cast<UTextBlock>(GetWidgetFromName(TEXT("RifleLevel")));
@@ -50,23 +55,43 @@ void UZeroEnforceBoardWidget::PistolEnfoButtonClicked()
 {
 	if (PistolLevel == 7) return;
 	SetPistolLevelText(++PistolLevel);
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
 }
 
 void UZeroEnforceBoardWidget::RifleEnfoButtonClicked()
 {
 	if (RifleLevel == 7) return;
 	SetRifleLevelText(++RifleLevel);
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
 }
 
 void UZeroEnforceBoardWidget::ShotgunEnfoButtonClicked()
 {
 	if (ShotgunLevel == 7) return;
 	SetShotgunLevelText(++ShotgunLevel);
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
 }
 
 void UZeroEnforceBoardWidget::CloseEnfoButtonClicked()
 {
 	OnCancelButton.ExecuteIfBound();
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
 }
 
 void UZeroEnforceBoardWidget::SetPistolLevelText(int32 InLevel)

@@ -43,6 +43,9 @@ protected:
 private:
 	void SetDefaultMovement();
 	void SetDialogueMovement();
+	
+	void TryPlayFootstepSound();
+	void SetFootstepInterval(float NewInterval);
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Interact")
@@ -57,4 +60,7 @@ private:
 	IZeroDialogueInterface* DialogueInterface;
 
 	bool bIsNoteToggle;
+
+	FTimerHandle FootstepTimerHandle;
+	float CurrentFootstepInterval = 0.5f;
 };

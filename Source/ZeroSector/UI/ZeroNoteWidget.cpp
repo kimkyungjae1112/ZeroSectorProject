@@ -15,6 +15,9 @@
 #include "Components/SizeBox.h"
 #include "Components/CanvasPanel.h"
 #include "Data/ZeroResearcherData.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/ZeroProvisoButtonWidget.h"
 #include "Player/ZeroPlayerController.h"
 #include "UI/ZeroAfternoonHUDWidget.h"
@@ -24,6 +27,8 @@
 void UZeroNoteWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+    GI = Cast<UZeroGameInstance>(GetGameInstance());
 
     ResearcherInfoBox->SetVisibility(ESlateVisibility::Hidden);
 
@@ -102,6 +107,11 @@ void UZeroNoteWidget::DisplayResearcher(UZeroResearcherData* ResearcherData)
 
     if (TrustText)
         TrustText->SetText(FText::AsNumber(ResearcherData->Trust));
+
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+    }
 }
 
 void UZeroNoteWidget::OnInterviewButtonClicked()
@@ -114,6 +124,11 @@ void UZeroNoteWidget::OnInterviewButtonClicked()
             PC->GetAfternoonHUDWidget()->ShowInterviewText(CurrentInterviewResearcher->Name);
             PC->SelectedInterviewName = CurrentInterviewResearcher->Name; 
         }
+    }
+
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
     }
 }
 
@@ -148,6 +163,11 @@ void UZeroNoteWidget::ShowClueDetail(const FZeroProvisoDataTable& ProvisoData)
             }
         }
     }
+
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+    }
 }
 
 void UZeroNoteWidget::CloseClueDetail()
@@ -155,5 +175,10 @@ void UZeroNoteWidget::CloseClueDetail()
     if (DetailPopupBox)
     {
         DetailPopupBox->SetVisibility(ESlateVisibility::Hidden);
+    }
+
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
     }
 }

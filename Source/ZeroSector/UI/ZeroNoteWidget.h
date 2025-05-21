@@ -19,6 +19,7 @@ class UButton;
 class UZeroResearcherData;
 class UCanvasPanel;
 class UZeroAfternoonHUDWidget;
+class UZeroGameInstance;
 
 UCLASS()
 class ZEROSECTOR_API UZeroNoteWidget : public UUserWidget
@@ -116,5 +117,8 @@ protected:
 
     UFUNCTION()
     void CloseClueDetail();
+
+    UPROPERTY()
+    TObjectPtr<UZeroGameInstance> GI;
 
 };
