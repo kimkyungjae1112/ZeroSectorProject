@@ -59,18 +59,7 @@ void AZeroGameModeBase::BeginPlay()
 	UZeroSingleton::Get().ExcludedResearcherName = TEXT("");
 	UZeroSingleton::Get().ResetCollectedProvisos();
 
-	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
-	UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
-
-	USoundBase* AfternoonBGM = LoadObject<USoundBase>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/Sound/day_bgm.day_bgm'"));
-	if (AfternoonBGM && SM)
-	{
-		BGMAudioComponent = UGameplayStatics::SpawnSound2D(this, AfternoonBGM);
-		if (BGMAudioComponent)
-		{
-			BGMAudioComponent->SetVolumeMultiplier(SM->GetVolume());
-		}
-	}
+	PlayAfternoonBGM();
 }
 
 void AZeroGameModeBase::InitNight()
@@ -181,24 +170,7 @@ void AZeroGameModeBase::ChangeDayToAfternoon()
 	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PC) PC->ATHUD_Display();
 
-	if (BGMAudioComponent)
-	{
-		BGMAudioComponent->Stop();
-		BGMAudioComponent = nullptr;
-	}
-
-	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
-	UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
-
-	USoundBase* AfternoonBGM = LoadObject<USoundBase>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/Sound/day_bgm.day_bgm'"));
-	if (AfternoonBGM && SM)
-	{
-		BGMAudioComponent = UGameplayStatics::SpawnSound2D(this, AfternoonBGM);
-		if (BGMAudioComponent)
-		{
-			BGMAudioComponent->SetVolumeMultiplier(SM->GetVolume());
-		}
-	}
+	PlayAfternoonBGM();
 }
 
 void AZeroGameModeBase::ChangeDayToNight()
@@ -229,11 +201,48 @@ void AZeroGameModeBase::ChangeDayToNight()
 	DecreaseTime();
 	OnStartNight.ExecuteIfBound(MaxWave);
 
+	PlayNightBGM();
+}
+
+void AZeroGameModeBase::DecreaseTime()
+{
+	// 남은 시간 표시, 남은 시간이 다 되면 해당 일자는 패배
+	MaxTime -= 1;
+	OnStartNightForTime.ExecuteIfBound(MaxTime);
+
+	if (MaxTime <= 0) EndGame(false);
+}
+
+void AZeroGameModeBase::StopBGM()
+{
 	if (BGMAudioComponent)
 	{
 		BGMAudioComponent->Stop();
 		BGMAudioComponent = nullptr;
 	}
+}
+
+void AZeroGameModeBase::PlayAfternoonBGM()
+{
+	StopBGM(); // 기존 BGM 끄기
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+	UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
+
+	USoundBase* AfternoonBGM = LoadObject<USoundBase>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/Sound/day_bgm.day_bgm'"));
+	if (AfternoonBGM && SM)
+	{
+		BGMAudioComponent = UGameplayStatics::SpawnSound2D(this, AfternoonBGM);
+		if (BGMAudioComponent)
+		{
+			BGMAudioComponent->SetVolumeMultiplier(SM->GetVolume());
+		}
+	}
+}
+
+void AZeroGameModeBase::PlayNightBGM()
+{
+	StopBGM(); // 기존 BGM 끄기
 
 	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
 	UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
@@ -247,13 +256,4 @@ void AZeroGameModeBase::ChangeDayToNight()
 			BGMAudioComponent->SetVolumeMultiplier(SM->GetVolume());
 		}
 	}
-}
-
-void AZeroGameModeBase::DecreaseTime()
-{
-	// 남은 시간 표시, 남은 시간이 다 되면 해당 일자는 패배
-	MaxTime -= 1;
-	OnStartNightForTime.ExecuteIfBound(MaxTime);
-
-	if (MaxTime <= 0) EndGame(false);
 }

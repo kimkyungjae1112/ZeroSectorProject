@@ -70,6 +70,10 @@ private:
 	void ChangeDayToNight();
 	void DecreaseTime();
 
+	void PlayAfternoonBGM();
+	void PlayNightBGM();
+	void StopBGM();
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Spawner")
 	TObjectPtr<AZeroZombieSpawner> Spawner;
