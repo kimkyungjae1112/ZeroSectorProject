@@ -155,6 +155,20 @@ void AZeroPlayerController::NightHUD_Display()
 	}
 }
 
+void AZeroPlayerController::CrosshairSpread(float Amount) const
+{
+	HUDWidgetPtr->IncreaseSpread(Amount);
+}
+
+void AZeroPlayerController::HitCrosshair() const
+{
+	HUDWidgetPtr->HitCrosshair();
+}
+
+void AZeroPlayerController::UnHitCrosshair() const
+{
+	HUDWidgetPtr->UnHitCrosshair();
+}
 
 void AZeroPlayerController::BeginPlay()
 {
