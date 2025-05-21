@@ -39,7 +39,7 @@ AZeroGameModeBase::AZeroGameModeBase()
 	{
 		WaveTriggerClass = WaveTriggerClassRef.Class;
 	}
-	static ConstructorHelpers::FClassFinder<UZeroPrologVideoWidget> PrologWidgetClassRef(TEXT("/Game/Cinematic/VideoWidget.VideoWidget_C"));
+	static ConstructorHelpers::FClassFinder<UZeroPrologVideoWidget> PrologWidgetClassRef(TEXT("/Game/Cinematic/WBP_PrologWidget.WBP_PrologWidget_C"));
 	if (PrologWidgetClassRef.Class)
 	{
 		PrologWidgetClass = PrologWidgetClassRef.Class;
