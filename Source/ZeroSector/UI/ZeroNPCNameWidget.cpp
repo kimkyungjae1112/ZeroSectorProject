@@ -25,6 +25,6 @@ void UZeroNPCNameWidget::NativeConstruct()
 	IZeroClassIdentifierInterface* Interface = Cast<IZeroClassIdentifierInterface>(OwningActor);
 	if (Interface)
 	{
-		SetNameText(Interface->GetClassName());
+		SetNameText(Interface->GetNPCName());
 	}
 }
