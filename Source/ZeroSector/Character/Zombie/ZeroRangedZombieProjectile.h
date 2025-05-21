@@ -9,6 +9,7 @@
 class UProjectileMovementComponent;
 class UNiagaraComponent;
 class USphereComponent;
+class UNiagaraSystem;
 class AController;
 
 UCLASS()
@@ -29,6 +30,11 @@ private:
 	UFUNCTION()
 	void ProjectileOnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	void Explosion();
+
+	UFUNCTION()
+	void DestroyAfterExplosion(UNiagaraComponent* PSystem);
+
 // Component
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
@@ -44,4 +50,8 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Controller")
 	TObjectPtr<AController> ZombieController;
+
+// Flag
+private:
+	bool bIsHit{ false };
 };

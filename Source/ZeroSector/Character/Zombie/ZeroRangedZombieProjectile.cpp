@@ -3,10 +3,12 @@
 
 #include "Character/Zombie/ZeroRangedZombieProjectile.h"
 #include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
 #include "Engine/DamageEvents.h"
+#include "ZeroSector.h"
 
 AZeroRangedZombieProjectile::AZeroRangedZombieProjectile()
 {
@@ -17,6 +19,8 @@ AZeroRangedZombieProjectile::AZeroRangedZombieProjectile()
 
 	NiagaraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Niagara Component"));
 	NiagaraComp->SetupAttachment(CollisionComp);
+	NiagaraComp->OnSystemFinished.AddDynamic(this, &AZeroRangedZombieProjectile::DestroyAfterExplosion);
+	NiagaraComp->bAutoActivate = false;
 
 	ProjectileComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement Component"));
 	ProjectileComp->UpdatedComponent = CollisionComp;
@@ -46,10 +50,13 @@ void AZeroRangedZombieProjectile::BeginPlay()
 
 void AZeroRangedZombieProjectile::ProjectileOnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor)
+	if (OtherActor && OtherActor != GetOwner() && !bIsHit)
 	{
+		ZE_LOG(LogZeroSector, Display, TEXT("%s"), *OtherActor->GetActorNameOrLabel());
+		bIsHit = true;
 		if (OtherActor->ActorHasTag(TEXT("Player")))
 		{
+			ZE_LOG(LogZeroSector, Display, TEXT("%s"), *OtherActor->GetActorNameOrLabel());
 			// 터지는 이펙트 및 대미지 적용
 			OtherActor->TakeDamage(100.f, FDamageEvent(), ZombieController, GetOwner());
 
@@ -57,21 +64,29 @@ void AZeroRangedZombieProjectile::ProjectileOnHit(UPrimitiveComponent* HitCompon
 			return;
 		}
 		
-		FTimerHandle BoomTimer;
-		GetWorld()->GetTimerManager().SetTimer(BoomTimer, [&]()
-			{
-				UGameplayStatics::ApplyRadialDamage(
-					GetWorld(), 
-					50.f, 
-					GetActorLocation(), 
-					500.f, 
-					TSubclassOf<UDamageType>(), 
-					TArray<AActor*>(), 
-					GetOwner(), 
-					ZombieController);
-
-				Destroy();
-			}, 3.f, false);
+		Explosion();
 	}
 }
 
+void AZeroRangedZombieProjectile::Explosion()
+{
+	FTimerHandle BoomTimer;
+	GetWorld()->GetTimerManager().SetTimer(BoomTimer, [&]()
+		{
+			UGameplayStatics::ApplyRadialDamage(
+				GetWorld(),
+				50.f,
+				GetActorLocation(),
+				500.f,
+				TSubclassOf<UDamageType>(),
+				TArray<AActor*>(),
+				GetOwner(),
+				ZombieController);
+			NiagaraComp->Activate();
+		}, 3.f, false);
+}
+
+void AZeroRangedZombieProjectile::DestroyAfterExplosion(UNiagaraComponent* PSystem)
+{
+	Destroy();
+}

@@ -36,6 +36,9 @@ AZeroCharacterPlayer::AZeroCharacterPlayer()
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Player"));
 
+	ProtectCapsuleComp = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Protect Capsule Component"));
+	ProtectCapsuleComp->SetupAttachment(GetMesh());
+
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm Component"));
 	SpringArmComp->SetupAttachment(GetMesh(), TEXT("headSocket"));
 	SpringArmComp->bUsePawnControlRotation = true;
