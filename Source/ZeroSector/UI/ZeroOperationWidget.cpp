@@ -2,6 +2,9 @@
 
 
 #include "UI/ZeroOperationWidget.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 
 UZeroOperationWidget::UZeroOperationWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -12,6 +15,8 @@ UZeroOperationWidget::UZeroOperationWidget(const FObjectInitializer& ObjectIniti
 void UZeroOperationWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	GI = Cast<UZeroGameInstance>(GetGameInstance());
 
 	RifleButton = Cast<UButton>(GetWidgetFromName(TEXT("RifleButton")));
 	ShotgunButton = Cast<UButton>(GetWidgetFromName(TEXT("ShotgunButton")));
@@ -35,6 +40,11 @@ void UZeroOperationWidget::ClickRifleButton()
 	CurrentWeaponType = EWeaponType::ERifle;
 	RifleButton->SetBackgroundColor(FLinearColor::Green);
 	ShotgunButton->SetBackgroundColor(FLinearColor::White);
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
 }
 
 void UZeroOperationWidget::ClickShotgunButton()
@@ -43,15 +53,30 @@ void UZeroOperationWidget::ClickShotgunButton()
 	CurrentWeaponType = EWeaponType::EShotgun;
 	RifleButton->SetBackgroundColor(FLinearColor::White);
 	ShotgunButton->SetBackgroundColor(FLinearColor::Green);
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
 }
 
 void UZeroOperationWidget::ClickNextButton()
 {
 	if (bIsSeleteced == false) return;
 	OnClickNextButton.ExecuteIfBound();
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
 }
 
 void UZeroOperationWidget::ClickCancelButton()
 {
 	OnCancelButton.ExecuteIfBound();
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
 }

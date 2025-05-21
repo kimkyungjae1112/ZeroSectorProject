@@ -9,6 +9,9 @@
 #include "Animation/AnimMontage.h"
 #include "Engine/DamageEvents.h"
 #include "Perception/AISense_Damage.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "ZeroSector.h"
 
 AZeroCharacterMeleeZombie::AZeroCharacterMeleeZombie()
@@ -150,6 +153,13 @@ void AZeroCharacterMeleeZombie::BeginDead()
 
 	DetachFromControllerPendingDestroy();
 	ZE_LOG(LogZeroSector, Display, TEXT("Zombie Dead"));
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ZombieDieSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ZombieDieSFX);
+	}
+
 
 	FTimerHandle DestoryTimer;
 	GetWorld()->GetTimerManager().SetTimer(DestoryTimer, [&]()

@@ -11,6 +11,9 @@
 #include "Animation/AnimMontage.h"
 #include "Camera/CameraShakeBase.h"
 #include "Components/AudioComponent.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "ZeroSector.h"
 
 AZeroWeaponBase::AZeroWeaponBase()
@@ -70,11 +73,21 @@ AZeroWeaponBase::AZeroWeaponBase()
 	{
 		ShotgunShake = ShotgunShakeRef.Class;
 	}
+
 }
 
 void AZeroWeaponBase::Fire()
 {
-	if (bIsFire || CurrentAmmo <= 0) return;
+	if (bIsFire || CurrentAmmo <= 0)
+	{
+		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->Ammo0SFX)
+		{
+			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->Ammo0SFX);
+		}
+
+		return;
+	}
+
 	bIsFire = true;
 
 	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetOwnerController());
@@ -109,6 +122,11 @@ void AZeroWeaponBase::ReloadingCurrentAmmo()
 	MaxAmmo -= AddAmmoAmount;
 	if (MaxAmmo <= 0) MaxAmmo = 0;
 	GunAmmoTextDisplay();
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ReloadSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ReloadSFX);
+	}
 }
 
 void AZeroWeaponBase::GunAmmoTextDisplay()
@@ -136,6 +154,8 @@ void AZeroWeaponBase::StatApply()
 void AZeroWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GI = Cast<UZeroGameInstance>(GetGameInstance());
 
 	switch (WeaponType)
 	{

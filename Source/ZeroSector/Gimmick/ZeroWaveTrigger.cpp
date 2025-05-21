@@ -4,6 +4,9 @@
 #include "Gimmick/ZeroWaveTrigger.h"
 #include "Components/BoxComponent.h"
 #include "Interface/ZeroClassIdentifierInterface.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "Game/ZeroGameModeBase.h"
 
 AZeroWaveTrigger::AZeroWaveTrigger()
@@ -31,5 +34,11 @@ void AZeroWaveTrigger::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 				Destroy();
 			}
 		}
+	}
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->TriggerSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->TriggerSFX);
 	}
 }

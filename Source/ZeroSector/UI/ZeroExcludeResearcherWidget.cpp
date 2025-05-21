@@ -3,11 +3,16 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/CanvasPanel.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/ZeroPlayerController.h"
 
 void UZeroExcludeResearcherWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	GI = Cast<UZeroGameInstance>(GetGameInstance());
 
 	ResearcherNames = { TEXT("Vaccine"), TEXT("Criminal"), TEXT("Normal1"), TEXT("Normal2"), TEXT("Normal3") };
 
@@ -62,6 +67,11 @@ void UZeroExcludeResearcherWidget::HandleResearcherSelection(int32 Index)
 		}
 	}
 
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
+
 	UpdateButtonStyles();
 }
 
@@ -105,6 +115,11 @@ void UZeroExcludeResearcherWidget::OnClickExcludeButton()
 			);
 		}
 	}
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
 }
 
 
@@ -114,6 +129,11 @@ void UZeroExcludeResearcherWidget::OnClickNotExcludeButton()
 	{
 		ExcludeCheckText->SetText(FText::FromString(TEXT("배제하지 않으시겠습니까?")));
 		ExcludeCheckPopup->SetVisibility(ESlateVisibility::Visible);
+	}
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
 	}
 }
 
@@ -143,6 +163,11 @@ void UZeroExcludeResearcherWidget::OnClickExcludeOK()
 		UE_LOG(LogTemp, Log, TEXT("Exclude cancelled."));
 	}
 
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ExcludeSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ExcludeSFX);
+	}
+
 	RemoveFromParent();
 	OnCloseExclude.ExecuteIfBound();
 }
@@ -152,6 +177,11 @@ void UZeroExcludeResearcherWidget::OnClickExcludeCancel()
 	if (ExcludeCheckPopup)
 	{
 		ExcludeCheckPopup->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
 	}
 }
 

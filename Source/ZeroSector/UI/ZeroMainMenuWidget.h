@@ -10,6 +10,7 @@ class UButton;
 class UCanvasPanel;
 class USlider;
 class UComboBoxString;
+class UZeroGameInstance;
 
 UCLASS()
 class ZEROSECTOR_API UZeroMainMenuWidget : public UUserWidget
@@ -82,13 +83,8 @@ protected:
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UButton> ApplySettingButton;
 
-    /*
-    FString PendingResolution;
-    FString PendingWindowMode;
-    float PendingVolume = 0.5f;
-
-    FString CurrentResolution;
-    FString CurrentWindowMode;
-    float CurrentVolume = 0.5f; */
+    UPROPERTY()
+    UZeroGameInstance* GI;
+    
 };
 

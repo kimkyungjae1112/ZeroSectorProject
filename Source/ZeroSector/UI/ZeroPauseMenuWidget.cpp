@@ -17,7 +17,7 @@ void UZeroPauseMenuWidget::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
 
-    UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+    GI = Cast<UZeroGameInstance>(GetGameInstance());
     UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
 
 
@@ -82,7 +82,6 @@ void UZeroPauseMenuWidget::OnResumeButtonClicked()
         PC->InputModeGameOnly();
     }
 
-    UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
     if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
     {
         UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
@@ -94,7 +93,6 @@ void UZeroPauseMenuWidget::OnMainMenuButtonClicked()
     UGameplayStatics::SetGamePaused(GetWorld(), false);
     UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
 
-    UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
     if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
     {
         UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
@@ -110,7 +108,7 @@ void UZeroPauseMenuWidget::OnOptionButtonClicked()
 
         if (!bVisible)  
         {
-            if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
+            if (GI)
             {
                 if (UZeroGameSettingManager* SM = GI->SettingManager)
                 {
@@ -122,7 +120,6 @@ void UZeroPauseMenuWidget::OnOptionButtonClicked()
             }
         }
 
-        UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
         if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
         {
             UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
@@ -143,15 +140,19 @@ void UZeroPauseMenuWidget::OnOptionExitButtonClicked()
         OptionPanel->SetVisibility(ESlateVisibility::Collapsed);
     }
 
-    UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
     UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
     SM->ResetTempSettings();
+
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+    }
 
 }
 
 void UZeroPauseMenuWidget::OnVolumeChanged(float Value)
 {
-    if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
+    if (GI)
     {
         if (UZeroGameSettingManager* SM = GI->SettingManager)
         {
@@ -163,7 +164,7 @@ void UZeroPauseMenuWidget::OnVolumeChanged(float Value)
 
 void UZeroPauseMenuWidget::OnSFXChanged(float Value)
 {
-    if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
+    if (GI)
     {
         if (UZeroGameSettingManager* SM = GI->SettingManager)
         {
@@ -175,7 +176,7 @@ void UZeroPauseMenuWidget::OnSFXChanged(float Value)
 
 void UZeroPauseMenuWidget::OnResolutionChanged(FString SelectedItem, ESelectInfo::Type SelectInfo)
 {
-    if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
+    if (GI)
     {
         if (UZeroGameSettingManager* SM = GI->SettingManager)
         {
@@ -187,7 +188,7 @@ void UZeroPauseMenuWidget::OnResolutionChanged(FString SelectedItem, ESelectInfo
 
 void UZeroPauseMenuWidget::OnWindowModeChanged(FString SelectedItem, ESelectInfo::Type SelectInfo)
 {
-    if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
+    if (GI)
     {
         if (UZeroGameSettingManager* SM = GI->SettingManager)
         {
@@ -199,7 +200,7 @@ void UZeroPauseMenuWidget::OnWindowModeChanged(FString SelectedItem, ESelectInfo
 
 void UZeroPauseMenuWidget::OnApplySettingsClicked()
 {
-    if (UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance()))
+    if (GI)
     {
         if (UZeroGameSettingManager* SM = GI->SettingManager)
         {
@@ -209,6 +210,11 @@ void UZeroPauseMenuWidget::OnApplySettingsClicked()
             UE_LOG(LogTemp, Log, TEXT("퍼즈 메뉴 설정 적용됨: %s / %s / 볼륨 %.2f / 효과음 %.2f"),
                 *SM->GetResolution(), *SM->GetWindowMode(), SM->GetVolume(), SM->GetSFXVolume());
         }
+    }
+
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
     }
 }
 

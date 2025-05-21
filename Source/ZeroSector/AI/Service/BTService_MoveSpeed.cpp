@@ -7,6 +7,9 @@
 #include "Interface/ZeroCharacterAIInterface.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 
 UBTService_MoveSpeed::UBTService_MoveSpeed()
 {
@@ -41,5 +44,18 @@ void UBTService_MoveSpeed::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* No
 	if (Owner && Owner->GetCharacterMovement())
 	{
 		Owner->GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
+
+		static float LastGroanTime = 0.f;
+		float CurrentTime = Owner->GetWorld()->GetTimeSeconds();
+
+		if (Dist < 1000.f && (CurrentTime - LastGroanTime > 4.f) && FMath::FRand() < 0.3f)
+		{
+			UZeroGameInstance* GI = Cast<UZeroGameInstance>(Owner->GetGameInstance());
+			if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ZombieMoveSFX)
+			{
+				UGameplayStatics::PlaySoundAtLocation(Owner, GI->GetSoundManager()->ZombieMoveSFX, Owner->GetActorLocation());
+				LastGroanTime = CurrentTime;
+			}
+		}
 	}
 }

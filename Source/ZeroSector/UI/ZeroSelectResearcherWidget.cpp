@@ -2,12 +2,17 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/CanvasPanel.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "Player/ZeroPlayerController.h"
 #include "Data/ZeroSingleton.h"
 
 void UZeroSelectResearcherWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	GI = Cast<UZeroGameInstance>(GetGameInstance());
 
 	ResearcherNames = { TEXT("Vaccine"), TEXT("Criminal"), TEXT("Normal1"), TEXT("Normal2"), TEXT("Normal3") };
 
@@ -58,6 +63,11 @@ void UZeroSelectResearcherWidget::HandleResearcherSelection(int32 Index)
 		}
 	}
 
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
+
 	UpdateButtonStyles();
 }
 
@@ -101,6 +111,11 @@ void UZeroSelectResearcherWidget::OnClickSelectButton()
 			);
 		}
 	}
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
 }
 
 void UZeroSelectResearcherWidget::OnClickSelectOK()
@@ -125,6 +140,11 @@ void UZeroSelectResearcherWidget::OnClickSelectOK()
 		UE_LOG(LogTemp, Log, TEXT("Select cancelled."));
 	}
 
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->SelectSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->SelectSFX);
+	}
+
 	RemoveFromParent();
 	OnCloseSelect.ExecuteIfBound();
 }
@@ -134,6 +154,11 @@ void UZeroSelectResearcherWidget::OnClickSelectCancel()
 	if (SelectCheckPopup)
 	{
 		SelectCheckPopup->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
 	}
 }
 

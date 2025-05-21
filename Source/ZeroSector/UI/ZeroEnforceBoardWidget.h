@@ -8,6 +8,7 @@
 
 class UTextBlock;
 class UButton;
+class UZeroGameInstance;
 
 DECLARE_DELEGATE(FOnCancelButton)
 
@@ -68,4 +69,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UButton> CancelEnfoButton;
+
+	UPROPERTY()
+	TObjectPtr<UZeroGameInstance> GI;
 };

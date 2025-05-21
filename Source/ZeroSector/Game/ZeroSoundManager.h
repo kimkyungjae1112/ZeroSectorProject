@@ -22,6 +22,45 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<USoundBase> UIClickSFX;
+	
+	UPROPERTY()
+	TObjectPtr<USoundBase> NoteSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> OperationSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> ExcludeSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> SelectSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> EnforceSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> ReloadSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> ChangeWeaponSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> Ammo0SFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> TriggerSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> FootstepSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> ZombieBiteSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> ZombieMoveSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> ZombieDieSFX;
 
 	void Init();
 };

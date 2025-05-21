@@ -47,6 +47,9 @@ private:
 	void SetupTransformWeapon(const FName& SocketName);
 	void ChangeWeaponMesh();
 
+	void TryPlayFootstepSound();
+	void SetFootstepInterval(float NewInterval);
+
 // Weapon Data
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon")
@@ -61,6 +64,9 @@ private:
 	EWeaponType ChoicedWeapon;
 	EWeaponType TempWeaponType;
 
+	FTimerHandle FootstepTimerHandle;
+	float CurrentFootstepInterval = 0.5f;
+
 // Anim Data
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Anim")
@@ -74,4 +80,5 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Anim")
 	TObjectPtr<UAnimMontage> ShotgunMontage;
+
 };

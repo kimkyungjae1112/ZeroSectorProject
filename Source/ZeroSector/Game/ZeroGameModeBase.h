@@ -65,6 +65,12 @@ private:
 	void ChangeDayToNight();
 	void DecreaseTime();
 
+// 드사운드
+private:
+	void PlayAfternoonBGM();
+	void PlayNightBGM();
+	void StopBGM();
+
 // 좀비 스폰 데이터 및 전투 스테이지 데이터
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Spawner")

@@ -9,6 +9,7 @@
 class UButton;
 class UTextBlock;
 class UCanvasPanel;
+class UZeroGameInstance;
 
 DECLARE_DELEGATE(FOnCloseExclude)
 
@@ -104,5 +105,9 @@ private:
 
 	UPROPERTY()
 	TArray<FString> ResearcherNames;
+
+	UPROPERTY()
+	TObjectPtr<UZeroGameInstance> GI;
+
 };
 
