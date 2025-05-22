@@ -10,7 +10,6 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Camera/CameraShakeBase.h"
-#include "Components/AudioComponent.h"
 #include "Game/ZeroGameInstance.h"
 #include "Game/ZeroSoundManager.h"
 #include "Kismet/GameplayStatics.h"
@@ -31,10 +30,6 @@ AZeroWeaponBase::AZeroWeaponBase()
 		EffectComp->SetCollisionProfileName(TEXT("NoCollision"));
 		EffectComp->SetVisibility(false);
 	}
-
-	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
-	AudioComp->SetupAttachment(GunMeshComp);
-	AudioComp->bAutoActivate = false;
 
 	static ConstructorHelpers::FObjectFinder<UDataTable> PistolDataTableRef(TEXT("/Script/Engine.DataTable'/Game/Data/WeaponStat/PistolStatDataTable.PistolStatDataTable'"));
 	if (PistolDataTableRef.Object)
@@ -57,43 +52,19 @@ AZeroWeaponBase::AZeroWeaponBase()
 	{
 		MoveTable = MoveTableRef.Object;
 	}
-
-	static ConstructorHelpers::FClassFinder<UCameraShakeBase> PistolShakeRef(TEXT("/Game/Blueprints/Camera/BP_CameraShakePistol.BP_CameraShakePistol_C"));
-	if (PistolShakeRef.Class)
-	{
-		PistolShake = PistolShakeRef.Class;
-	}
-	static ConstructorHelpers::FClassFinder<UCameraShakeBase> RifleShakeRef(TEXT("/Game/Blueprints/Camera/BP_CameraShakeRifle.BP_CameraShakeRifle_C"));
-	if (RifleShakeRef.Class)
-	{
-		RifleShake = RifleShakeRef.Class;
-	}
-	static ConstructorHelpers::FClassFinder<UCameraShakeBase> ShotgunShakeRef(TEXT("/Game/Blueprints/Camera/BP_CameraShakeShotgun.BP_CameraShakeShotgun_C"));
-	if (ShotgunShakeRef.Class)
-	{
-		ShotgunShake = ShotgunShakeRef.Class;
-	}
-
 }
 
 void AZeroWeaponBase::Fire()
 {
-	if (bIsFire || CurrentAmmo <= 0)
-	{
-		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->Ammo0SFX)
-		{
-			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->Ammo0SFX);
-		}
-
-		return;
-	}
-
+	if (bIsFire) return;
 	bIsFire = true;
 
-	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetOwnerController());
-	if (PC == nullptr) return;
-	
-	PC->CrosshairSpread(50.f);
+	if (CurrentAmmo <= 0)
+	{
+		Ammo0SoundPlay();
+		StartFireTimer();
+		return;
+	}
 
 	switch (WeaponType)
 	{
@@ -122,11 +93,7 @@ void AZeroWeaponBase::ReloadingCurrentAmmo()
 	MaxAmmo -= AddAmmoAmount;
 	if (MaxAmmo <= 0) MaxAmmo = 0;
 	GunAmmoTextDisplay();
-
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ReloadSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ReloadSFX);
-	}
+	ReloadSoundPlay();
 }
 
 void AZeroWeaponBase::GunAmmoTextDisplay()
@@ -140,12 +107,12 @@ void AZeroWeaponBase::StatApply()
 	if (Level > MaxLevel) Level = 7;
 
 	FName RowIndex = FName(*FString::Printf(TEXT("%d"), Level));
-	FString Context(TEXT("Weapon Stat"));
-	FZeroWeaponStatDataTable StatDataTable = *DataTableBuffer[WeaponType]->FindRow<FZeroWeaponStatDataTable>(RowIndex, Context);
+	FZeroWeaponStatDataTable StatDataTable = *DataTableBuffer[WeaponType]->FindRow<FZeroWeaponStatDataTable>(RowIndex, FString());
 	MaxRange = StatDataTable.MaxRange;
 	Damage = StatDataTable.Damage;
 	FireRate = StatDataTable.FireRate;
 	RecoilRate = StatDataTable.RecoilRate;
+	Spread = StatDataTable.Spread;
 	MaxAmmo = StatDataTable.MaxAmmo;
 	Magazine = StatDataTable.Magazine;
 	CurrentAmmo = Magazine;
@@ -228,14 +195,8 @@ void AZeroWeaponBase::ApplyRecoil()
 
 void AZeroWeaponBase::PistolFire()
 {
-	Anim->Montage_Play(GetFireMontage());
-	Cast<APlayerController>(GetOwnerController())->ClientStartCameraShake(PistolShake);
-	EffectComp->SetVisibility(true);
-
-	CurrentAmmo -= 1;
-	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
-	ApplyRecoil();
-	StartFireTimer();
+	PartialFire();
+	PistolFireSoundPlay();
 
 	FHitResult HitResult;
 	FVector ShotDirection;
@@ -246,14 +207,8 @@ void AZeroWeaponBase::PistolFire()
 
 void AZeroWeaponBase::RifleFire()
 {
-	Anim->Montage_Play(GetFireMontage());
-	Cast<APlayerController>(GetOwnerController())->ClientStartCameraShake(RifleShake);
-	EffectComp->SetVisibility(true);
-
-	CurrentAmmo -= 1;
-	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
-	ApplyRecoil();
-	StartFireTimer();
+	PartialFire();
+	RifleFireSoundPlay();
 
 	FHitResult HitResult;
 	FVector ShotDirection;
@@ -264,11 +219,8 @@ void AZeroWeaponBase::RifleFire()
 
 void AZeroWeaponBase::ShotgunFire()
 {
-	Anim->Montage_Play(GetFireMontage());
-	Cast<APlayerController>(GetOwnerController())->ClientStartCameraShake(ShotgunShake);
-	EffectComp->SetVisibility(true);
-
 	PartialFire();
+	ShotgunFireSoundPlay();
 
 	FVector CrosshairWorldDirection;
 	CalCrosshairVector(CrosshairWorldDirection);
@@ -305,6 +257,13 @@ void AZeroWeaponBase::ShotgunFire()
 
 void AZeroWeaponBase::PartialFire()
 {
+	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetOwnerController());
+	if (PC == nullptr) return;
+	PC->CrosshairSpread(Spread);
+
+	Anim->Montage_Play(GetFireMontage());
+	EffectComp->SetVisibility(true);
+
 	CurrentAmmo -= 1;
 	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
 	ApplyRecoil();
@@ -313,13 +272,17 @@ void AZeroWeaponBase::PartialFire()
 
 void AZeroWeaponBase::CalCrosshairVector(FVector& CrosshairWorldDirection)
 {
-	APlayerController* PC = Cast<APlayerController>(GetOwnerController());
+	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetOwnerController());
 	if (PC == nullptr) return;
 
 	UGameViewportClient* GameViewport = GetWorld()->GetGameViewport();
 	FVector2D ViewportSize;
 	GameViewport->GetViewportSize(ViewportSize);
 	ViewportSize /= 2.f;
+
+	float PixelSpreadRange = PC->GetCurrentSpread() * 0.8f;
+	ViewportSize.X += FMath::FRandRange(-PixelSpreadRange, PixelSpreadRange);
+	ViewportSize.Y += FMath::FRandRange(-PixelSpreadRange, PixelSpreadRange);
 
 	// 크로스헤어 위치를 월드 공간의 방향으로 변환
 	FVector CrosshairWorldLocation;
@@ -377,5 +340,45 @@ UAnimMontage* AZeroWeaponBase::GetReloadingMontage() const
 		MontageData.ReloadingMontage.LoadSynchronous();
 	}
 	return MontageData.ReloadingMontage.Get();
+}
+
+void AZeroWeaponBase::PistolFireSoundPlay() const
+{
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->PistolFireSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->PistolFireSFX);
+	}
+}
+
+void AZeroWeaponBase::RifleFireSoundPlay() const
+{
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->RifleFireSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->RifleFireSFX);
+	}
+}
+
+void AZeroWeaponBase::ShotgunFireSoundPlay() const
+{
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ShotgunFireSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ShotgunFireSFX);
+	}
+}
+
+void AZeroWeaponBase::Ammo0SoundPlay() const
+{
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->Ammo0SFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->Ammo0SFX);
+	}
+}
+
+void AZeroWeaponBase::ReloadSoundPlay() const
+{
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ReloadSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ReloadSFX);
+	}
 }
 

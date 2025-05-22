@@ -25,6 +25,9 @@ public:
 	float RecoilRate;
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
+	float Spread;
+
+	UPROPERTY(EditAnywhere, Category = "Stat")
 	int32 MaxAmmo;
 
 	UPROPERTY(EditAnywhere, Category = "Stat")

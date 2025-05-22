@@ -7,8 +7,8 @@
 UZeroCrossHairWidget::UZeroCrossHairWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
     CrosshairSpread = 0.0f;
-    MaxCrosshairSpread = 30.0f;    
-    CrosshairRecoverySpeed = 10.0f;    
+    CrosshairRecoverySpeed = 3.0f;    
+    MaxCrosshairSpread = 100.f;
 }
 
 void UZeroCrossHairWidget::NativeConstruct()

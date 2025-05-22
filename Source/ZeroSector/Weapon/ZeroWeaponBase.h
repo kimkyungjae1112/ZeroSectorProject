@@ -66,6 +66,9 @@ protected:
 	float RecoilRate;
 
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
+	float Spread;
+
+	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	int32 MaxAmmo;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
@@ -84,8 +87,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Effect")
 	TObjectPtr<UStaticMeshComponent> EffectComp;
 
-	UPROPERTY(VisibleAnywhere, Category = "Sound")
-	TObjectPtr<UAudioComponent> AudioComp;
 
 // 무기 실제 기능
 private:
@@ -108,8 +109,8 @@ private:
 // 기타 데이터
 private:
 	int32 MaxLevel = 7;
-	bool bIsFire = false;
-	
+	bool bIsFire{ false };
+
 // 애니메이션 데이터
 private:
 	// 애셋 경로에서 실제 로딩 도와주는 함수
@@ -128,21 +129,13 @@ private:
 
 // 특수 효과 ( 화면 흔들림, 이펙트, 사운드 )
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Shake")
-	TSubclassOf<UCameraShakeBase> PistolShake;
-
-	UPROPERTY(VisibleAnywhere, Category = "Shake")
-	TSubclassOf<UCameraShakeBase> RifleShake;
-
-	UPROPERTY(VisibleAnywhere, Category = "Shake")
-	TSubclassOf<UCameraShakeBase> ShotgunShake;
+	void PistolFireSoundPlay() const;
+	void RifleFireSoundPlay() const;
+	void ShotgunFireSoundPlay() const;
+	void Ammo0SoundPlay() const;
+	void ReloadSoundPlay() const;
 
 	UPROPERTY()
 	TObjectPtr<UZeroGameInstance> GI;
-	
-	/* 
-		SoundComp
-		ParticleComp
-	*/
 
 };

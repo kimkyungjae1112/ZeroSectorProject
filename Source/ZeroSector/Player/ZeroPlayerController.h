@@ -42,6 +42,7 @@ public:
 	void NightHUD_Display();
 
 	// 크로스 헤어
+	float GetCurrentSpread() const;
 	void CrosshairSpread(float Amount) const;
 	void HitCrosshair() const;
 	void UnHitCrosshair() const;

@@ -3,9 +3,6 @@
 
 #include "Weapon/ZeroWeaponRifle.h"
 #include "Animation/AnimInstance.h"
-#include "Components/AudioComponent.h"
-#include "Sound/SoundWave.h"
-#include "Kismet/GameplayStatics.h"
 
 AZeroWeaponRifle::AZeroWeaponRifle()
 {
@@ -19,11 +16,6 @@ AZeroWeaponRifle::AZeroWeaponRifle()
 	{
 		GunMeshComp->SetAnimInstanceClass(RifleABPRef.Class);
 	}
-	static ConstructorHelpers::FObjectFinder<USoundWave> FireSoundRef(TEXT("/Script/Engine.SoundWave'/Game/Characters/Weapons/Assets/Audio/GunFire/SW_GunFire_04.SW_GunFire_04'"));
-	if (FireSoundRef.Object)
-	{
-		FireSound = FireSoundRef.Object;
-	}
 
 	WeaponType = EWeaponType::ERifle;
 }
@@ -32,6 +24,4 @@ void AZeroWeaponRifle::Fire()
 {
 	Super::Fire();
 
-	AudioComp->SetSound(FireSound);
-	AudioComp->Play();
 }

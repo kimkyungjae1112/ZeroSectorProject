@@ -52,11 +52,9 @@ void AZeroRangedZombieProjectile::ProjectileOnHit(UPrimitiveComponent* HitCompon
 {
 	if (OtherActor && OtherActor != GetOwner() && !bIsHit)
 	{
-		ZE_LOG(LogZeroSector, Display, TEXT("%s"), *OtherActor->GetActorNameOrLabel());
 		bIsHit = true;
 		if (OtherActor->ActorHasTag(TEXT("Player")))
 		{
-			ZE_LOG(LogZeroSector, Display, TEXT("%s"), *OtherActor->GetActorNameOrLabel());
 			// 터지는 이펙트 및 대미지 적용
 			OtherActor->TakeDamage(100.f, FDamageEvent(), ZombieController, GetOwner());
 

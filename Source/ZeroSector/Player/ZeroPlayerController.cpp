@@ -155,6 +155,11 @@ void AZeroPlayerController::NightHUD_Display()
 	}
 }
 
+float AZeroPlayerController::GetCurrentSpread() const
+{
+	return HUDWidgetPtr->GetCurrentSpread();
+}
+
 void AZeroPlayerController::CrosshairSpread(float Amount) const
 {
 	HUDWidgetPtr->IncreaseSpread(Amount);

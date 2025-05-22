@@ -80,6 +80,8 @@ void UZeroInputNightComponent::Walk()
 
 void UZeroInputNightComponent::Fire()
 {
+	CurrentWeapon->Fire();
+
 	if (!CurrentWeapon->IsVaildFire()) return;
 
 	switch (CurrentWeaponType)
@@ -96,8 +98,6 @@ void UZeroInputNightComponent::Fire()
 	default:
 		break;
 	}
-
-	CurrentWeapon->Fire();
 }
 
 void UZeroInputNightComponent::ChangeWeapon()
