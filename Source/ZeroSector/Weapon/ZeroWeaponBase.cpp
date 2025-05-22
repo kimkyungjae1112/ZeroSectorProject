@@ -272,13 +272,17 @@ void AZeroWeaponBase::PartialFire()
 
 void AZeroWeaponBase::CalCrosshairVector(FVector& CrosshairWorldDirection)
 {
-	APlayerController* PC = Cast<APlayerController>(GetOwnerController());
+	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetOwnerController());
 	if (PC == nullptr) return;
 
 	UGameViewportClient* GameViewport = GetWorld()->GetGameViewport();
 	FVector2D ViewportSize;
 	GameViewport->GetViewportSize(ViewportSize);
 	ViewportSize /= 2.f;
+
+	float PixelSpreadRange = PC->GetCurrentSpread() * 0.8f;
+	ViewportSize.X += FMath::FRandRange(-PixelSpreadRange, PixelSpreadRange);
+	ViewportSize.Y += FMath::FRandRange(-PixelSpreadRange, PixelSpreadRange);
 
 	// 크로스헤어 위치를 월드 공간의 방향으로 변환
 	FVector CrosshairWorldLocation;
