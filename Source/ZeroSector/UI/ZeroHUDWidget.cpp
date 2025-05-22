@@ -48,6 +48,11 @@ void UZeroHUDWidget::UpdateHpBar(float InHp)
 	ZE_LOG(LogZeroSector, Display, TEXT("체력 : %f"), InHp / MaxHp);
 }
 
+float UZeroHUDWidget::GetCurrentSpread() const
+{
+	return CrosshairWidget->GetCurrentSpread();
+}
+
 void UZeroHUDWidget::IncreaseSpread(float Amount) const
 {
 	CrosshairWidget->IncreaseSpread(Amount);

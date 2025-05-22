@@ -14,6 +14,9 @@ void UZeroSoundManager::Init()
 	OperationSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Operation.Operation"));
 	ExcludeSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Exclude.Exclude"));
 	SelectSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Select.Select"));
+	PistolFireSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Characters/Weapons/Assets/Audio/GunFire/SW_GunFire_03.SW_GunFire_03"));
+	RifleFireSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Characters/Weapons/Assets/Audio/GunFire/SW_GunFire_04.SW_GunFire_04"));
+	ShotgunFireSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Characters/Weapons/Assets/Audio/GunFire/SW_GunFire_01.SW_GunFire_01"));
 	EnforceSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Enforce.Enforce"));
 	ReloadSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Reload.Reload"));
 	ChangeWeaponSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/ChangeWeapon.ChangeWeapon"));

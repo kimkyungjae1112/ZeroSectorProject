@@ -26,6 +26,7 @@ public:
 	void SetMaxHp(float InMaxHp);
 	void UpdateHpBar(float InHp);
 
+	float GetCurrentSpread() const;
 	void IncreaseSpread(float Amount) const;
 	void HitCrosshair() const;
 	void UnHitCrosshair() const;

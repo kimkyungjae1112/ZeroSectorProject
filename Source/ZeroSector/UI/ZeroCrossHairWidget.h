@@ -16,6 +16,8 @@ class ZEROSECTOR_API UZeroCrossHairWidget : public UUserWidget
 public:
 	UZeroCrossHairWidget(const FObjectInitializer& ObjectInitializer);
 
+    FORCEINLINE float GetCurrentSpread() const { return CrosshairSpread; }
+
 protected:
 	virtual void NativeConstruct() override;
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
@@ -44,11 +46,9 @@ private:
     // 크로스 헤어 스프레드 값 (총 발사 시 증가)
     float CrosshairSpread;
 
-    // 최대 스프레드 값
-    float MaxCrosshairSpread;
-
     // 스프레드가 원래대로 돌아가는 속도
     float CrosshairRecoverySpeed;
 
+    float MaxCrosshairSpread;
     
 };

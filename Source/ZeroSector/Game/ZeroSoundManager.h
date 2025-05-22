@@ -39,6 +39,15 @@ public:
 	TObjectPtr<USoundBase> EnforceSFX;
 
 	UPROPERTY()
+	TObjectPtr<USoundBase> PistolFireSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> RifleFireSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> ShotgunFireSFX;
+
+	UPROPERTY()
 	TObjectPtr<USoundBase> ReloadSFX;
 
 	UPROPERTY()
