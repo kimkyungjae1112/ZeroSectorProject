@@ -93,9 +93,11 @@ private:
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	AController* GetOwnerController() const;
 	void StartFireTimer();
+	void StartEffectTimer();
 	void StopFire();
+	void StopEffect();
 	void ApplyRecoil();
-
+	
 
 	void PistolFire();
 	void RifleFire();

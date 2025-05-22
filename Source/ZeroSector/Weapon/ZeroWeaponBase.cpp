@@ -172,10 +172,20 @@ void AZeroWeaponBase::StartFireTimer()
 	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AZeroWeaponBase::StopFire, FireRate, false);
 }
 
+void AZeroWeaponBase::StartEffectTimer()
+{
+	FTimerHandle EffectTimer;
+	GetWorld()->GetTimerManager().SetTimer(EffectTimer, this, &AZeroWeaponBase::StopEffect, 0.1f, false);
+}
+
 void AZeroWeaponBase::StopFire()
 {
-	EffectComp->SetVisibility(false);
 	bIsFire = false;
+}
+
+void AZeroWeaponBase::StopEffect()
+{
+	EffectComp->SetVisibility(false);
 }
 
 void AZeroWeaponBase::ApplyRecoil()
@@ -263,6 +273,7 @@ void AZeroWeaponBase::PartialFire()
 
 	Anim->Montage_Play(GetFireMontage());
 	EffectComp->SetVisibility(true);
+	StartEffectTimer();
 
 	CurrentAmmo -= 1;
 	OnChangedAmmo.ExecuteIfBound(CurrentAmmo);
