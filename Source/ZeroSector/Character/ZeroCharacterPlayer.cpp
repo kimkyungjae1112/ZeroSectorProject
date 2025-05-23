@@ -84,7 +84,6 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_Interact, ETriggerEvent::Started, this, &AZeroCharacterPlayer::EnforceBoardInteract);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Fire, ETriggerEvent::Triggered, this, &AZeroCharacterPlayer::Fire);
 	EnhancedInputComponent->BindAction(InputConfig->IA_ChangeWeapon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ChangeWeapon);
-	EnhancedInputComponent->BindAction(InputConfig->IA_NightToAfternoon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::NightToAfternoon);
 	EnhancedInputComponent->BindAction(InputConfig->IA_ToggleNote, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ToggleNoteDisplay);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Run, ETriggerEvent::Started, this, &AZeroCharacterPlayer::Run);
 	EnhancedInputComponent->BindAction(InputConfig->IA_Run, ETriggerEvent::Completed, this, &AZeroCharacterPlayer::Walk);
@@ -92,6 +91,12 @@ void AZeroCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	EnhancedInputComponent->BindAction(InputConfig->IA_PauseMenu, ETriggerEvent::Started, this, &AZeroCharacterPlayer::PauseMenuDisplay);
 	EnhancedInputComponent->BindAction(InputConfig->IA_ExcludeResearcher, ETriggerEvent::Started, this, &AZeroCharacterPlayer::ExcludeResearcherDisplay);
 	EnhancedInputComponent->BindAction(InputConfig->IA_SelectResearcher, ETriggerEvent::Started, this, &AZeroCharacterPlayer::SelectResearcherDisplay);
+
+#if WITH_EDITOR
+	EnhancedInputComponent->BindAction(InputConfig->IA_NightToAfternoon, ETriggerEvent::Started, this, &AZeroCharacterPlayer::NightToAfternoon);
+	EnhancedInputComponent->BindAction(InputConfig->IA_NightToFiveDay, ETriggerEvent::Started, this, &AZeroCharacterPlayer::NightToFiveDay);
+#endif
+
 }
 
 FGenericTeamId AZeroCharacterPlayer::GetGenericTeamId() const
@@ -139,6 +144,11 @@ UZeroHUDWidget* AZeroCharacterPlayer::GetWeaponHUDWidget() const
 #if WITH_EDITOR
 void AZeroCharacterPlayer::NightToAfternoon()
 {
+	ChangeInputMode();
+}
+void AZeroCharacterPlayer::NightToFiveDay()
+{
+	AZeroGameModeBase::Day = 4;
 	ChangeInputMode();
 }
 #endif

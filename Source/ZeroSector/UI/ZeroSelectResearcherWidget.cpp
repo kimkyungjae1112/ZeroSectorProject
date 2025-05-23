@@ -16,6 +16,17 @@ void UZeroSelectResearcherWidget::NativeConstruct()
 
 	ResearcherNames = { TEXT("Vaccine"), TEXT("Criminal"), TEXT("Normal1"), TEXT("Normal2"), TEXT("Normal3") };
 
+	TArray<UButton*> Buttons = { SelRes1Button, SelRes2Button, SelRes3Button, SelRes4Button, SelRes5Button };
+	for (int32 i = 0; i < ResearcherNames.Num(); ++i)
+	{
+		if (ResearcherNames[i] == UZeroSingleton::Get().ExcludedResearcherName && Buttons.IsValidIndex(i) && Buttons[i])
+		{
+			Buttons[i]->SetIsEnabled(false);
+			Buttons[i]->SetBackgroundColor(FLinearColor::Gray);
+			break;
+		}
+	}
+
 	if (SelRes1Button) SelRes1Button->OnClicked.AddDynamic(this, &UZeroSelectResearcherWidget::OnClickResearcher1);
 	if (SelRes2Button) SelRes2Button->OnClicked.AddDynamic(this, &UZeroSelectResearcherWidget::OnClickResearcher2);
 	if (SelRes3Button) SelRes3Button->OnClicked.AddDynamic(this, &UZeroSelectResearcherWidget::OnClickResearcher3);

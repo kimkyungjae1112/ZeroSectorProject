@@ -49,6 +49,19 @@ void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 		{
 			// 시네마틱 재생
 			// 메인 메뉴로 이동
+			if (UZeroSingleton::Get().SelectedResearcherName == TEXT("Vaccine"))
+			{
+				// 해피 엔딩
+			}
+			else if (UZeroSingleton::Get().SelectedResearcherName == TEXT("Criminal"))
+			{
+				// 배드 엔딩
+			}
+			else
+			{
+				// 일반 엔딩
+			}
+
 			UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenuMap"));
 		}
 

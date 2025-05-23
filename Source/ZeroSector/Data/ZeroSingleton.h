@@ -48,6 +48,7 @@ public:
     UPROPERTY()
     FString ExcludedResearcherName;
 
+    UPROPERTY()
     FString SelectedResearcherName;
 
 

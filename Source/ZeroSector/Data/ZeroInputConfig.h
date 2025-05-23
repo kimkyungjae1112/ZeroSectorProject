@@ -43,6 +43,9 @@ public:
 	TObjectPtr<UInputAction> IA_NightToAfternoon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
+	TObjectPtr<UInputAction> IA_NightToFiveDay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")
 	TObjectPtr<UInputAction> IA_ToggleNote;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input Action")

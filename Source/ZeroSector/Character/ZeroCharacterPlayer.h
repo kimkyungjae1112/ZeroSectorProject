@@ -72,6 +72,7 @@ public:
 
 #if WITH_EDITOR
 	void NightToAfternoon();
+	void NightToFiveDay();
 #endif
 
 	/* IZeroUIComponentInterface Implement */
