@@ -4,6 +4,7 @@
 #include "Character/Zombie/ZeroCharacterBossZombie.h"
 #include "Component/ZeroStatComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/DecalComponent.h"
 #include "Game/ZeroGameModeBase.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
@@ -149,4 +150,20 @@ void AZeroCharacterBossZombie::BeginDead()
 	{
 		GameMode->PawnKilled(this);
 	}
+}
+
+void AZeroCharacterBossZombie::ShowDangerDecal(FVector AttackLocation, float Radius, float Duration)
+{
+	DangerDecal = NewObject<UDecalComponent>(this);
+	if (!DangerDecal) return;
+
+	DangerDecal->RegisterComponent();
+	DangerDecal->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+	DangerDecal->SetWorldLocation(AttackLocation + FVector(0, 0, 10.f)); // 살짝 띄워서 Z-fighting 방지
+	DangerDecal->SetDecalMaterial(DangerMaterial);
+	DangerDecal->DecalSize = FVector(Radius, Radius, Radius);
+	DangerDecal->SetFadeScreenSize(0.001f); // 너무 멀면 안 보이게
+
+	// 페이드 아웃 (디칼 제거)
+	DangerDecal->SetFadeOut(Duration, 1.0f, false); // (지속 시간, 페이드시간, 동기화 여부)
 }

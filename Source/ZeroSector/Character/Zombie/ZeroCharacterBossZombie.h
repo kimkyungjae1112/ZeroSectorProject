@@ -6,6 +6,8 @@
 #include "Character/Zombie/ZeroCharacterBaseZombie.h"
 #include "ZeroCharacterBossZombie.generated.h"
 
+class UDecalComponent;
+
 UCLASS()
 class ZEROSECTOR_API AZeroCharacterBossZombie : public AZeroCharacterBaseZombie
 {
@@ -46,7 +48,6 @@ private:
 
 	void BeginDead();
 
-
 // 애니메이션 데이터 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Anim")
@@ -55,4 +56,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Anim")
 	TObjectPtr<UAnimMontage> AttackOneMontage;
 
+// Decal
+private:
+	void ShowDangerDecal(FVector AttackLocation, float Radius, float Duration);
+
+	UPROPERTY()
+	TObjectPtr<UDecalComponent> DangerDecal;
+
+	UPROPERTY(EditDefaultsOnly, Category = "FX")
+	TObjectPtr<UMaterialInterface> DangerMaterial;
 };
