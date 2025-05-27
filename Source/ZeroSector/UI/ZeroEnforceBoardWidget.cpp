@@ -7,6 +7,8 @@
 #include "Component/Input/ZeroInputNightComponent.h"
 #include "Game/ZeroGameInstance.h"
 #include "Game/ZeroSoundManager.h"
+#include "Character/ZeroCharacterPlayer.h"
+#include "Component/ZeroPlayerStatComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 int32 UZeroEnforceBoardWidget::PistolLevel = 1;
@@ -22,6 +24,13 @@ void UZeroEnforceBoardWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	GI = Cast<UZeroGameInstance>(GetGameInstance());
+
+	AZeroCharacterPlayer* Player = Cast<AZeroCharacterPlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
+	if (Player)
+	{
+		StatComp = Player->GetComponentByClass<UZeroPlayerStatComponent>();
+	}
+
 
 	PistolLevelText = Cast<UTextBlock>(GetWidgetFromName(TEXT("PistolLevel")));
 	RifleLevelText = Cast<UTextBlock>(GetWidgetFromName(TEXT("RifleLevel")));
@@ -60,6 +69,8 @@ void UZeroEnforceBoardWidget::PistolEnfoButtonClicked()
 	{
 		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
 	}
+
+	StatComp->UseActivePoint(-10.f);
 }
 
 void UZeroEnforceBoardWidget::RifleEnfoButtonClicked()
@@ -71,6 +82,8 @@ void UZeroEnforceBoardWidget::RifleEnfoButtonClicked()
 	{
 		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
 	}
+
+	StatComp->UseActivePoint(-10.f);
 }
 
 void UZeroEnforceBoardWidget::ShotgunEnfoButtonClicked()
@@ -82,6 +95,8 @@ void UZeroEnforceBoardWidget::ShotgunEnfoButtonClicked()
 	{
 		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
 	}
+
+	StatComp->UseActivePoint(-10.f);
 }
 
 void UZeroEnforceBoardWidget::CloseEnfoButtonClicked()

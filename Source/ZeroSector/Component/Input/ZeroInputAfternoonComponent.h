@@ -9,7 +9,7 @@
 struct FInputActionValue;
 class AZeroGimmick;
 class IZeroDialogueInterface;
-
+class UZeroPlayerStatComponent;
 UCLASS()
 class ZEROSECTOR_API UZeroInputAfternoonComponent : public UZeroInputBaseComponent
 {
@@ -63,4 +63,7 @@ private:
 
 	FTimerHandle FootstepTimerHandle;
 	float CurrentFootstepInterval = 0.5f;
+
+	UPROPERTY()
+	TObjectPtr<UZeroPlayerStatComponent> StatComp;
 };

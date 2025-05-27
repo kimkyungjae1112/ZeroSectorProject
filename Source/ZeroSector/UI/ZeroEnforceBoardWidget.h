@@ -9,6 +9,7 @@
 class UTextBlock;
 class UButton;
 class UZeroGameInstance;
+class UZeroPlayerStatComponent;
 
 DECLARE_DELEGATE(FOnCancelButton)
 
@@ -72,4 +73,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UZeroGameInstance> GI;
+
+	UPROPERTY()
+	TObjectPtr<UZeroPlayerStatComponent> StatComp;
 };
