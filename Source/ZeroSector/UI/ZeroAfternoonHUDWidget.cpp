@@ -4,6 +4,7 @@
 #include "UI/ZeroAfternoonHUDWidget.h"
 #include "Components/ProgressBar.h"
 #include "Interface/ZeroHUDInterface.h"
+#include "ZeroSector.h"
 #include "Components/TextBlock.h"
 
 UZeroAfternoonHUDWidget::UZeroAfternoonHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

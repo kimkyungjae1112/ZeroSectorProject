@@ -13,6 +13,7 @@
 #include "Gimmick/ZeroEnforceBoard.h"
 #include "Game/ZeroSoundManager.h"
 #include "Game/ZeroGameInstance.h"
+#include "Component/ZeroPlayerStatComponent.h"
 #include "Interface/ZeroDialogueInterface.h"
 #include "Interface/ZeroAfternoonInputInterface.h"
 #include "Interface/ZeroOutlineInterface.h"
@@ -165,6 +166,8 @@ void UZeroInputAfternoonComponent::DialogueInteract()
 		DialogueInterface->SetupFinishedDialogueDelegate(OnFinishedDialogue);
 
 		SetDialogueMovement();
+
+		StatComp->UseActivePoint(-10.f);
 	}
 }
 
@@ -193,6 +196,8 @@ void UZeroInputAfternoonComponent::ProvisoInteract()
 		{
 			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ProvisoInteractSFX);
 		}
+
+		StatComp->UseActivePoint(-10.f);
 	}
 
 	
@@ -209,6 +214,8 @@ void UZeroInputAfternoonComponent::EnforceBoardInteract()
 		{
 			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->EnforceSFX);
 		}
+
+		StatComp->UseActivePoint(-10.f);
 	}
 }
 
@@ -239,6 +246,7 @@ void UZeroInputAfternoonComponent::BeginPlay()
 	check(Player);
 
 	GetWorld()->GetTimerManager().SetTimer(FootstepTimerHandle, this, &UZeroInputAfternoonComponent::TryPlayFootstepSound, 0.5f, true);
+	StatComp = Player->GetComponentByClass<UZeroPlayerStatComponent>(); // 바인딩이 된 포인터 가져오기
 }
 
 void UZeroInputAfternoonComponent::SetDefaultMovement()
