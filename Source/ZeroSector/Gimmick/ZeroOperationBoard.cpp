@@ -6,6 +6,7 @@
 #include "Component/ZeroPlayerStatComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Game/ZeroGameModeBase.h"
+#include "ZeroSector.h"
 
 AZeroOperationBoard::AZeroOperationBoard()
 {
@@ -35,20 +36,30 @@ void AZeroOperationBoard::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	UZeroPlayerStatComponent::OnZeroActivePoint.BindUObject(this, &AZeroOperationBoard::SetUIDisplay);
+	AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GameMode) GameMode->OnNightLocation.AddUObject(this, &AZeroOperationBoard::SetUIUnDisplay);
+
+	UZeroPlayerStatComponent::OnZeroActivePoint.AddUObject(this, &AZeroOperationBoard::SetUIDisplay);
 }
 
 void AZeroOperationBoard::AccordingToDayOpBoardSelect() const
 {
 	if (StartDay == AZeroGameModeBase::Day)
 	{
+		ZE_LOG(LogZeroSector, Display, TEXT("행동력 모두 소모"));
 		WidgetComp->SetVisibility(true);
 	}
 }
 
 void AZeroOperationBoard::SetUIDisplay()
 {
+	ZE_LOG(LogZeroSector, Display, TEXT("SetUIDisplay"));
 	AccordingToDayOpBoardSelect();
+}
+
+void AZeroOperationBoard::SetUIUnDisplay(const FVector& InVector)
+{
+	WidgetComp->SetVisibility(false);
 }
 
 

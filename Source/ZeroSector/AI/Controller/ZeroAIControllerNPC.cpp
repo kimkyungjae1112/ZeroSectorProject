@@ -20,12 +20,12 @@ void AZeroAIControllerNPC::OnMoveCompleted(FAIRequestID RequestID, const FPathFo
 
 	if (Result.IsSuccess())
 	{
-		ZE_LOG(LogZeroSector, Display, TEXT("탐지 성공"));
+		//ZE_LOG(LogZeroSector, Display, TEXT("탐지 성공"));
 		MoveToNextPoint();
 	}
 	else if (Result.Code.GetValue() == EPathFollowingRequestResult::Failed)
 	{
-		ZE_LOG(LogZeroSector, Display, TEXT("탐지 실패"));
+		//ZE_LOG(LogZeroSector, Display, TEXT("탐지 실패"));
 	}
 }
 

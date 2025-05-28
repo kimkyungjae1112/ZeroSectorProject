@@ -213,7 +213,7 @@ void AZeroGameModeBase::ChangeDayToNight()
 		if (NightPlayerStart->GetStartDay() == Day)
 		{
 			// Player를 AfternoonPlayerStart 위치로 이동
-			OnNightLocation.ExecuteIfBound(NightPlayerStart->GetActorLocation());
+			OnNightLocation.Broadcast(NightPlayerStart->GetActorLocation());
 
 			for (const FVector& Loc : NightPlayerStart->GetZombieSpawnerLoc())
 			{

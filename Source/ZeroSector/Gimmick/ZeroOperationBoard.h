@@ -23,6 +23,7 @@ protected:
 private:
 	void AccordingToDayOpBoardSelect() const;
 	void SetUIDisplay();
+	void SetUIUnDisplay(const FVector& InVector);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "UI")

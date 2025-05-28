@@ -216,7 +216,7 @@ void AZeroCharacterPlayer::BeginPlay()
 	AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GameMode) 
 	{ 
-		GameMode->OnNightLocation.BindUObject(this, &AZeroCharacterPlayer::MoveNightStartLoc); 
+		GameMode->OnNightLocation.AddUObject(this, &AZeroCharacterPlayer::MoveNightStartLoc); 
 		GameMode->OnAfternoonLocation.AddUObject(this, &AZeroCharacterPlayer::MoveAfternoonStartLoc); 
 	}
 }

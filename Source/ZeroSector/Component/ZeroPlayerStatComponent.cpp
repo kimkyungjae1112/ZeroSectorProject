@@ -35,8 +35,9 @@ void UZeroPlayerStatComponent::UseActivePoint(float UsedActivePoint)
 	ZE_LOG(LogZeroSector, Display, TEXT("사용되고 남은 AP : %f"), CurrentActivePoint);
 	if (CurrentActivePoint < KINDA_SMALL_NUMBER)
 	{
+		ZE_LOG(LogZeroSector, Display, TEXT("Zero AP"));
 		CurrentActivePoint = 0.f;
-		OnZeroActivePoint.ExecuteIfBound();
+		OnZeroActivePoint.Broadcast();
 		bCanInteract = false;
 	}
 	OnChangedActivePoint.ExecuteIfBound(CurrentActivePoint);

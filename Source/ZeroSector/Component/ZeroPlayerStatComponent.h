@@ -7,7 +7,7 @@
 #include "ZeroPlayerStatComponent.generated.h"
 
 DECLARE_DELEGATE_OneParam(FOnChangedActivePoint, float /* ActivePoint */)
-DECLARE_DELEGATE(FOnZeroActivePoint)
+DECLARE_MULTICAST_DELEGATE(FOnZeroActivePoint)
 
 UCLASS()
 class ZEROSECTOR_API UZeroPlayerStatComponent : public UZeroStatComponent

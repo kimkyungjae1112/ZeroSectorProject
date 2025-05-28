@@ -15,7 +15,7 @@ class AZeroWaveTrigger;
 DECLARE_DELEGATE_OneParam(FOnStartNight, uint8)
 DECLARE_DELEGATE_OneParam(FOnStartNightForTime, int32)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnStartAfternoon, uint8)
-DECLARE_DELEGATE_OneParam(FOnNightLocation, const FVector&)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnNightLocation, const FVector&)
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnAfternoonLocation, const FVector&)
 
 UCLASS()
