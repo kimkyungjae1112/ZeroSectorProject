@@ -6,6 +6,9 @@
 #include "Gimmick/ZeroGimmick.h"
 #include "ZeroOperationBoard.generated.h"
 
+class UBoxComponent;
+class UWidgetComponent;
+
 UCLASS()
 class ZEROSECTOR_API AZeroOperationBoard : public AZeroGimmick
 {
@@ -17,5 +20,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+private:
+	void AccordingToDayOpBoardSelect() const;
+	void SetUIDisplay();
 
+private:
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<UWidgetComponent> WidgetComp;
+
+	UPROPERTY(EditAnywhere, Category = "Start")
+	uint8 StartDay;
 };

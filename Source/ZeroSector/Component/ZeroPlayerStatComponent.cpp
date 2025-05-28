@@ -4,6 +4,8 @@
 #include "Component/ZeroPlayerStatComponent.h"
 #include "ZeroSector.h"
 
+FOnZeroActivePoint UZeroPlayerStatComponent::OnZeroActivePoint;
+
 UZeroPlayerStatComponent::UZeroPlayerStatComponent()
 {
 	MaxActivePoint = 100.f;
@@ -19,6 +21,7 @@ void UZeroPlayerStatComponent::BeginPlay()
 void UZeroPlayerStatComponent::InitActivePoint()
 {
 	CurrentActivePoint = MaxActivePoint;
+	bCanInteract = true;
 }
 
 void UZeroPlayerStatComponent::InitHealth()
@@ -33,6 +36,8 @@ void UZeroPlayerStatComponent::UseActivePoint(float UsedActivePoint)
 	if (CurrentActivePoint < KINDA_SMALL_NUMBER)
 	{
 		CurrentActivePoint = 0.f;
+		OnZeroActivePoint.ExecuteIfBound();
+		bCanInteract = false;
 	}
 	OnChangedActivePoint.ExecuteIfBound(CurrentActivePoint);
 }

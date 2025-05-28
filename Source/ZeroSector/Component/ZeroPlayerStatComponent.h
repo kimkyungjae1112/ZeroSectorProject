@@ -7,6 +7,7 @@
 #include "ZeroPlayerStatComponent.generated.h"
 
 DECLARE_DELEGATE_OneParam(FOnChangedActivePoint, float /* ActivePoint */)
+DECLARE_DELEGATE(FOnZeroActivePoint)
 
 UCLASS()
 class ZEROSECTOR_API UZeroPlayerStatComponent : public UZeroStatComponent
@@ -21,8 +22,10 @@ protected:
 
 public:
 	FORCEINLINE float GetMaxActivePoint() const { return MaxActivePoint; }
+	FORCEINLINE bool GetCanInteract() const { return bCanInteract; }
 
 	FOnChangedActivePoint OnChangedActivePoint;
+	static FOnZeroActivePoint OnZeroActivePoint;
 
 	void InitActivePoint();
 	void InitHealth();
@@ -34,4 +37,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "ActivePoint")
 	float CurrentActivePoint;
+
+	bool bCanInteract{ true };
 };
