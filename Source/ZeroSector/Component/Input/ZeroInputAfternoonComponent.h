@@ -57,6 +57,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Gimmick")
 	TObjectPtr<AActor> PrevGimmick;
 
+	UPROPERTY(VisibleAnywhere, Category = "AP")
+	TObjectPtr<UZeroPlayerStatComponent> StatComp;
+
 	IZeroDialogueInterface* DialogueInterface;
 
 	bool bIsNoteToggle;
@@ -64,6 +67,4 @@ private:
 	FTimerHandle FootstepTimerHandle;
 	float CurrentFootstepInterval = 0.5f;
 
-	UPROPERTY()
-	TObjectPtr<UZeroPlayerStatComponent> StatComp;
 };

@@ -145,11 +145,13 @@ UZeroHUDWidget* AZeroCharacterPlayer::GetWeaponHUDWidget() const
 void AZeroCharacterPlayer::NightToAfternoon()
 {
 	ChangeInputMode();
+	StatComp->InitActivePoint();
 }
 void AZeroCharacterPlayer::NightToFiveDay()
 {
 	AZeroGameModeBase::Day = 4;
 	ChangeInputMode();
+	StatComp->InitActivePoint();
 }
 #endif
 

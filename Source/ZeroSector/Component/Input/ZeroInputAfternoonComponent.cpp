@@ -155,7 +155,7 @@ void UZeroInputAfternoonComponent::InteractBeamReachedProviso(AActor* InHitActor
 
 void UZeroInputAfternoonComponent::DialogueInteract()
 {
-	if (DialogueInterface)
+	if (DialogueInterface && StatComp->GetCanInteract())
 	{
 		DialogueInterface->StartDialogue();
 		FOnFinishedDialogue OnFinishedDialogue;
@@ -187,7 +187,7 @@ void UZeroInputAfternoonComponent::OperationBoardInteract()
 
 void UZeroInputAfternoonComponent::ProvisoInteract()
 {
-	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")))
+	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")) && StatComp->GetCanInteract())
 	{
 		OnProvisoInteract.ExecuteIfBound();
 
@@ -214,8 +214,6 @@ void UZeroInputAfternoonComponent::EnforceBoardInteract()
 		{
 			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->EnforceSFX);
 		}
-
-		StatComp->UseActivePoint(-10.f);
 	}
 }
 
