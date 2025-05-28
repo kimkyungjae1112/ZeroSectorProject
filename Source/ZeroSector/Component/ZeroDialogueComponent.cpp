@@ -79,7 +79,6 @@ void UZeroDialogueComponent::StartDialogue()
 
 	if (bIsTalking)
 	{
-		DialogueDataInit();
 		InProgressDialogue();
 		return;
 	}
@@ -216,6 +215,7 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 	else
 	{
 		DialogueWidgetPtr->DisplayNextDialogueButton();
+		DialogueDataInit();
 	}
 }
 
