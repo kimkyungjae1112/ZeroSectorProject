@@ -18,6 +18,7 @@
 #include "Sound/SoundClass.h"
 #include "Components/AudioComponent.h"
 #include "UI/ZeroPrologVideoWidget.h"
+#include "UI/ZeroEnforceBoardWidget.h"
 #include "ZeroSector.h"
 
 uint8 AZeroGameModeBase::Day = 1;
@@ -122,7 +123,20 @@ void AZeroGameModeBase::PawnKilled(APawn* PawnKilled)
 		}
 	}
 
-	if (CurrentWave == MaxWave) EndGame(true);
+	if (CurrentWave == MaxWave)
+	{
+		if (MaxTime >= SpawnDataTable.MaxTime / 2)
+		{
+			UZeroEnforceBoardWidget::UpgradePoint += 3;
+			ZE_LOG(LogZeroSector, Display, TEXT("Upgrade Point : %d"), UZeroEnforceBoardWidget::UpgradePoint);
+		}
+		else
+		{
+			UZeroEnforceBoardWidget::UpgradePoint += 2;
+			ZE_LOG(LogZeroSector, Display, TEXT("Upgrade Point : %d"), UZeroEnforceBoardWidget::UpgradePoint);
+		}
+		EndGame(true);
+	}
 }
 
 void AZeroGameModeBase::StartWave()

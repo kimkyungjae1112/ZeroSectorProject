@@ -30,6 +30,9 @@ public:
 	static int32 PistolLevel;
 	static int32 RifleLevel;
 	static int32 ShotgunLevel;
+	static int32 UpgradePoint;
+
+	void SetPointText();
 
 private:
 	UFUNCTION()
@@ -58,6 +61,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UTextBlock> ShotgunLevelText;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UTextBlock> PointText;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UButton> PistolEnfoButton;
@@ -71,9 +76,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UButton> CancelEnfoButton;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UZeroGameInstance> GI;
 
-	UPROPERTY()
-	TObjectPtr<UZeroPlayerStatComponent> StatComp;
 };

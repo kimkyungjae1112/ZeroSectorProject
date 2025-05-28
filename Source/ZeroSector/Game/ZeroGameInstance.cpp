@@ -26,6 +26,7 @@ void UZeroGameInstance::Shutdown()
 	UZeroEnforceBoardWidget::PistolLevel = 1;
 	UZeroEnforceBoardWidget::RifleLevel = 1;
 	UZeroEnforceBoardWidget::ShotgunLevel = 1;
+	UZeroEnforceBoardWidget::UpgradePoint = 0;
 
 	Super::Shutdown();
 }

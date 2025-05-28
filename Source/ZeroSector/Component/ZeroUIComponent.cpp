@@ -222,6 +222,7 @@ void UZeroUIComponent::EnforceBoardInteract()
 	if (EnforceBoardPtr)
 	{
 		EnforceBoardPtr->AddToViewport();
+		EnforceBoardPtr->SetPointText();
 		EnforceBoardPtr->OnCancelButton.BindUObject(this, &UZeroUIComponent::EnforceBoardCancelButtonClick);
 	}
 }

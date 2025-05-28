@@ -7,13 +7,14 @@
 #include "Component/Input/ZeroInputNightComponent.h"
 #include "Game/ZeroGameInstance.h"
 #include "Game/ZeroSoundManager.h"
-#include "Character/ZeroCharacterPlayer.h"
-#include "Component/ZeroPlayerStatComponent.h"
+#include "Game/ZeroGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "ZeroSector.h"
 
 int32 UZeroEnforceBoardWidget::PistolLevel = 1;
 int32 UZeroEnforceBoardWidget::RifleLevel = 1;
 int32 UZeroEnforceBoardWidget::ShotgunLevel = 1;
+int32 UZeroEnforceBoardWidget::UpgradePoint = 0;
 
 UZeroEnforceBoardWidget::UZeroEnforceBoardWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -25,16 +26,10 @@ void UZeroEnforceBoardWidget::NativeConstruct()
 
 	GI = Cast<UZeroGameInstance>(GetGameInstance());
 
-	AZeroCharacterPlayer* Player = Cast<AZeroCharacterPlayer>(UGameplayStatics::GetPlayerCharacter(this, 0));
-	if (Player)
-	{
-		StatComp = Player->GetComponentByClass<UZeroPlayerStatComponent>();
-	}
-
-
 	PistolLevelText = Cast<UTextBlock>(GetWidgetFromName(TEXT("PistolLevel")));
 	RifleLevelText = Cast<UTextBlock>(GetWidgetFromName(TEXT("RifleLevel")));
 	ShotgunLevelText = Cast<UTextBlock>(GetWidgetFromName(TEXT("ShotgunLevel")));
+	PointText = Cast<UTextBlock>(GetWidgetFromName(TEXT("PointText")));
 
 	PistolEnfoButton = Cast<UButton>(GetWidgetFromName(TEXT("PistolEnfoButton")));
 	RifleEnfoButton = Cast<UButton>(GetWidgetFromName(TEXT("RifleEnfoButton")));
@@ -44,6 +39,7 @@ void UZeroEnforceBoardWidget::NativeConstruct()
 	ensure(PistolLevelText);
 	ensure(RifleLevelText);
 	ensure(ShotgunLevelText);
+	ensure(PointText);
 
 	ensure(PistolEnfoButton);
 	ensure(RifleEnfoButton);
@@ -58,45 +54,46 @@ void UZeroEnforceBoardWidget::NativeConstruct()
 	SetPistolLevelText(PistolLevel);
 	SetRifleLevelText(RifleLevel);
 	SetShotgunLevelText(ShotgunLevel);
+	SetPointText();
 }
 
 void UZeroEnforceBoardWidget::PistolEnfoButtonClicked()
 {
-	if (PistolLevel == 7) return;
+	if (PistolLevel == 7 || UpgradePoint <= 0) return;
 	SetPistolLevelText(++PistolLevel);
 
+	UpgradePoint--;
+	SetPointText();
 	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
 	{
 		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
 	}
-
-	StatComp->UseActivePoint(-10.f);
 }
 
 void UZeroEnforceBoardWidget::RifleEnfoButtonClicked()
 {
-	if (RifleLevel == 7) return;
+	if (RifleLevel == 7 || UpgradePoint <= 0) return;
 	SetRifleLevelText(++RifleLevel);
 
+	UpgradePoint--;
+	SetPointText();
 	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
 	{
 		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
 	}
-
-	StatComp->UseActivePoint(-10.f);
 }
 
 void UZeroEnforceBoardWidget::ShotgunEnfoButtonClicked()
 {
-	if (ShotgunLevel == 7) return;
+	if (ShotgunLevel == 7 || UpgradePoint <= 0) return;
 	SetShotgunLevelText(++ShotgunLevel);
 
+	UpgradePoint--;
+	SetPointText();
 	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
 	{
 		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
 	}
-
-	StatComp->UseActivePoint(-10.f);
 }
 
 void UZeroEnforceBoardWidget::CloseEnfoButtonClicked()
@@ -122,4 +119,32 @@ void UZeroEnforceBoardWidget::SetRifleLevelText(int32 InLevel)
 void UZeroEnforceBoardWidget::SetShotgunLevelText(int32 InLevel)
 {
 	ShotgunLevelText->SetText(FText::FromString(FString::Printf(TEXT("%d"), InLevel)));
+}
+
+void UZeroEnforceBoardWidget::SetPointText()
+{
+	PointText->SetText(FText::FromString(FString::Printf(TEXT("%d"), UpgradePoint)));
+
+	TArray<UButton*> Buttons = { PistolEnfoButton, RifleEnfoButton, ShotgunEnfoButton };
+
+	if (UpgradePoint <= 0)
+	{
+		for (int32 i = 0; i < 3; ++i)
+		{
+			if (Buttons.IsValidIndex(i) && Buttons[i])
+			{
+				Buttons[i]->SetIsEnabled(false);
+			}
+		}
+	}
+	else
+	{
+		for (int32 i = 0; i < 3; ++i)
+		{
+			if (Buttons.IsValidIndex(i) && Buttons[i])
+			{
+				Buttons[i]->SetIsEnabled(true);
+			}
+		}
+	}
 }

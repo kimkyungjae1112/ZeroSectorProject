@@ -7,6 +7,7 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "Game/ZeroGameModeBase.h"
 #include "Navigation/PathFollowingComponent.h"
+#include "Interface/ZeroClassIdentifierInterface.h"
 #include "ZeroSector.h"
 
 AZeroAIControllerNPC::AZeroAIControllerNPC()
@@ -40,6 +41,12 @@ void AZeroAIControllerNPC::MoveToNextPoint()
 void AZeroAIControllerNPC::BeginPlay()
 {
 	Super::BeginPlay();
+
+	IZeroClassIdentifierInterface* CII = Cast<IZeroClassIdentifierInterface>(GetPawn());
+	if (CII && CII->GetClassName() == TEXT("Speedwagon"))
+	{
+		StopMovement();
+	}
 
 	MoveToNextPoint();
 	if (AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode()))
