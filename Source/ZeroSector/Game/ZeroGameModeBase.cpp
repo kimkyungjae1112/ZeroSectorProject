@@ -72,7 +72,7 @@ void AZeroGameModeBase::BeginPlay()
 	UZeroSingleton::Get().ExcludedResearcherName = TEXT("");
 	UZeroSingleton::Get().ResetCollectedProvisos();
 
-	PlayAfternoonBGM();
+	PlayNightBGM();
 }
 
 void AZeroGameModeBase::InitNight()
