@@ -62,6 +62,11 @@ void AZeroCharacterNPC::BeginPlay()
 	{
 		GameMode->OnAfternoonLocation.AddUObject(this, &AZeroCharacterNPC::MoveNextDayStartLoc);
 	}
+
+	if (ClassName == TEXT("Speedwagon"))
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+	}
 }
 
 AZeroAIControllerNPC* AZeroCharacterNPC::GetAIController() const
@@ -71,7 +76,7 @@ AZeroAIControllerNPC* AZeroCharacterNPC::GetAIController() const
 
 void AZeroCharacterNPC::MoveNextDayStartLoc(const FVector& InLocation)
 {
-	SetActorLocation(InLocation + FVector(1000.f, 0.f, 0.f));
+	SetActorLocation(InLocation + FVector(300.f, 0.f, 0.f));
 
 	GetAIController()->MoveToNextPoint();
 }

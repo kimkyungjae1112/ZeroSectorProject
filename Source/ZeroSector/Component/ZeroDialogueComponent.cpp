@@ -198,7 +198,13 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 				DialogueWidgetPtr->RemoveFromParent();
 				OnFinishedDialogue.ExecuteIfBound();
 				InputModeGameOnly();
-				Character->GetCharacterMovement()->MaxWalkSpeed = 300.f;
+				if (IZeroClassIdentifierInterface* CII = Cast<IZeroClassIdentifierInterface>(Character))
+				{
+					if (CII && CII->GetClassName() == TEXT("Speedwagon"))
+						Character->GetCharacterMovement()->MaxWalkSpeed = 0.f;
+					else
+						Character->GetCharacterMovement()->MaxWalkSpeed = 300.f;
+				}
 				GetAIController()->MoveToNextPoint();
 			}, 3.f, false);
 
@@ -226,7 +232,7 @@ void UZeroDialogueComponent::RotationToPlayer()
 	if (Character && Player)
 	{
 		FVector Dir = (Player->GetActorLocation() - Character->GetActorLocation()).GetSafeNormal();
-		GetAIController()->SetControlRotation(Dir.Rotation());
+		// GetAIController()->SetControlRotation(Dir.Rotation());
 	}
 }
 
@@ -274,7 +280,13 @@ void UZeroDialogueComponent::InProgressDialogue()
 				DialogueWidgetPtr->RemoveFromParent();
 				OnFinishedDialogue.ExecuteIfBound();
 				InputModeGameOnly();
-				Character->GetCharacterMovement()->MaxWalkSpeed = 300.f;
+				if (IZeroClassIdentifierInterface* CII = Cast<IZeroClassIdentifierInterface>(Character))
+				{
+					if (CII && CII->GetClassName() == TEXT("Speedwagon"))
+						Character->GetCharacterMovement()->MaxWalkSpeed = 0.f;
+					else
+						Character->GetCharacterMovement()->MaxWalkSpeed = 300.f;
+				}
 				GetAIController()->MoveToNextPoint();
 			}, 3.f, false);
 
