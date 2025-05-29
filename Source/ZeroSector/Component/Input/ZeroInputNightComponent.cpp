@@ -146,7 +146,7 @@ void UZeroInputNightComponent::Reloading()
 void UZeroInputNightComponent::SetupWeapon(const EWeaponType& WeaponType)
 {
 	ZE_LOG(LogZeroSector, Warning, TEXT("SetupWeapon"));
-	switch (TempWeaponType)
+	switch (WeaponType)
 	{
 	case EWeaponType::ERifle:
 		Weapons.Add(EWeaponType::ERifle, GetWorld()->SpawnActor<AZeroWeaponRifle>(AZeroWeaponRifle::StaticClass()));
