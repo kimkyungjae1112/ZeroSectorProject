@@ -100,6 +100,40 @@ float AZeroCharacterMeleeZombie::TakeDamage(float Damage, FDamageEvent const& Da
 	return 0.0f;
 }
 
+void AZeroCharacterMeleeZombie::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	
+	FTimerHandle PhysicsTimer;
+	GetWorld()->GetTimerManager().SetTimer(PhysicsTimer, [&]()
+		{
+			GetMesh()->SetSimulatePhysics(false);
+			GetMesh()->SetCollisionProfileName(TEXT("Zombie"));
+
+			FVector MeshLocation = GetMesh()->GetComponentLocation();
+			FVector CapsuleLocation = GetCapsuleComponent()->GetComponentLocation();
+			FVector Delta = MeshLocation - CapsuleLocation;
+			Delta.Z = 0; // Z축은 Capsule 기준으로 둠
+			GetCapsuleComponent()->SetWorldLocation(MeshLocation);
+
+			GetMesh()->AttachToComponent(GetCapsuleComponent(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+			GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()));
+			GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+		}, 1.f, false);
+}
+
+void AZeroCharacterMeleeZombie::SpawnInit(const FVector& Direction)
+{
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	GetMesh()->SetSimulatePhysics(true);
+
+	const float ImpulseStrength = 5000.0f;
+	FVector FinalImpulse = Direction * ImpulseStrength;
+
+	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
+	GetMesh()->AddImpulseToAllBodiesBelow(FinalImpulse, NAME_None);
+}
+
 void AZeroCharacterMeleeZombie::BeginPlay()
 {
 	Super::BeginPlay();

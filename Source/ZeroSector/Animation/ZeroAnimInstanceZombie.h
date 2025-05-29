@@ -30,6 +30,9 @@ public:
 	uint8 bIsIdle : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	uint8 bIsPose06 : 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
 	float GroundSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")

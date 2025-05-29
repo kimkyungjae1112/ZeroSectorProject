@@ -7,6 +7,7 @@
 #include "ZeroCharacterBossZombie.generated.h"
 
 class UDecalComponent;
+class UZeroAnimInstanceZombie;
 
 UCLASS()
 class ZEROSECTOR_API AZeroCharacterBossZombie : public AZeroCharacterBaseZombie
@@ -22,8 +23,11 @@ public:
 	virtual float GetRunSpeed() override;
 	virtual float GetWalkSpeed() override;
 
+	virtual void SetAISpawnAttackDelegate(const FOnSpawnAttackFinished& InOnSpawnAttackFinished) override;
+
 	virtual void AttackOneByAI() override;
 	virtual void AttackTwoByAI() override;
+	virtual void SpawnAttackByAI() override;
 
 	virtual AController* GetAIController() override;
 
@@ -51,10 +55,19 @@ private:
 // 애니메이션 데이터 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Anim")
-	TObjectPtr<UAnimInstance> Anim;
+	TObjectPtr<UZeroAnimInstanceZombie> Anim;
 
 	UPROPERTY(EditAnywhere, Category = "Anim")
 	TObjectPtr<UAnimMontage> AttackOneMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	TObjectPtr<UAnimMontage> RushAttackMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	TObjectPtr<UAnimMontage> SpawnAttackMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Anim")
+	TObjectPtr<UAnimMontage> DeadMontage;
 
 // Decal
 private:
@@ -65,4 +78,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "FX")
 	TObjectPtr<UMaterialInterface> DangerMaterial;
+
+private:
+	FOnSpawnAttackFinished OnSpawnAttackFinished;
 };

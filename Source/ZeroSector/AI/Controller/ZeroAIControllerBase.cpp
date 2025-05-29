@@ -57,8 +57,8 @@ void AZeroAIControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	/*AZeroCharacterPlayer* Player = Cast<AZeroCharacterPlayer>(UGameplayStatics::GetActorOfClass(GetWorld(), AZeroCharacterPlayer::StaticClass()));
-	GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), Player);*/
+	GetBlackboardComponent()->SetValueAsBool(TEXT("bIsMove"), true);
+	GetBlackboardComponent()->SetValueAsBool(TEXT("bIsSpawnAttack"), false);
 }
 
 FGenericTeamId AZeroAIControllerBase::GetGenericTeamId() const

@@ -6,7 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/DecalComponent.h"
 #include "Game/ZeroGameModeBase.h"
-#include "Animation/AnimInstance.h"
+#include "Animation/ZeroAnimInstanceZombie.h"
 #include "Animation/AnimMontage.h"
 #include "Engine/DamageEvents.h"
 #include "Perception/AISense_Damage.h"
@@ -26,7 +26,7 @@ AZeroCharacterBossZombie::AZeroCharacterBossZombie()
 
 float AZeroCharacterBossZombie::GetAIAttackRange()
 {
-	return 1000.f;
+	return 500.f;
 }
 
 float AZeroCharacterBossZombie::GetAITurnSpeed()
@@ -44,6 +44,11 @@ float AZeroCharacterBossZombie::GetWalkSpeed()
 	return 250.0f;
 }
 
+void AZeroCharacterBossZombie::SetAISpawnAttackDelegate(const FOnSpawnAttackFinished& InOnSpawnAttackFinished)
+{
+
+}
+
 void AZeroCharacterBossZombie::AttackOneByAI()
 {
 	Super::AttackOneByAI();
@@ -54,6 +59,13 @@ void AZeroCharacterBossZombie::AttackOneByAI()
 void AZeroCharacterBossZombie::AttackTwoByAI()
 {
 	Super::AttackOneByAI();
+
+	BeginAttackTwo();
+}
+
+void AZeroCharacterBossZombie::SpawnAttackByAI()
+{
+
 }
 
 AController* AZeroCharacterBossZombie::GetAIController()
@@ -97,16 +109,18 @@ void AZeroCharacterBossZombie::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Anim = GetMesh()->GetAnimInstance();
+	Anim = Cast<UZeroAnimInstanceZombie>(GetMesh()->GetAnimInstance());
 }
 
 void AZeroCharacterBossZombie::BeginAttackOne()
 {
-	Anim->Montage_Play(AttackOneMontage);
+	Anim->bIsPose06 = true;
+
+	Anim->Montage_Play(SpawnAttackMontage);
 
 	FOnMontageEnded MontageEnd;
 	MontageEnd.BindUObject(this, &AZeroCharacterBossZombie::EndAttackOne);
-	Anim->Montage_SetEndDelegate(MontageEnd, AttackOneMontage);
+	Anim->Montage_SetEndDelegate(MontageEnd, SpawnAttackMontage);
 }
 
 void AZeroCharacterBossZombie::EndAttackOne(UAnimMontage* Target, bool IsProperlyEnded)
@@ -116,10 +130,18 @@ void AZeroCharacterBossZombie::EndAttackOne(UAnimMontage* Target, bool IsProperl
 
 void AZeroCharacterBossZombie::BeginAttackTwo()
 {
+	Anim->bIsPose06 = false;
+
+	Anim->Montage_Play(RushAttackMontage);
+
+	FOnMontageEnded MontageEnd;
+	MontageEnd.BindUObject(this, &AZeroCharacterBossZombie::EndAttackTwo);
+	Anim->Montage_SetEndDelegate(MontageEnd, RushAttackMontage);
 }
 
 void AZeroCharacterBossZombie::EndAttackTwo(UAnimMontage* Target, bool IsProperlyEnded)
 {
+	OnAttackTwoFinished.ExecuteIfBound();
 }
 
 void AZeroCharacterBossZombie::BeginDead()
@@ -127,14 +149,8 @@ void AZeroCharacterBossZombie::BeginDead()
 	// Ragdoll 보단 AnimMontage 로 하는게 나을듯 보스니까
 	if (bIsDead) return;
 	bIsDead = true;
-	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
-	GetMesh()->SetSimulatePhysics(true);
-
-	const float ImpulseStrength = 1000.0f;
-	FVector FinalImpulse = ImpulseDirection * ImpulseStrength;
-
-	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
-	GetMesh()->AddImpulseToAllBodiesBelow(FinalImpulse, NAME_None);
+	
+	Anim->Montage_Play(DeadMontage);
 
 	DetachFromControllerPendingDestroy();
 	ZE_LOG(LogZeroSector, Display, TEXT("Zombie Dead"));
