@@ -38,7 +38,7 @@ UZeroDialogueComponent::UZeroDialogueComponent()
 	N2_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N2.DialogueDataTable_N2'"));
 	N3_DialogueTable = FSoftObjectPath(TEXT("/Script/Engine.DataTable'/Game/Data/Dialogue/DialogueDataTable_N3.DialogueDataTable_N3'"));
 
-	DialogueTableMap.Add(TEXT("데인"), P_DialogueTable);
+	DialogueTableMap.Add(TEXT("데인 코너"), P_DialogueTable);
 	DialogueTableMap.Add(TEXT("Speedwagon"), S_DialogueTable);
 	DialogueTableMap.Add(TEXT("Vaccine"), V_DialogueTable);
 	DialogueTableMap.Add(TEXT("Criminal"), C_DialogueTable);
@@ -105,7 +105,7 @@ void UZeroDialogueComponent::StartDialogue()
 	bIsTalking = true;
 	DialogueWidgetPtr = CreateWidget<UZeroDialogueWidget>(GetWorld(), DialogueWidgetClass);
 	DialogueWidgetPtr->AddToViewport();
-	DialogueWidgetPtr->SetDialogueText((DialogueTable.bIsPlayerDialogue ? FText::FromString(TEXT("데인")) : ActorName), DialogueTable.Dialogue);
+	DialogueWidgetPtr->SetDialogueText((DialogueTable.bIsPlayerDialogue ? FText::FromString(TEXT("데인 코너")) : ActorName), DialogueTable.Dialogue);
 
 	if (DialogueTable.bIsOpenOption)
 	{
@@ -179,7 +179,7 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 	DialogueTable = InDialogueTable;
 	ZE_LOG(LogZeroSector, Warning, TEXT("Dialogue Loaded: %s"), *DialogueTable.Dialogue.ToString());
 
-	DialogueWidgetPtr->SetDialogueText((DialogueTable.bIsPlayerDialogue ? FText::FromString(TEXT("데인")) : ActorName), DialogueTable.Dialogue);
+	DialogueWidgetPtr->SetDialogueText((DialogueTable.bIsPlayerDialogue ? FText::FromString(TEXT("데인 코너")) : ActorName), DialogueTable.Dialogue);
 	if (DialogueTable.bIsOpenOption)
 	{
 		for (const auto& DialogueOptionTable : DialogueTable.OptionDialogues)
@@ -268,7 +268,7 @@ void UZeroDialogueComponent::InProgressDialogue()
 	ZE_LOG(LogZeroSector, Display, TEXT("Progress Dialogue"));
 
 	DialogueWidgetPtr->GetScrollBox()->ClearChildren();
-	DialogueWidgetPtr->SetDialogueText((DialogueTable.bIsPlayerDialogue ? FText::FromString(TEXT("데인")) : ActorName), DialogueTable.Dialogue);
+	DialogueWidgetPtr->SetDialogueText((DialogueTable.bIsPlayerDialogue ? FText::FromString(TEXT("데인 코너")) : ActorName), DialogueTable.Dialogue);
 
 	if (DialogueTable.bIsEnd)
 	{
@@ -353,7 +353,7 @@ AZeroAIControllerNPC* UZeroDialogueComponent::GetAIController() const
 void UZeroDialogueComponent::DialogueOptionSpawn(const FZeroDialogueOptionDataTable& InDialogueOptionTable)
 {
 	DialogueWidgetPtr->CloseNextDialogueButton();
-	DialogueWidgetPtr->SetDialogueText((DialogueTable.bIsPlayerDialogue ? FText::FromString(TEXT("데인")) : ActorName), DialogueTable.Dialogue);
+	DialogueWidgetPtr->SetDialogueText((DialogueTable.bIsPlayerDialogue ? FText::FromString(TEXT("데인 코너")) : ActorName), DialogueTable.Dialogue);
 	DialogueOptionWidgetPtr = CreateWidget<UZeroDialogueOptionWidget>(GetWorld(), DialogueOptionWidgetClass);
 	DialogueOptionWidgetPtr->SetDialogueComp(this);
 	DialogueOptionWidgetPtr->SetReliability(InDialogueOptionTable.Reliability);
