@@ -73,7 +73,7 @@ void UZeroNoteWidget::AddProvisoToUI(const FZeroProvisoDataTable& ProvisoData)
     NewButtonWidget->OnProvisoClicked.AddDynamic(this, &UZeroNoteWidget::ShowClueDetail);
 
     USizeBox* SizeBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    SizeBox->SetWidthOverride(100.f);
+    SizeBox->SetWidthOverride(450.f);
     SizeBox->SetHeightOverride(80.f);
     SizeBox->AddChild(NewButtonWidget);
 

@@ -7,6 +7,7 @@
 #include "Interface/ZeroHUDInterface.h"
 #include "Game/ZeroGameModeBase.h"
 #include "Components/ProgressBar.h"
+#include "Components/Image.h"
 #include "ZeroSector.h"
 
 UZeroHUDWidget::UZeroHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -23,6 +24,26 @@ void UZeroHUDWidget::UpdateMaxAmmo(int32 InMaxAmmo)
 {
 	MaxAmmoText->SetText(FText::FromString(FString::Printf(TEXT("%d"), InMaxAmmo)));
 }
+
+/*void UZeroHUDWidget::UpdateCurrentWeapon(int8 InCurrentWeapon)
+{
+	UTexture2D* NewWeaponImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/handgun.handgun'"));
+	if (InCurrentWeapon == 1) {
+		NewWeaponImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/handgun.handgun'"));
+	}
+	else if (InCurrentWeapon == 2) {
+		NewWeaponImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/rifle.rifle'"));
+	}
+	else if (InCurrentWeapon == 3) {
+		NewWeaponImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/shotgun.shotgun'"));
+	}
+
+	if (CurrentWeaponImage) {
+		FVector2D CurrentImageSize = CurrentWeaponImage->Brush.ImageSize;
+		CurrentWeaponImage->SetBrushFromTexture(NewWeaponImage);
+		CurrentWeaponImage->SetBrushSize(CurrentImageSize);
+	}
+}*/
 
 void UZeroHUDWidget::UpdateRemainTime(int32 InTime)
 {
@@ -79,6 +100,7 @@ void UZeroHUDWidget::NativeConstruct()
 	RemainWaveText = Cast<UTextBlock>(GetWidgetFromName(TEXT("RemainWave")));
 	HpBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HpBar")));
 	CrosshairWidget = Cast<UZeroCrossHairWidget>(GetWidgetFromName(TEXT("WBP_CrossHair")));
+	// CurrentWeaponImage = Cast<UImage>(GetWidgetFromName(TEXT("CurrentWeapon")));
 
 	ensure(CurrentAmmoText);
 	ensure(MaxAmmoText);
@@ -86,6 +108,7 @@ void UZeroHUDWidget::NativeConstruct()
 	ensure(RemainSecondText);
 	ensure(RemainWaveText);
 	ensure(HpBar);
+	// ensure(CurrentWeaponImage);
 
 	IZeroHUDInterface* Interface = Cast<IZeroHUDInterface>(GetOwningPlayerPawn());
 	if (Interface)	Interface->SetHUDWidget(this);

@@ -32,14 +32,26 @@ void UZeroOperationWidget::NativeConstruct()
 	ShotgunButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickShotgunButton);
 	NextButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickNextButton);
 	CancelButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickCancelButton);
+
 }
 
 void UZeroOperationWidget::ClickRifleButton()
 {
+	UTexture2D* ShotgunTexture = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/shotgun_noselect.shotgun_noselect'"));
+	UTexture2D* RifleSelectedTexture = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/rifle_select.rifle_select'"));
+
 	bIsSeleteced = true;
 	CurrentWeaponType = EWeaponType::ERifle;
-	RifleButton->SetBackgroundColor(FLinearColor::Green);
-	ShotgunButton->SetBackgroundColor(FLinearColor::White);
+
+	FSlateBrush Brush;
+
+	Brush.SetResourceObject(ShotgunTexture);
+	Brush.ImageSize = FVector2D(400, 125);
+	ShotgunButton->WidgetStyle.Normal = Brush;
+
+	Brush.SetResourceObject(RifleSelectedTexture);
+	Brush.ImageSize = FVector2D(400, 125);
+	RifleButton->WidgetStyle.Normal = Brush;
 
 	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
 	{
@@ -49,10 +61,22 @@ void UZeroOperationWidget::ClickRifleButton()
 
 void UZeroOperationWidget::ClickShotgunButton()
 {
+
+	UTexture2D* ShotgunSelectedTexture = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/shotgun_select.shotgun_select'"));
+	UTexture2D* RifleTexture = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/rifle_noselect.rifle_noselect'"));
+
 	bIsSeleteced = true;
 	CurrentWeaponType = EWeaponType::EShotgun;
-	RifleButton->SetBackgroundColor(FLinearColor::White);
-	ShotgunButton->SetBackgroundColor(FLinearColor::Green);
+
+	FSlateBrush Brush;
+
+	Brush.SetResourceObject(ShotgunSelectedTexture);
+	Brush.ImageSize = FVector2D(400, 125);
+	ShotgunButton->WidgetStyle.Normal = Brush;
+
+	Brush.SetResourceObject(RifleTexture);
+	Brush.ImageSize = FVector2D(400, 125);
+	RifleButton->WidgetStyle.Normal = Brush;
 
 	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
 	{

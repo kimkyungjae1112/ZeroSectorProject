@@ -9,6 +9,7 @@
 class UZeroCrossHairWidget;
 class UTextBlock;
 class UProgressBar;
+class UImage;
 
 UCLASS()
 class ZEROSECTOR_API UZeroHUDWidget : public UUserWidget
@@ -20,6 +21,7 @@ public:
 
 	void UpdateCurrentAmmo(int32 InCurrentAmmo);
 	void UpdateMaxAmmo(int32 InMaxAmmo);
+	// void UpdateCurrentWeapon(int8 InCurrentWeapon);
 	void UpdateRemainTime(int32 InTime);
 	void UpdateRemainWave(uint8 InWave);
 
@@ -56,6 +58,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProgressBar> HpBar;
+
+	/*UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UImage> CurrentWeaponImage;*/
 
 	float MaxHp;
 };
