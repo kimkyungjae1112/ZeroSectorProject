@@ -8,6 +8,7 @@
 #include "ZeroOperationWidget.generated.h"
 
 class UButton;
+class UImage;
 class UZeroGameInstance;
 
 DECLARE_DELEGATE(FOnClickNextButton)
@@ -28,6 +29,8 @@ public:
 	FORCEINLINE void SetDelegateClickNextButton(const FOnClickNextButton& InOnClickNextButton) { OnClickNextButton = InOnClickNextButton; }
 	FORCEINLINE EWeaponType GetWeaponType() const { return CurrentWeaponType; }
 
+	void BackgroundImageChange(uint8 Day);
+
 	FOnCancelButton OnCancelButton;
 
 private:
@@ -42,6 +45,7 @@ private:
 
 	UFUNCTION()
 	void ClickCancelButton();
+
 
 private:
 	FOnClickNextButton OnClickNextButton;
@@ -60,6 +64,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UButton> CancelButton;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UImage> Image;
 
 	bool bIsSeleteced{ false };
 

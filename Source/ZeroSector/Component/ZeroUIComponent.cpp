@@ -156,6 +156,7 @@ void UZeroUIComponent::OperationInteract()
 	if (OperationWidgetPtr)
 	{
 		OperationWidgetPtr->AddToViewport();
+		OperationWidgetPtr->BackgroundImageChange(AZeroGameModeBase::Day);
 		OperationWidgetPtr->OnCancelButton.BindUObject(this, &UZeroUIComponent::OperationCancelButtonClick);
 		FOnClickNextButton OnClickNextButton;
 		OnClickNextButton.BindLambda([&]()
