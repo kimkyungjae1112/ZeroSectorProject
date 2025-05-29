@@ -11,4 +11,7 @@ class ZEROSECTOR_API AZeroAIControllerBoss : public AZeroAIControllerBase
 {
 	GENERATED_BODY()
 	
+
+protected:
+	virtual void BeginPlay() override;
 };

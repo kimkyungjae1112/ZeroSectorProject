@@ -57,8 +57,6 @@ void AZeroAIControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetBlackboardComponent()->SetValueAsBool(TEXT("bIsMove"), true);
-	GetBlackboardComponent()->SetValueAsBool(TEXT("bIsSpawnAttack"), false);
 }
 
 FGenericTeamId AZeroAIControllerBase::GetGenericTeamId() const

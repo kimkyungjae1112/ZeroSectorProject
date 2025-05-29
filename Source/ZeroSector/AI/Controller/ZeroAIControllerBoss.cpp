@@ -2,4 +2,10 @@
 
 
 #include "AI/Controller/ZeroAIControllerBoss.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
+void AZeroAIControllerBoss::BeginPlay()
+{
+	GetBlackboardComponent()->SetValueAsBool(TEXT("bIsMove"), true);
+	GetBlackboardComponent()->SetValueAsBool(TEXT("bIsSpawnAttack"), false);
+}
