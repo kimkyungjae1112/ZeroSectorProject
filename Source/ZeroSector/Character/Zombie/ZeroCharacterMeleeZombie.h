@@ -11,33 +11,6 @@
 class UAnimMontage;
 class UAnimInstance;
 
-DECLARE_DELEGATE(FZombieAttackOne)
-DECLARE_DELEGATE(FZombieAttackTwo)
-
-USTRUCT()
-struct FZombieAttackOneWrapper
-{
-	GENERATED_BODY()
-
-public:
-	FZombieAttackOneWrapper() {}
-	FZombieAttackOneWrapper(const FZombieAttackOne& InZombieAttackOne) : ZombieAttackOne(InZombieAttackOne) {}
-
-	FZombieAttackOne ZombieAttackOne;
-};
-
-USTRUCT()
-struct FZombieAttackTwoWrapper
-{
-	GENERATED_BODY()
-
-public:
-	FZombieAttackTwoWrapper() {}
-	FZombieAttackTwoWrapper(const FZombieAttackTwo& InZombieAttackTwo) : ZombieAttackTwo(InZombieAttackTwo) {}
-
-	FZombieAttackTwo ZombieAttackTwo;
-};
-
 UCLASS()
 class ZEROSECTOR_API AZeroCharacterMeleeZombie : public AZeroCharacterBaseZombie
 {
@@ -65,6 +38,13 @@ public:
 	/* APawn override */
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
+
+/* Spawn */
+public:
+	virtual void Landed(const FHitResult& Hit) override;
+	void SpawnInit(const FVector& Direction);
+
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -78,12 +58,6 @@ private:
 
 	void BeginDead();
 	
-	UPROPERTY()
-	TMap<EZombieType, FZombieAttackOneWrapper> ZombieAttackOneMaps;
-
-	UPROPERTY()
-	TMap<EZombieType, FZombieAttackTwoWrapper> ZombieAttackTwoMaps;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Type")
 	EZombieType CurrentType;
 

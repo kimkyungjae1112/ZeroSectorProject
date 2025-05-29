@@ -8,6 +8,7 @@
 UZeroAnimInstanceZombie::UZeroAnimInstanceZombie()
 {
 	MovingThreshold = 3.f;
+	bIsPose06 = true;
 }
 
 void UZeroAnimInstanceZombie::NativeInitializeAnimation()

@@ -6,8 +6,9 @@
 #include "UObject/Interface.h"
 #include "ZeroCharacterAIInterface.generated.h"
 
-DECLARE_DELEGATE(FOnAttackOneFinished);
-DECLARE_DELEGATE(FOnAttackTwoFinished);
+DECLARE_DELEGATE(FOnAttackOneFinished)
+DECLARE_DELEGATE(FOnAttackTwoFinished)
+DECLARE_DELEGATE(FOnSpawnAttackFinished)
 
 UINTERFACE(MinimalAPI)
 class UZeroCharacterAIInterface : public UInterface
@@ -27,9 +28,11 @@ public:
 
 	virtual void SetAIAttackOneDelegate(const FOnAttackOneFinished& InOnAttackOneFinished) = 0;
 	virtual void SetAIAttackTwoDelegate(const FOnAttackTwoFinished& InOnAttackTwoFinished) = 0;
+	virtual void SetAISpawnAttackDelegate(const FOnSpawnAttackFinished& InOnSpawnAttackFinished) { }
 
 	virtual void AttackOneByAI() = 0;
 	virtual void AttackTwoByAI() = 0;
+	virtual void SpawnAttackByAI() { }
 
 	virtual AController* GetAIController() = 0;
 };
