@@ -297,6 +297,7 @@ void AZeroCharacterPlayer::ChangeWeapon()
 	{
 		InputComp->ChangeWeapon();
 		CurrentWeaponType = InputComp->GetWeaponType();
+		HUDWidgetPtr->UpdateCurrentWeapon(CurrentWeaponType);
 	}
 }
 

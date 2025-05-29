@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Weapon/ZeroWeaponType.h"
 #include "ZeroHUDWidget.generated.h"
 
 class UZeroCrossHairWidget;
@@ -21,7 +22,7 @@ public:
 
 	void UpdateCurrentAmmo(int32 InCurrentAmmo);
 	void UpdateMaxAmmo(int32 InMaxAmmo);
-	// void UpdateCurrentWeapon(int8 InCurrentWeapon);
+	void UpdateCurrentWeapon(const EWeaponType& WeaponType);
 	void UpdateRemainTime(int32 InTime);
 	void UpdateRemainWave(uint8 InWave);
 
@@ -59,8 +60,17 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProgressBar> HpBar;
 
-	/*UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UImage> CurrentWeaponImage;*/
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UImage> CurrentWeaponImage;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Image")
+	TObjectPtr<UTexture2D> PistolImage;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Image")
+	TObjectPtr<UTexture2D> RifleImage;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Image")
+	TObjectPtr<UTexture2D> ShotgunImage;
 
 	float MaxHp;
 };

@@ -6,6 +6,8 @@
 #include "Game/ZeroSoundManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
+#include "Components/Image.h"
+#include "ZeroSector.h"
 
 UZeroOperationWidget::UZeroOperationWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -22,17 +24,18 @@ void UZeroOperationWidget::NativeConstruct()
 	ShotgunButton = Cast<UButton>(GetWidgetFromName(TEXT("ShotgunButton")));
 	NextButton = Cast<UButton>(GetWidgetFromName(TEXT("NextButton")));
 	CancelButton = Cast<UButton>(GetWidgetFromName(TEXT("CancelButton")));
+	Image = Cast<UImage>(GetWidgetFromName(TEXT("BackGround")));
 
 	ensure(RifleButton);
 	ensure(ShotgunButton);
 	ensure(NextButton);
 	ensure(CancelButton);
+	check(Image);
 
 	RifleButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickRifleButton);
 	ShotgunButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickShotgunButton);
 	NextButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickNextButton);
 	CancelButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickCancelButton);
-
 }
 
 void UZeroOperationWidget::ClickRifleButton()
@@ -102,5 +105,55 @@ void UZeroOperationWidget::ClickCancelButton()
 	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
 	{
 		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
+}
+
+void UZeroOperationWidget::BackgroundImageChange(uint8 Day)
+{
+	ZE_LOG(LogZeroSector, Display, TEXT("Image Change 함수 실행"));
+
+	switch (Day)
+	{
+	case 2:
+	{
+		UTexture2D* NewTexture = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/OpBoard_Day2.OpBoard_Day2'"));
+		Image->SetBrushFromTexture(NewTexture, true);
+		break;
+	}
+	case 3:
+	{
+		UTexture2D* NewTexture = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/OpBoard_Day3.OpBoard_Day3'"));
+		Image->SetBrushFromTexture(NewTexture, true);
+		break;
+	}
+	case 4:
+	{
+		UTexture2D* NewTexture = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/OpBoard_Day4.OpBoard_Day4'"));
+		Image->SetBrushFromTexture(NewTexture, true);
+		break;
+	}
+	case 5:
+	{
+		UTexture2D* NewTexture = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/OpBoard_Day5.OpBoard_Day5'"));
+		Image->SetBrushFromTexture(NewTexture, true);
+		break;
+	}
+	case 6:
+	{
+		UTexture2D* NewTexture = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/OpBoard_Day6.OpBoard_Day6'"));
+		Image->SetBrushFromTexture(NewTexture, true);
+		break;
+	}
+	case 7:
+	{
+		UTexture2D* NewTexture = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/OpBoard_Day7.OpBoard_Day7'"));
+		Image->SetBrushFromTexture(NewTexture, true);
+		break;
+	}
+	default:
+	{
+		ZE_LOG(LogZeroSector, Display, TEXT("이미지 안들어옴"));
+		break;
+	}
 	}
 }

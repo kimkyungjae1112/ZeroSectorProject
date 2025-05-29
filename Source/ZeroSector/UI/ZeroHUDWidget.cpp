@@ -12,6 +12,10 @@
 
 UZeroHUDWidget::UZeroHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	PistolImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/handgun.handgun'"));
+	RifleImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/rifle.rifle'"));
+	ShotgunImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/shotgun.shotgun'"));
+
 	MaxHp = -1.f;
 }
 
@@ -25,25 +29,23 @@ void UZeroHUDWidget::UpdateMaxAmmo(int32 InMaxAmmo)
 	MaxAmmoText->SetText(FText::FromString(FString::Printf(TEXT("%d"), InMaxAmmo)));
 }
 
-/*void UZeroHUDWidget::UpdateCurrentWeapon(int8 InCurrentWeapon)
+void UZeroHUDWidget::UpdateCurrentWeapon(const EWeaponType& WeaponType)
 {
-	UTexture2D* NewWeaponImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/handgun.handgun'"));
-	if (InCurrentWeapon == 1) {
-		NewWeaponImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/handgun.handgun'"));
+	switch (WeaponType)
+	{
+	case EWeaponType::EPistol:
+		CurrentWeaponImage->SetBrushFromTexture(PistolImage);
+		break;
+	case EWeaponType::ERifle:
+		CurrentWeaponImage->SetBrushFromTexture(RifleImage);
+		break;
+	case EWeaponType::EShotgun:
+		CurrentWeaponImage->SetBrushFromTexture(ShotgunImage);
+		break;
+	default:
+		ZE_LOG(LogZeroSector, Display, TEXT("무기 이미지 안들어옴"));
 	}
-	else if (InCurrentWeapon == 2) {
-		NewWeaponImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/rifle.rifle'"));
-	}
-	else if (InCurrentWeapon == 3) {
-		NewWeaponImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/shotgun.shotgun'"));
-	}
-
-	if (CurrentWeaponImage) {
-		FVector2D CurrentImageSize = CurrentWeaponImage->Brush.ImageSize;
-		CurrentWeaponImage->SetBrushFromTexture(NewWeaponImage);
-		CurrentWeaponImage->SetBrushSize(CurrentImageSize);
-	}
-}*/
+}
 
 void UZeroHUDWidget::UpdateRemainTime(int32 InTime)
 {
@@ -100,7 +102,7 @@ void UZeroHUDWidget::NativeConstruct()
 	RemainWaveText = Cast<UTextBlock>(GetWidgetFromName(TEXT("RemainWave")));
 	HpBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HpBar")));
 	CrosshairWidget = Cast<UZeroCrossHairWidget>(GetWidgetFromName(TEXT("WBP_CrossHair")));
-	// CurrentWeaponImage = Cast<UImage>(GetWidgetFromName(TEXT("CurrentWeapon")));
+	CurrentWeaponImage = Cast<UImage>(GetWidgetFromName(TEXT("CurrentWeapon")));
 
 	ensure(CurrentAmmoText);
 	ensure(MaxAmmoText);
@@ -108,7 +110,8 @@ void UZeroHUDWidget::NativeConstruct()
 	ensure(RemainSecondText);
 	ensure(RemainWaveText);
 	ensure(HpBar);
-	// ensure(CurrentWeaponImage);
+	ensure(CurrentWeaponImage);
+	CurrentWeaponImage->SetBrushFromTexture(PistolImage);
 
 	IZeroHUDInterface* Interface = Cast<IZeroHUDInterface>(GetOwningPlayerPawn());
 	if (Interface)	Interface->SetHUDWidget(this);
