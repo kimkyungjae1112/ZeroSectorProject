@@ -64,10 +64,8 @@ void UZeroEnforceBoardWidget::PistolEnfoButtonClicked()
 
 	UpgradePoint--;
 	SetPointText();
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-	}
+
+	PlayUIClickSound();
 }
 
 void UZeroEnforceBoardWidget::RifleEnfoButtonClicked()
@@ -77,10 +75,8 @@ void UZeroEnforceBoardWidget::RifleEnfoButtonClicked()
 
 	UpgradePoint--;
 	SetPointText();
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-	}
+
+	PlayUIClickSound();
 }
 
 void UZeroEnforceBoardWidget::ShotgunEnfoButtonClicked()
@@ -90,20 +86,15 @@ void UZeroEnforceBoardWidget::ShotgunEnfoButtonClicked()
 
 	UpgradePoint--;
 	SetPointText();
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-	}
+	
+	PlayUIClickSound();
 }
 
 void UZeroEnforceBoardWidget::CloseEnfoButtonClicked()
 {
 	OnCancelButton.ExecuteIfBound();
 
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-	}
+	PlayUIClickSound();
 }
 
 void UZeroEnforceBoardWidget::SetPistolLevelText(int32 InLevel)
@@ -119,6 +110,14 @@ void UZeroEnforceBoardWidget::SetRifleLevelText(int32 InLevel)
 void UZeroEnforceBoardWidget::SetShotgunLevelText(int32 InLevel)
 {
 	ShotgunLevelText->SetText(FText::FromString(FString::Printf(TEXT("%d"), InLevel)));
+}
+
+void UZeroEnforceBoardWidget::PlayUIClickSound()
+{
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+	}
 }
 
 void UZeroEnforceBoardWidget::SetPointText()

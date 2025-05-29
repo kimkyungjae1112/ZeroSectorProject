@@ -15,6 +15,7 @@
 #include "Gimmick/ZeroWaveTrigger.h"
 #include "Game/ZeroGameInstance.h"
 #include "Game/ZeroGameSettingManager.h"
+#include "Game/ZeroSoundManager.h"
 #include "Sound/SoundClass.h"
 #include "Components/AudioComponent.h"
 #include "UI/ZeroPrologVideoWidget.h"
@@ -136,6 +137,16 @@ void AZeroGameModeBase::PawnKilled(APawn* PawnKilled)
 			ZE_LOG(LogZeroSector, Display, TEXT("Upgrade Point : %d"), UZeroEnforceBoardWidget::UpgradePoint);
 		}
 		EndGame(true);
+
+		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->WinSFX)
+		{
+			FTimerHandle TimerHandle;
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, GI]()
+				{
+					UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->WinSFX);
+				}, 2.0f, false);
+		}
 	}
 }
 
@@ -254,6 +265,12 @@ void AZeroGameModeBase::DecreaseTime()
 	OnStartNightForTime.ExecuteIfBound(MaxTime);
 
 	if (MaxTime <= 0) EndGame(false);
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->LoseSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->LoseSFX);
+	}
 }
 
 void AZeroGameModeBase::StopBGM()

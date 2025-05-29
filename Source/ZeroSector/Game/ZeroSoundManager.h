@@ -71,5 +71,14 @@ public:
 	UPROPERTY()
 	TObjectPtr<USoundBase> ZombieDieSFX;
 
+	UPROPERTY()
+	TObjectPtr<USoundBase> NPCInteractSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> WinSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> LoseSFX;
+
 	void Init();
 };

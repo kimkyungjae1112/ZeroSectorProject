@@ -26,5 +26,8 @@ void UZeroSoundManager::Init()
 	ZombieBiteSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/ZombieBite.ZombieBite"));
 	ZombieMoveSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/ZombieMove.ZombieMove"));
 	ZombieDieSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/ZombieDie.ZombieDie"));
+	NPCInteractSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/NPCInteract.NPCInteract"));
+	WinSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Win.Win"));
+	LoseSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Lose.Lose"));
 
 }

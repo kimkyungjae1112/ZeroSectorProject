@@ -167,6 +167,12 @@ void UZeroInputAfternoonComponent::DialogueInteract()
 
 		SetDialogueMovement();
 
+		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->NPCInteractSFX)
+		{
+			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->NPCInteractSFX);
+		}
+
 		StatComp->UseActivePoint(-10.f);
 	}
 }

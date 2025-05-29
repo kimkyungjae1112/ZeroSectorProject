@@ -74,10 +74,7 @@ void UZeroSelectResearcherWidget::HandleResearcherSelection(int32 Index)
 		}
 	}
 
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-	}
+	PlayUIClickSound();
 
 	UpdateButtonStyles();
 }
@@ -123,10 +120,7 @@ void UZeroSelectResearcherWidget::OnClickSelectButton()
 		}
 	}
 
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-	}
+	PlayUIClickSound();
 }
 
 void UZeroSelectResearcherWidget::OnClickSelectOK()
@@ -167,10 +161,7 @@ void UZeroSelectResearcherWidget::OnClickSelectCancel()
 		SelectCheckPopup->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-	}
+	PlayUIClickSound();
 }
 
 void UZeroSelectResearcherWidget::HideSelectWarningText()
@@ -178,5 +169,13 @@ void UZeroSelectResearcherWidget::HideSelectWarningText()
 	if (SelectWarningText)
 	{
 		SelectWarningText->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void UZeroSelectResearcherWidget::PlayUIClickSound()
+{
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
 	}
 }

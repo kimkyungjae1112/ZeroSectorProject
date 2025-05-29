@@ -75,10 +75,7 @@ void UZeroMainMenuWidget::NativeConstruct()
 
 void UZeroMainMenuWidget::OnStartButtonClicked()
 {
-    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-    {
-        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-    }
+    PlayUIClickSound();
 
     UGameplayStatics::OpenLevel(this, "KJMap");
 }
@@ -110,10 +107,7 @@ void UZeroMainMenuWidget::OnOptionButtonClicked()
         }
     }
 
-    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-    {
-        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-    }
+    PlayUIClickSound();
 
     if (ApplySettingButton)
     {
@@ -128,10 +122,7 @@ void UZeroMainMenuWidget::OnOptionExitButtonClicked()
         OptionPanel->SetVisibility(ESlateVisibility::Collapsed);
     }
 
-    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-    {
-        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-    }
+    PlayUIClickSound();
 
     UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
     SM->ResetTempSettings();
@@ -199,10 +190,7 @@ void UZeroMainMenuWidget::OnApplySettingsClicked()
         }
     }
 
-    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-    {
-        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-    }
+    PlayUIClickSound();
 }
 
 void UZeroMainMenuWidget::InitializeResolutionOptions()
@@ -255,5 +243,13 @@ void UZeroMainMenuWidget::InitializeWindowModeOptions()
     for (const FString& Mode : Modes)
     {
         WindowModeComboBox->AddOption(Mode);
+    }
+}
+
+void UZeroMainMenuWidget::PlayUIClickSound()
+{
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
     }
 }

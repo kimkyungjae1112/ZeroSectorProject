@@ -108,10 +108,7 @@ void UZeroNoteWidget::DisplayResearcher(UZeroResearcherData* ResearcherData)
     if (TrustText)
         TrustText->SetText(FText::AsNumber(ResearcherData->Trust));
 
-    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-    {
-        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-    }
+    PlayUIClickSound();
 }
 
 void UZeroNoteWidget::OnInterviewButtonClicked()
@@ -126,10 +123,7 @@ void UZeroNoteWidget::OnInterviewButtonClicked()
         }
     }
 
-    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-    {
-        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-    }
+    PlayUIClickSound();
 }
 
 void UZeroNoteWidget::ShowClueDetail(const FZeroProvisoDataTable& ProvisoData)
@@ -164,10 +158,7 @@ void UZeroNoteWidget::ShowClueDetail(const FZeroProvisoDataTable& ProvisoData)
         }
     }
 
-    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-    {
-        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-    }
+    PlayUIClickSound();
 }
 
 void UZeroNoteWidget::CloseClueDetail()
@@ -177,6 +168,11 @@ void UZeroNoteWidget::CloseClueDetail()
         DetailPopupBox->SetVisibility(ESlateVisibility::Hidden);
     }
 
+    PlayUIClickSound();
+}
+
+void UZeroNoteWidget::PlayUIClickSound()
+{
     if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
     {
         UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);

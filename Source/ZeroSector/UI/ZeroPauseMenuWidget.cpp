@@ -82,10 +82,7 @@ void UZeroPauseMenuWidget::OnResumeButtonClicked()
         PC->InputModeGameOnly();
     }
 
-    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-    {
-        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-    }
+    PlayUIClickSound();
 }
 
 void UZeroPauseMenuWidget::OnMainMenuButtonClicked()
@@ -93,10 +90,7 @@ void UZeroPauseMenuWidget::OnMainMenuButtonClicked()
     UGameplayStatics::SetGamePaused(GetWorld(), false);
     UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
 
-    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-    {
-        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-    }
+    PlayUIClickSound();
 }
 
 void UZeroPauseMenuWidget::OnOptionButtonClicked()
@@ -120,10 +114,7 @@ void UZeroPauseMenuWidget::OnOptionButtonClicked()
             }
         }
 
-        if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-        {
-            UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-        }
+        PlayUIClickSound();
     }
 
     if (ApplySettingButton)
@@ -143,10 +134,7 @@ void UZeroPauseMenuWidget::OnOptionExitButtonClicked()
     UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
     SM->ResetTempSettings();
 
-    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-    {
-        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-    }
+    PlayUIClickSound();
 
 }
 
@@ -212,10 +200,7 @@ void UZeroPauseMenuWidget::OnApplySettingsClicked()
         }
     }
 
-    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-    {
-        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-    }
+    PlayUIClickSound();
 }
 
 void UZeroPauseMenuWidget::InitializeResolutionOptions()
@@ -268,5 +253,13 @@ void UZeroPauseMenuWidget::InitializeWindowModeOptions()
     for (const FString& Mode : Modes)
     {
         WindowModeComboBox->AddOption(Mode);
+    }
+}
+
+void UZeroPauseMenuWidget::PlayUIClickSound()
+{
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
     }
 }

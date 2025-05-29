@@ -79,4 +79,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UZeroGameInstance> GI;
 
+	void PlayUIClickSound();
+
 };

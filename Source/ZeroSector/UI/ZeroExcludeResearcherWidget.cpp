@@ -67,10 +67,7 @@ void UZeroExcludeResearcherWidget::HandleResearcherSelection(int32 Index)
 		}
 	}
 
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-	}
+	PlayUIClickSound();
 
 	UpdateButtonStyles();
 }
@@ -116,10 +113,7 @@ void UZeroExcludeResearcherWidget::OnClickExcludeButton()
 		}
 	}
 
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-	}
+	PlayUIClickSound();
 }
 
 
@@ -131,10 +125,7 @@ void UZeroExcludeResearcherWidget::OnClickNotExcludeButton()
 		ExcludeCheckPopup->SetVisibility(ESlateVisibility::Visible);
 	}
 
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-	}
+	PlayUIClickSound();
 }
 
 void UZeroExcludeResearcherWidget::OnClickExcludeOK()
@@ -179,10 +170,7 @@ void UZeroExcludeResearcherWidget::OnClickExcludeCancel()
 		ExcludeCheckPopup->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
-	}
+	PlayUIClickSound();
 }
 
 void UZeroExcludeResearcherWidget::HideExcludeWarningText()
@@ -190,5 +178,13 @@ void UZeroExcludeResearcherWidget::HideExcludeWarningText()
 	if (ExcludeWarningText)
 	{
 		ExcludeWarningText->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void UZeroExcludeResearcherWidget::PlayUIClickSound()
+{
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
 	}
 }
