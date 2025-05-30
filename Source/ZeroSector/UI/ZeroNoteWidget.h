@@ -121,4 +121,6 @@ protected:
     UPROPERTY()
     TObjectPtr<UZeroGameInstance> GI;
 
+    void PlayUIClickSound();
+
 };

@@ -85,5 +85,7 @@ protected:
 
     UPROPERTY()
     UZeroGameInstance* GI;
+
+    void PlayUIClickSound();
 };
 

@@ -102,5 +102,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UZeroGameInstance> GI;
+
+	void PlayUIClickSound();
 };
 

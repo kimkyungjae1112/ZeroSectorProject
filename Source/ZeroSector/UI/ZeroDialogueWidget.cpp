@@ -7,6 +7,9 @@
 #include "Components/Button.h"
 #include "Component/ZeroDialogueComponent.h"
 #include "Component/Input/ZeroInputAfternoonComponent.h"
+#include "Game/ZeroSoundManager.h"
+#include "Game/ZeroGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 #include "ZeroSector.h"
 
 UZeroDialogueWidget::UZeroDialogueWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -54,6 +57,12 @@ void UZeroDialogueWidget::NextDialogueButtonClicked()
 	{
 		UZeroDialogueComponent* DialogueComp = Cast<UZeroDialogueComponent>(UZeroInputAfternoonComponent::CurrentDialogueNPC->GetComponentByClass<UZeroDialogueComponent>());
 		DialogueComp->StartDialogue();
+	}
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
 	}
 }
 
