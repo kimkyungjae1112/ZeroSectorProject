@@ -3,19 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BehaviorTree/Decorators/BTDecorator_BlackboardBase.h"
-#include "BTDecorator_AttackRange.generated.h"
+#include "BehaviorTree/BTDecorator.h"
+#include "BTDecorator_AttackInRange.generated.h"
 
 UCLASS()
-class UBTDecorator_AttackRange : public UBTDecorator_BlackboardBase
+class ZEROSECTOR_API UBTDecorator_AttackInRange : public UBTDecorator
 {
 	GENERATED_BODY()
 	
-	
 public:
-	UBTDecorator_AttackRange();
+	UBTDecorator_AttackInRange();
 
 protected:
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
-
 };

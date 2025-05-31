@@ -18,9 +18,9 @@ AZeroAIControllerBase::AZeroAIControllerBase()
 
 	// Base Sight 설정
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-	SightConfig->SightRadius = 2000.f;
-	SightConfig->LoseSightRadius = 2200.f;
-	SightConfig->PeripheralVisionAngleDegrees = 180.f;
+	SightConfig->SightRadius = 15000.f;
+	SightConfig->LoseSightRadius = 20000.f;
+	SightConfig->PeripheralVisionAngleDegrees = 360.f;
 	SightConfig->SetMaxAge(5.f);
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
