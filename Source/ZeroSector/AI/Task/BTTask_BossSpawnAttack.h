@@ -11,4 +11,8 @@ class ZEROSECTOR_API UBTTask_BossSpawnAttack : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
+public:
+	UBTTask_BossSpawnAttack();
+
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

@@ -6,7 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/DecalComponent.h"
 #include "Game/ZeroGameModeBase.h"
-#include "Animation/ZeroAnimInstanceZombie.h"
+#include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Engine/DamageEvents.h"
 #include "Perception/AISense_Damage.h"
@@ -46,7 +46,7 @@ float AZeroCharacterBossZombie::GetWalkSpeed()
 
 void AZeroCharacterBossZombie::SetAISpawnAttackDelegate(const FOnSpawnAttackFinished& InOnSpawnAttackFinished)
 {
-
+	OnSpawnAttackFinished = InOnSpawnAttackFinished;
 }
 
 void AZeroCharacterBossZombie::AttackOneByAI()
@@ -60,12 +60,13 @@ void AZeroCharacterBossZombie::AttackTwoByAI()
 {
 	Super::AttackOneByAI();
 
-	BeginAttackTwo();
+	BeginRushAttack();
 }
 
+// Not Super
 void AZeroCharacterBossZombie::SpawnAttackByAI()
 {
-
+	BeginSpawnAttack();
 }
 
 AController* AZeroCharacterBossZombie::GetAIController()
@@ -109,18 +110,17 @@ void AZeroCharacterBossZombie::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Anim = Cast<UZeroAnimInstanceZombie>(GetMesh()->GetAnimInstance());
+	Anim = GetMesh()->GetAnimInstance();
+	ensure(Anim);
 }
 
 void AZeroCharacterBossZombie::BeginAttackOne()
 {
-	Anim->bIsPose06 = true;
-
-	Anim->Montage_Play(SpawnAttackMontage);
+	Anim->Montage_Play(AttackOneMontage);
 
 	FOnMontageEnded MontageEnd;
 	MontageEnd.BindUObject(this, &AZeroCharacterBossZombie::EndAttackOne);
-	Anim->Montage_SetEndDelegate(MontageEnd, SpawnAttackMontage);
+	Anim->Montage_SetEndDelegate(MontageEnd, AttackOneMontage);
 }
 
 void AZeroCharacterBossZombie::EndAttackOne(UAnimMontage* Target, bool IsProperlyEnded)
@@ -128,25 +128,36 @@ void AZeroCharacterBossZombie::EndAttackOne(UAnimMontage* Target, bool IsProperl
 	OnAttackOneFinished.ExecuteIfBound();
 }
 
-void AZeroCharacterBossZombie::BeginAttackTwo()
+void AZeroCharacterBossZombie::BeginRushAttack()
 {
-	Anim->bIsPose06 = false;
-
 	Anim->Montage_Play(RushAttackMontage);
 
 	FOnMontageEnded MontageEnd;
-	MontageEnd.BindUObject(this, &AZeroCharacterBossZombie::EndAttackTwo);
+	MontageEnd.BindUObject(this, &AZeroCharacterBossZombie::EndRushAttack);
 	Anim->Montage_SetEndDelegate(MontageEnd, RushAttackMontage);
 }
 
-void AZeroCharacterBossZombie::EndAttackTwo(UAnimMontage* Target, bool IsProperlyEnded)
+void AZeroCharacterBossZombie::EndRushAttack(UAnimMontage* Target, bool IsProperlyEnded)
 {
 	OnAttackTwoFinished.ExecuteIfBound();
 }
 
+void AZeroCharacterBossZombie::BeginSpawnAttack()
+{
+	Anim->Montage_Play(SpawnAttackMontage);
+
+	FOnMontageEnded MontageEnd;
+	MontageEnd.BindUObject(this, &AZeroCharacterBossZombie::EndSpawnAttack);
+	Anim->Montage_SetEndDelegate(MontageEnd, SpawnAttackMontage);
+}
+
+void AZeroCharacterBossZombie::EndSpawnAttack(UAnimMontage* Target, bool IsProperlyEnded)
+{
+	OnSpawnAttackFinished.ExecuteIfBound();
+}
+
 void AZeroCharacterBossZombie::BeginDead()
 {
-	// Ragdoll 보단 AnimMontage 로 하는게 나을듯 보스니까
 	if (bIsDead) return;
 	bIsDead = true;
 	

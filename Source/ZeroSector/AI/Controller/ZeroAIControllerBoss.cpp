@@ -6,6 +6,8 @@
 
 void AZeroAIControllerBoss::BeginPlay()
 {
+	Super::BeginPlay();
+
 	GetBlackboardComponent()->SetValueAsBool(TEXT("bIsMove"), true);
 	GetBlackboardComponent()->SetValueAsBool(TEXT("bIsSpawnAttack"), false);
 }

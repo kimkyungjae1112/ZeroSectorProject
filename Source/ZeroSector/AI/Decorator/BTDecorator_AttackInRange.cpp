@@ -1,21 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AI/Decorator/BTDecorator_AttackRange.h"
-#include "BehaviorTree/BlackboardComponent.h"
+#include "AI/Decorator/BTDecorator_AttackInRange.h"
 #include "AIController.h"
-#include "GameFramework/Character.h"
-#include "ZeroHeader/ZeroAIHeader.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Interface/ZeroCharacterAIInterface.h"
 
-UBTDecorator_AttackRange::UBTDecorator_AttackRange()
+UBTDecorator_AttackInRange::UBTDecorator_AttackInRange()
 {
-	NodeName = TEXT("CanAttack");
+	NodeName = TEXT("Attack In Range");
 }
 
-bool UBTDecorator_AttackRange::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
+bool UBTDecorator_AttackInRange::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
-	bool bResult = Super::CalculateRawConditionValue(OwnerComp, NodeMemory);
+	bool SuperResult = Super::CalculateRawConditionValue(OwnerComp, NodeMemory);
 
 	APawn* Owner = OwnerComp.GetAIOwner()->GetPawn();
 	if (nullptr == Owner)

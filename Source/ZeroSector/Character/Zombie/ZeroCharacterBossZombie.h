@@ -7,7 +7,6 @@
 #include "ZeroCharacterBossZombie.generated.h"
 
 class UDecalComponent;
-class UZeroAnimInstanceZombie;
 
 UCLASS()
 class ZEROSECTOR_API AZeroCharacterBossZombie : public AZeroCharacterBaseZombie
@@ -27,6 +26,8 @@ public:
 
 	virtual void AttackOneByAI() override;
 	virtual void AttackTwoByAI() override;
+
+	// Not Super
 	virtual void SpawnAttackByAI() override;
 
 	virtual AController* GetAIController() override;
@@ -47,15 +48,18 @@ private:
 	void BeginAttackOne();
 	void EndAttackOne(UAnimMontage* Target, bool IsProperlyEnded);
 
-	void BeginAttackTwo();
-	void EndAttackTwo(UAnimMontage* Target, bool IsProperlyEnded);
+	void BeginRushAttack();
+	void EndRushAttack(UAnimMontage* Target, bool IsProperlyEnded);
+
+	void BeginSpawnAttack();
+	void EndSpawnAttack(UAnimMontage* Target, bool IsProperlyEnded);
 
 	void BeginDead();
 
 // 애니메이션 데이터 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Anim")
-	TObjectPtr<UZeroAnimInstanceZombie> Anim;
+	TObjectPtr<UAnimInstance> Anim;
 
 	UPROPERTY(EditAnywhere, Category = "Anim")
 	TObjectPtr<UAnimMontage> AttackOneMontage;
