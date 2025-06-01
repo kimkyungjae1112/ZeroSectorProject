@@ -190,6 +190,15 @@ float AZeroCharacterPlayer::TakeDamage(float Damage, FDamageEvent const& DamageE
 
 	StatComp->ApplyDamage(Damage);
 
+	if (StatComp->GetCurrentHp() < 1000.f / 3.f)
+	{
+		HUDWidgetPtr->LargeHitThreatImageDisplay();
+	}
+	else
+	{
+		HUDWidgetPtr->LittleHitThreatImageDisplay();
+	}
+
 	return 0.0f;
 }
 

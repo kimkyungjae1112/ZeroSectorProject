@@ -15,6 +15,8 @@ UZeroHUDWidget::UZeroHUDWidget(const FObjectInitializer& ObjectInitializer) : Su
 	PistolImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/handgun.handgun'"));
 	RifleImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/rifle.rifle'"));
 	ShotgunImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/shotgun.shotgun'"));
+	LittleHitThreatImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/redscreen_soft.redscreen_soft'"));
+	LargeHitThreatImage = LoadObject<UTexture2D>(nullptr, TEXT("/Script/Engine.Texture2D'/Game/Blueprints/UI/Image/redscreen.redscreen'"));
 
 	MaxHp = -1.f;
 }
@@ -91,6 +93,32 @@ void UZeroHUDWidget::UnHitCrosshair() const
 	CrosshairWidget->UnHitCrosshair();
 }
 
+void UZeroHUDWidget::LittleHitThreatImageDisplay() const
+{
+	HitBackGroundImage->SetBrushFromTexture(LittleHitThreatImage);
+	HitBackGroundImage->SetVisibility(ESlateVisibility::Visible);
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
+		{
+			HitBackGroundImage->SetBrushFromTexture(nullptr);
+			HitBackGroundImage->SetVisibility(ESlateVisibility::Hidden);
+		}, 2.5f, false);
+}
+
+void UZeroHUDWidget::LargeHitThreatImageDisplay() const
+{
+	HitBackGroundImage->SetBrushFromTexture(LargeHitThreatImage);
+	HitBackGroundImage->SetVisibility(ESlateVisibility::Visible);
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
+		{
+			HitBackGroundImage->SetBrushFromTexture(nullptr);
+			HitBackGroundImage->SetVisibility(ESlateVisibility::Hidden);
+		}, 2.5f, false);
+}
+
 void UZeroHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -103,6 +131,7 @@ void UZeroHUDWidget::NativeConstruct()
 	HpBar = Cast<UProgressBar>(GetWidgetFromName(TEXT("HpBar")));
 	CrosshairWidget = Cast<UZeroCrossHairWidget>(GetWidgetFromName(TEXT("WBP_CrossHair")));
 	CurrentWeaponImage = Cast<UImage>(GetWidgetFromName(TEXT("CurrentWeapon")));
+	HitBackGroundImage = Cast<UImage>(GetWidgetFromName(TEXT("HitBackGround")));
 
 	ensure(CurrentAmmoText);
 	ensure(MaxAmmoText);
@@ -111,6 +140,8 @@ void UZeroHUDWidget::NativeConstruct()
 	ensure(RemainWaveText);
 	ensure(HpBar);
 	ensure(CurrentWeaponImage);
+	ensure(HitBackGroundImage);
+	HitBackGroundImage->SetVisibility(ESlateVisibility::Hidden);
 	CurrentWeaponImage->SetBrushFromTexture(PistolImage);
 
 	IZeroHUDInterface* Interface = Cast<IZeroHUDInterface>(GetOwningPlayerPawn());

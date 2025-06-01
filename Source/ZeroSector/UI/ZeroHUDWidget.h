@@ -34,6 +34,8 @@ public:
 	void HitCrosshair() const;
 	void UnHitCrosshair() const;
 
+	void LittleHitThreatImageDisplay() const;
+	void LargeHitThreatImageDisplay() const;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -63,6 +65,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UImage> CurrentWeaponImage;
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UImage> HitBackGroundImage;
+
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Image")
 	TObjectPtr<UTexture2D> PistolImage;
 
@@ -71,6 +76,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Image")
 	TObjectPtr<UTexture2D> ShotgunImage;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Image")
+	TObjectPtr<UTexture2D> LittleHitThreatImage;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Image")
+	TObjectPtr<UTexture2D> LargeHitThreatImage;
 
 	float MaxHp;
 };
