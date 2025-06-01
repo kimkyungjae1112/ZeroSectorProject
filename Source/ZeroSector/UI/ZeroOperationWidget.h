@@ -5,10 +5,12 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Weapon/ZeroWeaponType.h"
+#include "Data/ZeroZombieSpawnDataTable.h"
 #include "ZeroOperationWidget.generated.h"
 
 class UButton;
 class UImage;
+class UTextBlock;
 class UZeroGameInstance;
 
 DECLARE_DELEGATE(FOnClickNextButton)
@@ -67,6 +69,21 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UImage> Image;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UTextBlock> CommonZombieNumText;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UTextBlock> TankerZombieNumText;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UTextBlock> MiniZombieNumText;
+	
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UTextBlock> RangedZombieNumText;
+
+	UPROPERTY()
+	FZeroZombieSpawnDataTable SpawnDataTable;
 
 	bool bIsSeleteced{ false };
 

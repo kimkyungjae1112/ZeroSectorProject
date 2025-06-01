@@ -7,6 +7,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
+#include "Data/ZeroSingleton.h"
+#include "Game/ZeroGameModeBase.h"
 #include "ZeroSector.h"
 
 UZeroOperationWidget::UZeroOperationWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -25,17 +28,50 @@ void UZeroOperationWidget::NativeConstruct()
 	NextButton = Cast<UButton>(GetWidgetFromName(TEXT("NextButton")));
 	CancelButton = Cast<UButton>(GetWidgetFromName(TEXT("CancelButton")));
 	Image = Cast<UImage>(GetWidgetFromName(TEXT("BackGround")));
+	CommonZombieNumText = Cast<UTextBlock>(GetWidgetFromName(TEXT("CommonZombieText")));
+	TankerZombieNumText = Cast<UTextBlock>(GetWidgetFromName(TEXT("TankerZombieText")));
+	MiniZombieNumText = Cast<UTextBlock>(GetWidgetFromName(TEXT("MiniZombieText")));
+	RangedZombieNumText = Cast<UTextBlock>(GetWidgetFromName(TEXT("RangedZombieText")));
 
 	ensure(RifleButton);
 	ensure(ShotgunButton);
 	ensure(NextButton);
 	ensure(CancelButton);
-	check(Image);
+	ensure(Image);
+	ensure(CommonZombieNumText);
+	ensure(TankerZombieNumText);
+	ensure(MiniZombieNumText);
+	ensure(RangedZombieNumText);
 
 	RifleButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickRifleButton);
 	ShotgunButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickShotgunButton);
 	NextButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickNextButton);
 	CancelButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickCancelButton);
+
+	uint8 Temp = AZeroGameModeBase::Day + 1;
+	SpawnDataTable = UZeroSingleton::Get().GetZombieSpawnData(Temp);
+
+	uint8 CommonZombieNum{ 0 };
+	uint8 RangedZombieNum{ 0 };
+	uint8 MiniZombieNum{ 0 };
+	uint8 TankerZombieNum{ 0 };
+
+	for (auto E : SpawnDataTable.ZombieNums[EZombieType::EZ_Common].ZombieNum)
+		CommonZombieNum += E;
+	
+	for (auto E : SpawnDataTable.ZombieNums[EZombieType::EZ_Tanker].ZombieNum)
+		TankerZombieNum += E;
+
+	for (auto E : SpawnDataTable.ZombieNums[EZombieType::EZ_Mini].ZombieNum)
+		MiniZombieNum += E;
+
+	for (auto E : SpawnDataTable.ZombieNums[EZombieType::EZ_Ranged].ZombieNum)
+		RangedZombieNum += E;
+	
+	CommonZombieNumText->SetText(FText::FromString(FString::Printf(TEXT("%d"), CommonZombieNum)));
+	TankerZombieNumText->SetText(FText::FromString(FString::Printf(TEXT("%d"), TankerZombieNum)));
+	MiniZombieNumText->SetText(FText::FromString(FString::Printf(TEXT("%d"), MiniZombieNum)));
+	RangedZombieNumText->SetText(FText::FromString(FString::Printf(TEXT("%d"), RangedZombieNum)));
 }
 
 void UZeroOperationWidget::ClickRifleButton()
