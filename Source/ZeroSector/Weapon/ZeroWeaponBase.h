@@ -14,6 +14,7 @@ class UAnimInstance;
 class UCameraShakeBase;
 class UAudioComponent;
 class UZeroGameInstance;
+class UNiagaraSystem;
 
 DECLARE_DELEGATE_OneParam(FOnChangedAmmo, int32 /* Current Ammo */)
 DECLARE_DELEGATE_OneParam(FOnSetMaxAmmo, int32 /* Max Ammo */)
@@ -139,5 +140,8 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UZeroGameInstance> GI;
+
+	UPROPERTY(VisibleAnywhere, Category = "Effect")
+	TObjectPtr<UNiagaraSystem> HitEffect;
 
 };

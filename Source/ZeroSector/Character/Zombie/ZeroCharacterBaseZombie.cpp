@@ -5,8 +5,6 @@
 #include "Component/ZeroStatComponent.h"
 #include "Animation/ZeroAnimInstanceZombie.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "NiagaraComponent.h"
-#include "Components/AudioComponent.h"
 
 AZeroCharacterBaseZombie::AZeroCharacterBaseZombie()
 {
@@ -16,15 +14,6 @@ AZeroCharacterBaseZombie::AZeroCharacterBaseZombie()
     GetCharacterMovement()->MaxWalkSpeed = 0.f;
 
     StatComp = CreateDefaultSubobject<UZeroStatComponent>(TEXT("Stat Component"));
-
-    NiagaraComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Niagara Component"));
-    NiagaraComp->SetupAttachment(GetMesh());
-    NiagaraComp->SetRelativeLocation(FVector(0.f, 0.f, 100.f));
-    NiagaraComp->bAutoActivate = false;
-
-    AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
-    AudioComp->SetupAttachment(GetMesh());
-    AudioComp->bAutoActivate = false;
 }
 
 void AZeroCharacterBaseZombie::BeginPlay()
@@ -85,7 +74,6 @@ float AZeroCharacterBaseZombie::TakeDamage(float Damage, FDamageEvent const& Dam
 {
     float SuperResult = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 
-    NiagaraComp->Activate();
 
     return 0.0f;
 }

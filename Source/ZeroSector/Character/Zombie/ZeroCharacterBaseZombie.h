@@ -8,8 +8,7 @@
 #include "ZeroCharacterBaseZombie.generated.h"
 
 class UZeroStatComponent;
-class UNiagaraComponent;
-class UAudioComponent;
+class UNiagarSystem;
 
 UCLASS(abstract)
 class ZEROSECTOR_API AZeroCharacterBaseZombie
@@ -61,15 +60,6 @@ protected:
 protected:
 	FVector ImpulseDirection;
 
-// 이펙트
-protected:
-	UPROPERTY(VisibleAnywhere, Category = "Effect")
-	TObjectPtr<UNiagaraComponent> NiagaraComp;
-
-// 사운드
-protected:
-	UPROPERTY(VisibleAnywhere, Category = "Sound")
-	TObjectPtr<UAudioComponent> AudioComp;
 
 // Flag
 protected:

@@ -13,6 +13,8 @@
 #include "Game/ZeroGameInstance.h"
 #include "Game/ZeroSoundManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
 #include "ZeroSector.h"
 
 AZeroWeaponBase::AZeroWeaponBase()
@@ -51,6 +53,12 @@ AZeroWeaponBase::AZeroWeaponBase()
 	if (MoveTableRef.Object)
 	{
 		MoveTable = MoveTableRef.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UNiagaraSystem> HitEffectRef(TEXT("/Script/Niagara.NiagaraSystem'/Game/Blood_VFX_Pack/Particles/Systems/P_BigSplash.P_BigSplash'"));
+	if (HitEffectRef.Object)
+	{
+		HitEffect = HitEffectRef.Object;
 	}
 }
 
@@ -308,6 +316,7 @@ void AZeroWeaponBase::HitCheck(const FHitResult& InHitResult, const FVector& Tra
 		if (HitActor)
 		{
 			HitCheckTimer();
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, InHitResult.ImpactPoint, TraceDir.Rotation());
 
 			FPointDamageEvent DamageEvent(Damage, InHitResult, TraceDir, nullptr);
 			AController* OwnerController = GetOwnerController();
