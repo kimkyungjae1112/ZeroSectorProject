@@ -23,12 +23,12 @@ void UBTService_MeleeBehaviorChoice::TickNode(UBehaviorTreeComponent& OwnerComp,
 
 	if (Probability >= 0 && Probability < 70)
 	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bIsMove"), true);
-		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bIsSpawnAttack"), false);
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bIsCommonAttack"), true);
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bIsRushAttack"), false);
 	}
 	else
 	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bIsMove"), false);
-		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bIsSpawnAttack"), true);
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bIsCommonAttack"), false);
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bIsRushAttack"), true);
 	}
 }

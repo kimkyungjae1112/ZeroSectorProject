@@ -22,6 +22,8 @@ EBTNodeResult::Type UBTTask_BossPose09_06::ExecuteTask(UBehaviorTreeComponent& O
 {
 	EBTNodeResult::Type SuperResult = Super::ExecuteTask(OwnerComp, NodeMemory);
 
+	if (ZombieAnim->bIsPose06) return EBTNodeResult::Succeeded;
+
 	ZombieAnim->Montage_Play(Pose09_06_Montage);
 
 	FOnMontageEnded MontageEnd;
