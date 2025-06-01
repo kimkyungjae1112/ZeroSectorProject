@@ -5,6 +5,7 @@
 #include "Animation/ZeroAnimInstanceZombie.h"
 #include "GameFramework/Character.h"
 #include "Animation/AnimMontage.h"
+#include "AIController.h"
 
 UBTTask_BossPose06_09::UBTTask_BossPose06_09()
 {
@@ -21,6 +22,28 @@ EBTNodeResult::Type UBTTask_BossPose06_09::ExecuteTask(UBehaviorTreeComponent& O
 {
 	EBTNodeResult::Type SuperResult = Super::ExecuteTask(OwnerComp, NodeMemory);
 
+	ZombieAnim->Montage_Play(Pose06_09_Montage);
+
+	FOnMontageEnded MontageEnd;
+	MontageEnd.BindUObject(this, &UBTTask_BossPose06_09::EndMontage);
+	ZombieAnim->Montage_SetEndDelegate(MontageEnd, Pose06_09_Montage);
+
+	float MontageLength = Pose06_09_Montage->GetPlayLength();
+	float CurrentPosition = ZombieAnim->Montage_GetPosition(Pose06_09_Montage);
+	float RemainingTime = MontageLength - CurrentPosition;
+	RemainingTime = FMath::Max(RemainingTime, 0.01f);
+
+	FTimerHandle TimerHandle;
+	Owner->GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
+		{
+			UBTTaskNode::FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		}, RemainingTime, false);
+
+
+	return EBTNodeResult::InProgress;
+}
+
+void UBTTask_BossPose06_09::EndMontage(UAnimMontage* Target, bool IsProperlyEnded)
+{
 	ZombieAnim->bIsPose06 = false;
-	return EBTNodeResult::Succeeded;
 }

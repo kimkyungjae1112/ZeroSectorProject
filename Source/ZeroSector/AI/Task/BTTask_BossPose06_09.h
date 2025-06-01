@@ -19,6 +19,9 @@ public:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 private:
+	void EndMontage(UAnimMontage* Target, bool IsProperlyEnded);
+
+private:
 	UPROPERTY(VisibleAnywhere, Category = "Montage")
 	TObjectPtr<UAnimMontage> Pose06_09_Montage;
 };

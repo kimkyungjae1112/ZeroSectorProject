@@ -20,7 +20,6 @@ public:
 
 private:
 	void EndMontage(UAnimMontage* Target, bool IsProperlyEnded);
-	void SuccessWrapper();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Montage")
