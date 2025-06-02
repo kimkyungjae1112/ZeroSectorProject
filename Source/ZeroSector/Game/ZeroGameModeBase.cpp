@@ -110,7 +110,6 @@ void AZeroGameModeBase::ChangeDay()
 		}
 		else
 		{
-			ZE_LOG(LogZeroSector, Display, TEXT("Night To Afternoon"));
 			DaySequence->AfternoonToNightfall();
 			ChangeDayToNight();
 		}
