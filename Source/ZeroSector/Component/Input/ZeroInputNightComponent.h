@@ -49,6 +49,8 @@ private:
 
 	void TryPlayFootstepSound();
 	void SetFootstepInterval(float NewInterval);
+	
+	void EndReloading(UAnimMontage* Target, bool bIsProperlyEnd);
 
 // Weapon Data
 private:
@@ -73,12 +75,22 @@ private:
 	TObjectPtr<UAnimInstance> Anim;
 
 	UPROPERTY(VisibleAnywhere, Category = "Anim")
-	TObjectPtr<UAnimMontage> PistolMontage;
+	TObjectPtr<UAnimMontage> PistolFireMontage;
 
 	UPROPERTY(VisibleAnywhere, Category = "Anim")
-	TObjectPtr<UAnimMontage> RifleMontage;
+	TObjectPtr<UAnimMontage> RifleFireMontage;
 
 	UPROPERTY(VisibleAnywhere, Category = "Anim")
-	TObjectPtr<UAnimMontage> ShotgunMontage;
+	TObjectPtr<UAnimMontage> ShotgunFireMontage;
 
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	TObjectPtr<UAnimMontage> PistolReloadMontage;
+
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	TObjectPtr<UAnimMontage> RifleReloadMontage;
+
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	TObjectPtr<UAnimMontage> ShotgunReloadMontage;
+
+	bool bIsCanFire{ true };
 };

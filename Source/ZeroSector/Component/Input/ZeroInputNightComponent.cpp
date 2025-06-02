@@ -24,20 +24,35 @@ UZeroInputNightComponent::UZeroInputNightComponent()
 {
 	CurrentWeaponType = EWeaponType::EPistol;
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> PistolMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/Player/AM/AM_PistolFire.AM_PistolFire'"));
-	if (PistolMontageRef.Object)
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> PistolFireMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/Player/AM/AM_PistolFire.AM_PistolFire'"));
+	if (PistolFireMontageRef.Object)
 	{
-		PistolMontage = PistolMontageRef.Object;
+		PistolFireMontage = PistolFireMontageRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> RifleMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/Player/AM/AM_RifleFire.AM_RifleFire'"));
-	if (RifleMontageRef.Object)
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> RifleFireMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/Player/AM/AM_RifleFire.AM_RifleFire'"));
+	if (RifleFireMontageRef.Object)
 	{
-		RifleMontage = RifleMontageRef.Object;
+		RifleFireMontage = RifleFireMontageRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ShotgunMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/Player/AM/AM_ShotgunFire.AM_ShotgunFire'"));
-	if (ShotgunMontageRef.Object)
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ShotgunFireMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/Player/AM/AM_ShotgunFire.AM_ShotgunFire'"));
+	if (ShotgunFireMontageRef.Object)
 	{
-		ShotgunMontage = ShotgunMontageRef.Object;
+		ShotgunFireMontage = ShotgunFireMontageRef.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> PistolReloadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/Player/AM/AM_PistolFire.AM_PistolFire'"));
+	if (PistolReloadMontageRef.Object)
+	{
+		PistolReloadMontage = PistolReloadMontageRef.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> RifleReloadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/Player/AM/AM_RifleFire.AM_RifleFire'"));
+	if (RifleReloadMontageRef.Object)
+	{
+		RifleReloadMontage = RifleReloadMontageRef.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ShotgunReloadMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/Animation/Player/AM/AM_ShotgunFire.AM_ShotgunFire'"));
+	if (ShotgunReloadMontageRef.Object)
+	{
+		ShotgunReloadMontage = ShotgunReloadMontageRef.Object;
 	}
 
 }
@@ -82,18 +97,18 @@ void UZeroInputNightComponent::Fire()
 {
 	CurrentWeapon->Fire();
 
-	if (!CurrentWeapon->IsVaildFire()) return;
+	if (!CurrentWeapon->IsVaildFire() || !bIsCanFire) return;
 
 	switch (CurrentWeaponType)
 	{
 	case EWeaponType::EPistol:
-		Anim->Montage_Play(PistolMontage);
+		Anim->Montage_Play(PistolFireMontage);
 		break;
 	case EWeaponType::ERifle:
-		Anim->Montage_Play(RifleMontage);
+		Anim->Montage_Play(RifleFireMontage);
 		break;
 	case EWeaponType::EShotgun:
-		Anim->Montage_Play(ShotgunMontage);
+		Anim->Montage_Play(ShotgunFireMontage);
 		break;
 	default:
 		break;
@@ -138,7 +153,31 @@ void UZeroInputNightComponent::ChangeWeapon()
 
 void UZeroInputNightComponent::Reloading()
 {
-	//Anim->Montage_Play(Reloading);
+	if (!CurrentWeapon->IsVaildReload()) return;
+
+	bIsCanFire = false;
+	UAnimMontage* ReloadingMontage{ nullptr };
+	switch (CurrentWeaponType)
+	{
+	case EWeaponType::EPistol:
+		Anim->Montage_Play(PistolReloadMontage);
+		ReloadingMontage = PistolReloadMontage;
+		break;
+	case EWeaponType::ERifle:
+		Anim->Montage_Play(RifleReloadMontage);
+		ReloadingMontage = RifleReloadMontage;
+		break;
+	case EWeaponType::EShotgun:
+		Anim->Montage_Play(ShotgunReloadMontage);
+		ReloadingMontage = ShotgunReloadMontage;
+		break;
+	default:
+		break;
+	}
+
+	FOnMontageEnded MontageEnd;
+	MontageEnd.BindUObject(this, &UZeroInputNightComponent::EndReloading);
+	Anim->Montage_SetEndDelegate(MontageEnd, ReloadingMontage);
 
 	CurrentWeapon->ReloadingCurrentAmmo();
 }
@@ -288,4 +327,10 @@ void UZeroInputNightComponent::SetFootstepInterval(float NewInterval)
 	CurrentFootstepInterval = NewInterval;
 	GetWorld()->GetTimerManager().ClearTimer(FootstepTimerHandle);
 	GetWorld()->GetTimerManager().SetTimer(FootstepTimerHandle, this, &UZeroInputNightComponent::TryPlayFootstepSound, NewInterval, true);
+}
+
+void UZeroInputNightComponent::EndReloading(UAnimMontage* Target, bool bIsProperlyEnd)
+{
+	bIsCanFire = true;
+	ZE_LOG(LogZeroSector, Display, TEXT("End Reloading"));
 }

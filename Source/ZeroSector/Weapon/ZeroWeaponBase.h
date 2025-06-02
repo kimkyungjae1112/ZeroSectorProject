@@ -35,6 +35,7 @@ public:
 public:
 	FORCEINLINE USkeletalMeshComponent* GetGunMeshComp() const { return GunMeshComp; }
 	FORCEINLINE bool IsVaildFire() const { return CurrentAmmo > 0; }
+	FORCEINLINE bool IsVaildReload() const { return CurrentAmmo < Magazine; }
 
 	void ReloadingCurrentAmmo();
 	void GunAmmoTextDisplay();
