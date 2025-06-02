@@ -10,6 +10,7 @@ class UZeroHUDWidget;
 class UZeroAfternoonHUDWidget;
 class UZeroLoseScreenWidget;
 class UZeroNoteWidget;
+class UZeroEndingVideoWidget;
 
 DECLARE_MULTICAST_DELEGATE(FOnClearZombie)
 DECLARE_MULTICAST_DELEGATE(FOnNonClearZombie)
@@ -84,6 +85,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI")
 	TSubclassOf<UZeroLoseScreenWidget> LoseScreenClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TSubclassOf<UZeroEndingVideoWidget> EndingCinematicClass;
 
 private:
 	bool PrologFlag{ false };

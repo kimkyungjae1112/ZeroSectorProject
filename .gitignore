@@ -19,6 +19,7 @@
 # files if adding them here.
 !/Content/**/*.uasset
 !/Content/**/*.umap
+!/Content/**/*.mp4
 
 # Any file in /RawContent dir will be managed by git lfs.
 !/RawContent/**/*

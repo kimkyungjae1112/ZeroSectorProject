@@ -9,12 +9,12 @@
 
 UZeroPrologVideoWidget::UZeroPrologVideoWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<UMediaPlayer> PrologMediaPlayerRef(TEXT("/Script/MediaAssets.MediaPlayer'/Game/Cinematic/ZeroSectorPrologPlayer.ZeroSectorPrologPlayer'"));
+	static ConstructorHelpers::FObjectFinder<UMediaPlayer> PrologMediaPlayerRef(TEXT("/Script/MediaAssets.MediaPlayer'/Game/Cinematic/Prolog/ZeroSectorPrologPlayer.ZeroSectorPrologPlayer'"));
 	if (PrologMediaPlayerRef.Object)
 	{
 		PrologMediaPlayer = PrologMediaPlayerRef.Object;
 	}
-	static ConstructorHelpers::FObjectFinder<UMediaSource> PrologMediaSourceRef(TEXT("/Script/MediaAssets.FileMediaSource'/Game/Cinematic/ZeroSectorProlog.ZeroSectorProlog'"));
+	static ConstructorHelpers::FObjectFinder<UMediaSource> PrologMediaSourceRef(TEXT("/Script/MediaAssets.FileMediaSource'/Game/Cinematic/Prolog/ZeroSectorProlog.ZeroSectorProlog'"));
 	if (PrologMediaSourceRef.Object)
 	{
 		PrologMediaSource = PrologMediaSourceRef.Object;

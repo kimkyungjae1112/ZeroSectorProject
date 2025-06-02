@@ -48,8 +48,7 @@ void UZeroOperationWidget::NativeConstruct()
 	NextButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickNextButton);
 	CancelButton->OnClicked.AddDynamic(this, &UZeroOperationWidget::ClickCancelButton);
 
-	uint8 Temp = AZeroGameModeBase::Day + 1;
-	SpawnDataTable = UZeroSingleton::Get().GetZombieSpawnData(Temp);
+	SpawnDataTable = UZeroSingleton::Get().GetZombieSpawnData(AZeroGameModeBase::Day);
 
 	uint8 CommonZombieNum{ 0 };
 	uint8 RangedZombieNum{ 0 };

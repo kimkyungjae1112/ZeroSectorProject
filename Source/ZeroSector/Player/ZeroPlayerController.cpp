@@ -6,6 +6,7 @@
 #include "UI/ZeroHUDWidget.h"
 #include "UI/ZeroAfternoonHUDWidget.h"
 #include "UI/ZeroLoseScreenWidget.h"
+#include "UI/ZeroEndingVideoWidget.h"
 #include "Game/ZeroGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "ZeroSector.h"
@@ -37,6 +38,11 @@ AZeroPlayerController::AZeroPlayerController()
 	{
 		LoseScreenClass = LoseScreenClassRef.Class;
 	}
+	static ConstructorHelpers::FClassFinder<UZeroEndingVideoWidget> EndingCinematicClassRef(TEXT("/Game/Cinematic/Ending/WBP_EndingCinematic.WBP_EndingCinematic_C"));
+	if (EndingCinematicClassRef.Class)
+	{
+		EndingCinematicClass = EndingCinematicClassRef.Class;
+	}
 }
 
 void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
@@ -52,17 +58,44 @@ void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 			if (UZeroSingleton::Get().SelectedResearcherName == TEXT("Vaccine"))
 			{
 				// 해피 엔딩
+				FTimerHandle EndingTimer;
+				GetWorld()->GetTimerManager().SetTimer(EndingTimer, [&]()
+					{
+						UZeroEndingVideoWidget* EndingWidget = CreateWidget<UZeroEndingVideoWidget>(this, EndingCinematicClass);
+						if (EndingWidget)
+						{
+							EndingWidget->AddToViewport();
+						}
+					}, 2.5f, false);
 			}
 			else if (UZeroSingleton::Get().SelectedResearcherName == TEXT("Criminal"))
 			{
 				// 배드 엔딩
+				FTimerHandle EndingTimer;
+				GetWorld()->GetTimerManager().SetTimer(EndingTimer, [&]()
+					{
+						UZeroEndingVideoWidget* EndingWidget = CreateWidget<UZeroEndingVideoWidget>(this, EndingCinematicClass);
+						if (EndingWidget)
+						{
+							EndingWidget->AddToViewport();
+						}
+					}, 2.5f, false);
 			}
 			else
 			{
 				// 일반 엔딩
+				FTimerHandle EndingTimer;
+				GetWorld()->GetTimerManager().SetTimer(EndingTimer, [&]()
+					{
+						UZeroEndingVideoWidget* EndingWidget = CreateWidget<UZeroEndingVideoWidget>(this, EndingCinematicClass);
+						if (EndingWidget)
+						{
+							EndingWidget->AddToViewport();
+						}
+					}, 2.5f, false);
 			}
 
-			UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenuMap"));
+			return;
 		}
 
 		WinScreenPtr = CreateWidget<UUserWidget>(this, WinScreenClass);
