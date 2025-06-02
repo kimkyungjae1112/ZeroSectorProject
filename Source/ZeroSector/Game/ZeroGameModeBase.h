@@ -9,6 +9,7 @@
 #include "ZeroGameModeBase.generated.h"
 
 class UZeroPrologVideoWidget;
+class UZeroWallVideoWidget;
 class AZeroZombieSpawner;
 class AZeroWaveTrigger;
 
@@ -65,7 +66,7 @@ private:
 	void ChangeDayToNight();
 	void DecreaseTime();
 
-// 드사운드
+// 사운드
 private:
 	void PlayAfternoonBGM();
 	void PlayNightBGM();
@@ -119,9 +120,14 @@ public:
 	
 // Cinematic
 private:
+	void WallVideoPlay() const;
+
 	UPROPERTY(VisibleAnywhere, Category = "Cinematic")
 	TSubclassOf<UZeroPrologVideoWidget> PrologWidgetClass;
 
+	UPROPERTY(VisibleAnywhere, Category = "Cinematic")
+	TSubclassOf<UZeroWallVideoWidget> WallWidgetClass;
+	
 	UPROPERTY(EditAnywhere, Category = "Cinematic")
 	bool PrologFlag{ false };
 };

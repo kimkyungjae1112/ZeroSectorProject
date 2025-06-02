@@ -9,7 +9,7 @@
 
 UZeroPrologVideoWidget::UZeroPrologVideoWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	static ConstructorHelpers::FObjectFinder<UMediaPlayer> PrologMediaPlayerRef(TEXT("/Script/MediaAssets.MediaPlayer'/Game/Cinematic/Prolog/ZeroSectorPrologPlayer.ZeroSectorPrologPlayer'"));
+	static ConstructorHelpers::FObjectFinder<UMediaPlayer> PrologMediaPlayerRef(TEXT("/Script/MediaAssets.MediaPlayer'/Game/Cinematic/Prolog/ZeroSectorProlog_Player.ZeroSectorProlog_Player'"));
 	if (PrologMediaPlayerRef.Object)
 	{
 		PrologMediaPlayer = PrologMediaPlayerRef.Object;

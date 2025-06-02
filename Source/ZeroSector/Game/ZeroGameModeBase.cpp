@@ -20,6 +20,7 @@
 #include "Components/AudioComponent.h"
 #include "UI/ZeroPrologVideoWidget.h"
 #include "UI/ZeroEnforceBoardWidget.h"
+#include "UI/ZeroWallVideoWidget.h"
 #include "ZeroSector.h"
 
 uint8 AZeroGameModeBase::Day = 1;
@@ -45,6 +46,11 @@ AZeroGameModeBase::AZeroGameModeBase()
 	if (PrologWidgetClassRef.Class)
 	{
 		PrologWidgetClass = PrologWidgetClassRef.Class;
+	}
+	static ConstructorHelpers::FClassFinder<UZeroWallVideoWidget> WallWidgetClassRef(TEXT("/Game/Cinematic/Wall/WBP_ZeroSectorWallVideo.WBP_ZeroSectorWallVideo_C"));
+	if (WallWidgetClassRef.Class)
+	{
+		WallWidgetClass = WallWidgetClassRef.Class;
 	}
 
 	CurrentDaySequence = EDaySequence::ENight;
@@ -229,6 +235,8 @@ void AZeroGameModeBase::ChangeDayToAfternoon()
 
 void AZeroGameModeBase::ChangeDayToNight()
 {
+	if (Day == 2) WallVideoPlay();
+
 	CurrentDaySequence = EDaySequence::ENight;
 	InitNight();
 
@@ -315,5 +323,14 @@ void AZeroGameModeBase::PlayNightBGM()
 		{
 			BGMAudioComponent->SetVolumeMultiplier(SM->GetVolume());
 		}
+	}
+}
+
+void AZeroGameModeBase::WallVideoPlay() const
+{
+	UZeroWallVideoWidget* WallWidget = CreateWidget<UZeroWallVideoWidget>(GetWorld(), WallWidgetClass);
+	if (WallWidget)
+	{
+		WallWidget->AddToViewport();
 	}
 }
