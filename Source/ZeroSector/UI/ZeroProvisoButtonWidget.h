@@ -10,6 +10,7 @@
 
 class UButton;
 class UTextBlock;
+class UImage;
 
 /* 단서 버튼 클릭 델리게이트 */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnProvisoButtonClicked, const FZeroProvisoDataTable&, Data);
@@ -27,6 +28,9 @@ class ZEROSECTOR_API UZeroProvisoButtonWidget : public UUserWidget
 
     const FZeroProvisoDataTable& GetProvisoData() const { return ProvisoData; }
 
+
+    void SetLocked(bool bLocked);
+
 protected:
     virtual void NativeConstruct() override;
 
@@ -40,6 +44,9 @@ private:
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UTextBlock> ProvisoText;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UImage> LockImage;
 
     FZeroProvisoDataTable ProvisoData;
 };

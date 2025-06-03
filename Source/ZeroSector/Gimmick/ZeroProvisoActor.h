@@ -23,4 +23,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Proviso")
 	EZeroProvisoType ProvisoType;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Proviso")
+	FName RowName;
+
+
 };

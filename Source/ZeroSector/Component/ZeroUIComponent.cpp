@@ -16,7 +16,10 @@
 #include "UI/ZeroAfternoonHUDWidget.h"
 #include "UI/ZeroEnforceBoardWidget.h"
 #include "Game/ZeroGameModeBase.h"
+#include "Component/ZeroPlayerStatComponent.h"
 #include "ZeroSector.h"
+#include "GameFramework/Character.h"
+
 
 UZeroUIComponent::UZeroUIComponent()
 {
@@ -31,6 +34,9 @@ UZeroUIComponent::UZeroUIComponent()
 void UZeroUIComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Player = Cast<ACharacter>(GetOwner());
+	StatComp = Player->GetComponentByClass<UZeroPlayerStatComponent>(); // 바인딩이 된 포인터 가져오기
 
 }
 
@@ -72,10 +78,6 @@ void UZeroUIComponent::ToggleNoteDisplay()
 			NoteWidgetPtr->AddToViewport();
 			NoteWidgetPtr->ShowWidget();
 
-			for (const FZeroProvisoDataTable& Data : PendingProvisoList)
-			{
-				NoteWidgetPtr->SetNoteInfo(Data);
-			}
 			PendingProvisoList.Empty(); 
 		}
 
@@ -173,42 +175,57 @@ void UZeroUIComponent::ProvisoInteract()
 	AZeroProvisoActor* ProvisoActor = Cast<AZeroProvisoActor>(CurrentGimmick);
 	if (!ProvisoActor) return;
 
-	EZeroProvisoType Type = ProvisoActor->ProvisoType;
-	FZeroProvisoDataTable ProvisoData = UZeroSingleton::Get().GetRandomProvisoByType(Type);
+	CachedProvisoActor = ProvisoActor; // 추후 삭제용 저장
+
+	FZeroProvisoDataTable ProvisoData;
+	if (!ProvisoActor->RowName.IsNone())
+	{
+		ProvisoData = UZeroSingleton::Get().GetProvisoData(ProvisoActor->RowName);
+	}
+	else
+	{
+		EZeroProvisoType Type = ProvisoActor->ProvisoType;
+		ProvisoData = UZeroSingleton::Get().GetRandomProvisoByType(Type);
+	}
 
 	UZeroGetProvisoWidget* GetProvisoWidgetInstance = CreateWidget<UZeroGetProvisoWidget>(GetWorld(), GetProvisoWidgetClass);
 	if (GetProvisoWidgetInstance)
 	{
-		GetProvisoWidgetInstance->ShowWidget();
-
-		UTexture2D* Image = ProvisoData.ProvisoImage.LoadSynchronous();
-		if (Image)
+		IZeroUIComponentInterface* Interface = Cast<IZeroUIComponentInterface>(GetOwner());
+		if (Interface)
 		{
-			GetProvisoWidgetInstance->SetProvisoImage(Image);
+			Interface->GetOwnerController()->InputModeUIOnly();
 		}
 
-		if (!ProvisoData.ProvisoName.IsNone())
-		{
-			GetProvisoWidgetInstance->SetProvisoInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
-		}
+		GetProvisoWidgetInstance->SetProvisoImage(ProvisoData.ProvisoImage.LoadSynchronous());
+		GetProvisoWidgetInstance->SetProvisoInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
+		GetProvisoWidgetInstance->SetCurrentProvisoData(ProvisoData);
+
+		GetProvisoWidgetInstance->OnProvisoConfirmed.AddLambda([this](const FZeroProvisoDataTable& Data)
+			{
+				if (Data.ProvisoType != EZeroProvisoType::Fake && !Data.ProvisoName.IsNone())
+				{
+					UZeroSingleton::Get().AddCollectedProviso(Data);
+				}
+
+				if (StatComp)
+				{
+					StatComp->UseActivePoint(-10.f); 
+				}
+
+				if (CachedProvisoActor) CachedProvisoActor->Destroy();
+			});
+
+		GetProvisoWidgetInstance->OnProvisoRejected.AddLambda([this]()
+			{
+				if (CachedProvisoActor) CachedProvisoActor->Destroy();
+			});
+
+		GetProvisoWidgetInstance->AddToViewport();
 	}
-
-	if (ProvisoData.ProvisoType != EZeroProvisoType::Fake && !ProvisoData.ProvisoName.IsNone())
-	{
-		UZeroSingleton::Get().AddCollectedProviso(ProvisoData);
-
-		if (NoteWidgetPtr && NoteWidgetPtr->IsInViewport())
-		{
-			NoteWidgetPtr->SetNoteInfo(ProvisoData);
-		}
-		else
-		{
-			PendingProvisoList.Add(ProvisoData);
-		}
-	}
-
-	ProvisoActor->Destroy();
 }
+
+
 
 
 void UZeroUIComponent::EnforceBoardInteract()
