@@ -33,12 +33,14 @@ void AZeroWaveTrigger::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAct
 				GameMode->StartWave();
 				Destroy();
 			}
+
+			UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+			if (GI && GI->GetSoundManager() && GI->GetSoundManager()->TriggerSFX)
+			{
+				UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->TriggerSFX);
+			}
 		}
 	}
 
-	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
-	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->TriggerSFX)
-	{
-		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->TriggerSFX);
-	}
+	
 }
