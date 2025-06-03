@@ -172,6 +172,7 @@ void AZeroGameModeBase::StartWave()
 	{
 		if (ZombieSpawner->GetStartDay() == Day && ZombieSpawner->GetWaveNum() == CurrentWave)
 		{
+			ZE_LOG(LogZeroSector, Display, TEXT("현재 Wave : %d"), CurrentWave);
 			ZombieSpawner->SpawnZombie(CommonZombieNum, RangedZombieNum, MiniZombieNum, TankerZombieNum, BossZombieNum);
 		}
 	}
@@ -339,6 +340,11 @@ void AZeroGameModeBase::WallVideoPlay() const
 	UZeroWallVideoWidget* WallWidget = CreateWidget<UZeroWallVideoWidget>(GetWorld(), WallWidgetClass);
 	if (WallWidget)
 	{
-		WallWidget->AddToViewport();
+		//WallWidget->AddToViewport();
+		if (!WallWidget->IsInViewport())
+		{
+			AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
+			if (PC) PC->NightHUD_Display();
+		}
 	}
 }

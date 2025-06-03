@@ -23,7 +23,7 @@ void AZeroZombieSpawner::BeginPlay()
 void AZeroZombieSpawner::SpawnZombie(uint8 CommonZombieNum, uint8 RangedZombieNum, uint8 MiniZombieNum, uint8 TankerZombieNum, uint8 BossZombieNum)
 {
     ZE_LOG(LogZeroSector, Display, TEXT("Spawn Zombie"));
-    uint8 SumOfZombieNum = CommonZombieNum + RangedZombieNum + MiniZombieNum + TankerZombieNum + BossZombieNum;
+    int32 SumOfZombieNum = CommonZombieNum + RangedZombieNum + MiniZombieNum + TankerZombieNum + BossZombieNum;
     const float SplineLength = SplineComp->GetSplineLength();
     const float Spacing = SplineLength / SumOfZombieNum;
 
@@ -35,30 +35,28 @@ void AZeroZombieSpawner::SpawnZombie(uint8 CommonZombieNum, uint8 RangedZombieNu
         FVector Location = SplineComp->GetLocationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
         FRotator Rotation = SplineComp->GetRotationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
 
-        if (i < CommonZombieNum)
-        {   // Common zombie
+        int32 Index = i;
+
+        if (Index < CommonZombieNum)
+        {
             GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(CommonMeleeZombieClass[FMath::RandRange(0, 2)], Location, Rotation);
-            continue;
         }
-        else if (i > CommonZombieNum && i < CommonZombieNum + RangedZombieNum)
+        else if (Index < CommonZombieNum + RangedZombieNum)
         {
             GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(RangedZombieClass, Location, Rotation);
-            continue;
         }
-        else if (i > CommonZombieNum + RangedZombieNum && i < CommonZombieNum + RangedZombieNum + MiniZombieNum)
-        {   // Mini zombie
+        else if (Index < CommonZombieNum + RangedZombieNum + MiniZombieNum)
+        {
             GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(MiniMeleeZombieClass, Location, Rotation);
-            continue;
         }
-        else if (i > CommonZombieNum + RangedZombieNum + MiniZombieNum && i < CommonZombieNum + RangedZombieNum + MiniZombieNum + TankerZombieNum)
-        {   // Tanker zombie
+        else if (Index < CommonZombieNum + RangedZombieNum + MiniZombieNum + TankerZombieNum)
+        {
+            ZE_LOG(LogZeroSector, Display, TEXT("Tanker Zombie Spawn"));
             GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(TankerMeleeZombieClass[FMath::RandRange(0, 2)], Location, Rotation);
-            continue;
         }
-        else if (i > CommonZombieNum + RangedZombieNum + MiniZombieNum + TankerZombieNum)
+        else
         {
             GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(BossZombieClass, Location, Rotation);
-            continue;
         }
     }
 }
