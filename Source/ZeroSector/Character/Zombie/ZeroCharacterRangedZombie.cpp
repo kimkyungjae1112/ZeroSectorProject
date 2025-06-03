@@ -5,11 +5,12 @@
 #include "Component/ZeroStatComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Game/ZeroGameModeBase.h"
-#include "Animation/AnimInstance.h"
+#include "Animation/ZeroAnimInstanceZombie.h"
 #include "Animation/AnimMontage.h"
 #include "Engine/DamageEvents.h"
 #include "Perception/AISense_Damage.h"
 #include "ZeroRangedZombieProjectile.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "ZeroSector.h"
 
 AZeroCharacterRangedZombie::AZeroCharacterRangedZombie()
@@ -168,14 +169,56 @@ void AZeroCharacterRangedZombie::BeginDead()
 	{
 		GameMode->PawnKilled(this);
 	}
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-UAnimMontage* AZeroCharacterRangedZombie::GetAttackOneMontage() const
+void AZeroCharacterRangedZombie::BeginHitReaction()
 {
-	return nullptr;
+	UZeroAnimInstanceZombie* ZombieAnim = Cast<UZeroAnimInstanceZombie>(Anim);
+	if (ZombieAnim)
+	{
+		ZombieAnim->bIsHit = true;
+	}
+
+	GetCharacterMovement()->MaxWalkSpeed = 50.f;
+	Anim->Montage_Play(GetHitReactionMontage());
+
+	FOnMontageEnded MontageEnd;
+	MontageEnd.BindUObject(this, &AZeroCharacterRangedZombie::EndHitReaction);
+	Anim->Montage_SetEndDelegate(MontageEnd, GetHitReactionMontage());
 }
 
-UAnimMontage* AZeroCharacterRangedZombie::GetAttackTwoMontage() const
+void AZeroCharacterRangedZombie::EndHitReaction(UAnimMontage* Target, bool IsProperlyEnded)
 {
-	return nullptr;
+	UZeroAnimInstanceZombie* ZombieAnim = Cast<UZeroAnimInstanceZombie>(Anim);
+	if (ZombieAnim)
+	{
+		ZombieAnim->bIsHit = false;
+	}
+
+	GetCharacterMovement()->MaxWalkSpeed = GetWalkSpeed();
+}
+
+void AZeroCharacterRangedZombie::BeginStagger()
+{
+	Anim->Montage_Play(GetStaggerMontage());
+}
+
+UAnimMontage* AZeroCharacterRangedZombie::GetHitReactionMontage() const
+{
+	if (ZeroZombieAnimDataTable.HitReactionMontages[AnimPoseType].HitReactionMontage[AnimIndex].IsPending())
+	{
+		ZeroZombieAnimDataTable.HitReactionMontages[AnimPoseType].HitReactionMontage[AnimIndex].LoadSynchronous();
+	}
+	return ZeroZombieAnimDataTable.HitReactionMontages[AnimPoseType].HitReactionMontage[AnimIndex].Get();
+}
+
+UAnimMontage* AZeroCharacterRangedZombie::GetStaggerMontage() const
+{
+	if (ZeroZombieAnimDataTable.StaggerMontages[AnimPoseType].IsPending())
+	{
+		ZeroZombieAnimDataTable.StaggerMontages[AnimPoseType].LoadSynchronous();
+	}
+	return ZeroZombieAnimDataTable.StaggerMontages[AnimPoseType].Get();
 }

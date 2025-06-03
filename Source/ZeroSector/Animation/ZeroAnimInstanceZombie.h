@@ -31,6 +31,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
 	uint8 bIsPose06 : 1;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	uint8 bIsHit : 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
 	float GroundSpeed;
@@ -40,8 +43,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
 	FVector Velocity;
-
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
 	int32 AnimPoseType;

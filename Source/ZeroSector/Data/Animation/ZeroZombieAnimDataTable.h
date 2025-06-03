@@ -25,6 +25,15 @@ struct FZeroAttackTwoMontageArray
 };
 
 USTRUCT(BlueprintType)
+struct FZeroHitReactionArray
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSoftObjectPtr<UAnimMontage>> HitReactionMontage;
+};
+
+USTRUCT(BlueprintType)
 struct FZeroZombieAnimDataTable : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -37,6 +46,9 @@ public:
 	TArray<FZeroAttackTwoMontageArray> AttackTwoMontages;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
-	TArray<TSoftObjectPtr<UAnimMontage>> DeadMontages;
+	TArray<FZeroHitReactionArray> HitReactionMontages;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	TArray<TSoftObjectPtr<UAnimMontage>> StaggerMontages;
 
 };

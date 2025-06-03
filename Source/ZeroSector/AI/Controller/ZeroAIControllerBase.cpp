@@ -18,20 +18,15 @@ AZeroAIControllerBase::AZeroAIControllerBase()
 
 	// Base Sight 설정
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-	SightConfig->SightRadius = 15000.f;
-	SightConfig->LoseSightRadius = 20000.f;
+	SightConfig->SightRadius = 50000.f;
+	SightConfig->LoseSightRadius = 50000.f;
 	SightConfig->PeripheralVisionAngleDegrees = 360.f;
 	SightConfig->SetMaxAge(5.f);
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
-	// Base Damaged 설정
-	DamageConfig = CreateDefaultSubobject<UAISenseConfig_Damage>(TEXT("DamageConfig"));
-	DamageConfig->SetMaxAge(2.f);
-
 	PerceptionComp->ConfigureSense(*SightConfig);
-	PerceptionComp->ConfigureSense(*DamageConfig);
 	PerceptionComp->SetDominantSense(SightConfig->GetSenseImplementation());
 	PerceptionComp->OnTargetPerceptionUpdated.AddDynamic(this, &AZeroAIControllerBase::OnPerceptionUpdated);
 
@@ -110,9 +105,6 @@ void AZeroAIControllerBase::OnPerceptionUpdated(AActor* Actor, FAIStimulus Stimu
 	{
 		Stimulus = CanSenseActor(Actor, EAIPerceptionSense::EPS_Sight);
 		HandleSenseSight(Actor, Stimulus);
-
-		Stimulus = CanSenseActor(Actor, EAIPerceptionSense::EPS_Damage);
-		HandleSenseDamage(Actor, Stimulus);
 	}
 }
 
@@ -168,14 +160,3 @@ void AZeroAIControllerBase::HandleSenseSight(AActor* Actor, const FAIStimulus& A
 	}
 }
 
-void AZeroAIControllerBase::HandleSenseDamage(AActor* Actor, const FAIStimulus& AIStimulus)
-{
-	if (AIStimulus.WasSuccessfullySensed())
-	{
-		GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), true);
-	}
-	else
-	{
-		GetBlackboardComponent()->SetValueAsBool(TEXT("IsHit"), false);
-	}
-}

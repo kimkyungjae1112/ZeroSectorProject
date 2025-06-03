@@ -55,7 +55,6 @@ void UZeroZombieMeleeAttackNotifyState::MakeSphereTrace(ACharacter* Character)
 	if ((bLeftHandHit || bRightHandHit) && !HitTarget.Contains(HitResult.GetActor()))
 	{
 		HitTarget.Add(HitResult.GetActor());
-		ZE_LOG(LogZeroSector, Display, TEXT("Attack"));
 
 		FDamageEvent DamageEvent;
 		IZeroCharacterAIInterface* Interface = Cast<IZeroCharacterAIInterface>(Character);

@@ -54,10 +54,8 @@ protected:
 	FAIStimulus CanSenseActor(AActor* Actor, EAIPerceptionSense AIPerceptionSense);
 
 	void HandleSenseSight(AActor* Actor, const FAIStimulus& AIStimulus);
-	void HandleSenseDamage(AActor* Actor, const FAIStimulus& AIStimulus);
 
 	TObjectPtr<UAISenseConfig_Sight> SightConfig;
-	TObjectPtr<UAISenseConfig_Damage> DamageConfig;
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "AI")
