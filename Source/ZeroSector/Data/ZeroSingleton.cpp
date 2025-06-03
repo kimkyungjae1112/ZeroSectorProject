@@ -84,6 +84,18 @@ FZeroProvisoDataTable UZeroSingleton::GetRandomProvisoByType(EZeroProvisoType Ty
 	return *Matched[Index];
 }
 
+TArray<FZeroProvisoDataTable> UZeroSingleton::GetAllProvisoData() const
+{
+	TArray<FZeroProvisoDataTable> Result;
+
+	for (const auto& Elem : ProvisoDataMap)
+	{
+		Result.Add(Elem.Value);
+	}
+
+	return Result;
+}
+
 
 void UZeroSingleton::ResetCollectedProvisos()
 {
@@ -106,4 +118,5 @@ UZeroSingleton& UZeroSingleton::Get()
 
 	return *NewObject<UZeroSingleton>();
 }
+
 

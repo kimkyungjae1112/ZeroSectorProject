@@ -22,6 +22,7 @@
 #include "Player/ZeroPlayerController.h"
 #include "UI/ZeroAfternoonHUDWidget.h"
 #include "Game/ZeroGameModeBase.h"
+#include "Data/ZeroSingleton.h"
 
 
 void UZeroNoteWidget::NativeConstruct()
@@ -54,37 +55,11 @@ void UZeroNoteWidget::ShowWidget()
         FString DayString = FString::Printf(TEXT("Day %d"), Day);
         DayText->SetText(FText::FromString(DayString));
     }
-}
 
-void UZeroNoteWidget::SetNoteInfo(const FZeroProvisoDataTable& ProvisoData)
-{
-    if (ProvisoWrapBox)
+    if (CurrentNoteResearcher)
     {
-        AddProvisoToUI(ProvisoData); 
+        ShowResearcherClues(CurrentNoteResearcher);
     }
-}
-
-
-void UZeroNoteWidget::AddProvisoToUI(const FZeroProvisoDataTable& ProvisoData)
-{
-    UZeroProvisoButtonWidget* NewButtonWidget = CreateWidget<UZeroProvisoButtonWidget>(this, ProvisoButtonClass);
-
-    NewButtonWidget->InitProviso(ProvisoData);
-    NewButtonWidget->OnProvisoClicked.AddDynamic(this, &UZeroNoteWidget::ShowClueDetail);
-
-    USizeBox* SizeBox = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
-    SizeBox->SetWidthOverride(450.f);
-    SizeBox->SetHeightOverride(80.f);
-    SizeBox->AddChild(NewButtonWidget);
-
-    UWrapBoxSlot* WrapSlot = ProvisoWrapBox->AddChildToWrapBox(SizeBox);
-    if (WrapSlot)
-    {
-        WrapSlot->SetPadding(FMargin(10.f, 10.f));
-        WrapSlot->SetHorizontalAlignment(HAlign_Center);
-        WrapSlot->SetVerticalAlignment(VAlign_Center);
-    }
-
 }
 
 
@@ -93,6 +68,7 @@ void UZeroNoteWidget::DisplayResearcher(UZeroResearcherData* ResearcherData)
     if (!ResearcherData) return;
 
     CurrentInterviewResearcher = ResearcherData;
+    CurrentNoteResearcher = ResearcherData;
 
     ResearcherInfoBox->SetVisibility(ESlateVisibility::Visible);
 
@@ -178,3 +154,40 @@ void UZeroNoteWidget::PlayUIClickSound()
         UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
     }
 }
+
+void UZeroNoteWidget::ShowResearcherClues(UZeroResearcherData* ResearcherData)
+{
+    if (!ResearcherData || !ProvisoWrapBox) return;
+
+    ProvisoWrapBox->ClearChildren();
+
+    const TArray<FZeroProvisoDataTable>& AllProvisos = UZeroSingleton::Get().GetAllProvisoData();
+    const TArray<FZeroProvisoDataTable>& Collected = UZeroSingleton::Get().GetCollectedProvisos();
+
+    for (int32 i = 0; i < ResearcherData->ProvisoNum; ++i)
+    {
+        FName RowName = *FString::FromInt(ResearcherData->ProvisoStart + i);
+        const FZeroProvisoDataTable& Proviso = UZeroSingleton::Get().GetProvisoData(RowName);
+
+        UZeroProvisoButtonWidget* NewButton = CreateWidget<UZeroProvisoButtonWidget>(this, ProvisoButtonClass);
+        if (!NewButton) continue;
+
+        NewButton->InitProviso(Proviso);
+        NewButton->OnProvisoClicked.AddDynamic(this, &UZeroNoteWidget::ShowClueDetail);
+
+        bool bIsCollected = Collected.ContainsByPredicate(
+            [&](const FZeroProvisoDataTable& C) { return C.ProvisoName == Proviso.ProvisoName; });
+
+        NewButton->SetLocked(!bIsCollected);
+
+        USizeBox* Box = WidgetTree->ConstructWidget<USizeBox>(USizeBox::StaticClass());
+        Box->SetWidthOverride(450.f);
+        Box->SetHeightOverride(80.f);
+        Box->AddChild(NewButton);
+
+        ProvisoWrapBox->AddChildToWrapBox(Box);
+    }
+}
+
+
+

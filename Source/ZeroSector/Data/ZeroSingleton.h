@@ -51,6 +51,7 @@ public:
     UPROPERTY()
     FString SelectedResearcherName;
 
+    TArray<FZeroProvisoDataTable> GetAllProvisoData() const;
 
 private:
     UPROPERTY()

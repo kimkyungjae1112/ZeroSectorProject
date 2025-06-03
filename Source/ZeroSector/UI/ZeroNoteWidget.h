@@ -38,7 +38,6 @@ protected:
 
     int32 CurrentProvisoCount = 0;  
 
-    void AddProvisoToUI(const FZeroProvisoDataTable& ProvisoData);
 
     // 연구원
 public:
@@ -65,6 +64,9 @@ public:
 
     UPROPERTY()
     UZeroResearcherData* CurrentInterviewResearcher;
+
+    UPROPERTY()
+    UZeroResearcherData* CurrentNoteResearcher;
 
 
 private:
@@ -122,5 +124,10 @@ protected:
     TObjectPtr<UZeroGameInstance> GI;
 
     void PlayUIClickSound();
+
+
+    UFUNCTION(BlueprintCallable, Category = "UI")
+    void ShowResearcherClues(UZeroResearcherData* ResearcherData);
+
 
 };

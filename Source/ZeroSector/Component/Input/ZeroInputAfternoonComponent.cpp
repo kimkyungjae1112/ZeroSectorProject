@@ -202,11 +202,7 @@ void UZeroInputAfternoonComponent::ProvisoInteract()
 		{
 			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ProvisoInteractSFX);
 		}
-
-		StatComp->UseActivePoint(-10.f);
-	}
-
-	
+	}	
 }
 
 void UZeroInputAfternoonComponent::EnforceBoardInteract()

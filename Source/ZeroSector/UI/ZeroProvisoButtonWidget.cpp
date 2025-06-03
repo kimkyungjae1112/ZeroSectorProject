@@ -4,6 +4,21 @@
 #include "UI/ZeroProvisoButtonWidget.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
+
+void UZeroProvisoButtonWidget::SetLocked(bool bLocked)
+{
+    if (LockImage)
+    {
+        LockImage->SetVisibility(bLocked ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+    }
+
+    if (ProvisoButton)
+    {
+        ProvisoButton->SetIsEnabled(!bLocked);
+    }
+
+}
 
 void UZeroProvisoButtonWidget::NativeConstruct()
 {

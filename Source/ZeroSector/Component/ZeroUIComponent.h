@@ -18,6 +18,8 @@ class UZeroPauseMenuWidget;
 class UZeroExcludeResearcherWidget;
 class UZeroSelectResearcherWidget;
 class UZeroEnforceBoardWidget;
+class AZeroProvisoActor;
+class UZeroPlayerStatComponent;
 
 DECLARE_DELEGATE_OneParam(FOnClickOperationNextButton, const EWeaponType&)
 
@@ -110,5 +112,12 @@ private:
 	bool bIsExclude = true;
 	bool bIsSelect = true;
 
-	
+	AZeroProvisoActor* CachedProvisoActor;
+
+	UPROPERTY(VisibleAnywhere, Category = "AP")
+	TObjectPtr<UZeroPlayerStatComponent> StatComp;
+
+
+	UPROPERTY()
+	ACharacter* Player;
 };

@@ -23,5 +23,11 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     UTexture2D* Portrait;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    int32 ProvisoStart;  
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    int32 ProvisoNum;       
 	
 };
