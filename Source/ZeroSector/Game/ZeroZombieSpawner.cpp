@@ -36,8 +36,8 @@ void AZeroZombieSpawner::SpawnZombie(uint8 CommonZombieNum, uint8 RangedZombieNu
         FRotator Rotation = SplineComp->GetRotationAtDistanceAlongSpline(Distance, ESplineCoordinateSpace::World);
 
         if (i < CommonZombieNum)
-        {
-            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(MeleeZombieClass[0], Location, Rotation);
+        {   // Common zombie
+            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(CommonMeleeZombieClass[FMath::RandRange(0, 2)], Location, Rotation);
             continue;
         }
         else if (i > CommonZombieNum && i < CommonZombieNum + RangedZombieNum)
@@ -46,13 +46,13 @@ void AZeroZombieSpawner::SpawnZombie(uint8 CommonZombieNum, uint8 RangedZombieNu
             continue;
         }
         else if (i > CommonZombieNum + RangedZombieNum && i < CommonZombieNum + RangedZombieNum + MiniZombieNum)
-        {
-            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(MeleeZombieClass[1], Location, Rotation);
+        {   // Mini zombie
+            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(MiniMeleeZombieClass, Location, Rotation);
             continue;
         }
         else if (i > CommonZombieNum + RangedZombieNum + MiniZombieNum && i < CommonZombieNum + RangedZombieNum + MiniZombieNum + TankerZombieNum)
-        {
-            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(MeleeZombieClass[2], Location, Rotation);
+        {   // Tanker zombie
+            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(TankerMeleeZombieClass[FMath::RandRange(0, 2)], Location, Rotation);
             continue;
         }
         else if (i > CommonZombieNum + RangedZombieNum + MiniZombieNum + TankerZombieNum)

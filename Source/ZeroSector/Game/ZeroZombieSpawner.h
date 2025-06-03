@@ -33,7 +33,13 @@ private:
 	TObjectPtr<USplineComponent> SplineComp;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Zero")
-	TArray<TSubclassOf<AZeroCharacterMeleeZombie>> MeleeZombieClass;
+	TArray<TSubclassOf<AZeroCharacterMeleeZombie>> CommonMeleeZombieClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Zero")
+	TSubclassOf<AZeroCharacterMeleeZombie> MiniMeleeZombieClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Zero")
+	TArray<TSubclassOf<AZeroCharacterMeleeZombie>> TankerMeleeZombieClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Zero")	
 	TSubclassOf<AZeroCharacterRangedZombie> RangedZombieClass;

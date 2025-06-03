@@ -20,6 +20,12 @@ public:
 
 	
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Zombie")
-	TArray<TSubclassOf<AZeroCharacterMeleeZombie>> MeleeZombieClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Zero")
+	TArray<TSubclassOf<AZeroCharacterMeleeZombie>> CommonMeleeZombieClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Zero")
+	TSubclassOf<AZeroCharacterMeleeZombie> MiniMeleeZombieClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Zero")
+	TArray<TSubclassOf<AZeroCharacterMeleeZombie>> TankerMeleeZombieClass;
 };

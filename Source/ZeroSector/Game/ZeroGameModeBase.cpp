@@ -330,6 +330,6 @@ void AZeroGameModeBase::WallVideoPlay() const
 	UZeroWallVideoWidget* WallWidget = CreateWidget<UZeroWallVideoWidget>(GetWorld(), WallWidgetClass);
 	if (WallWidget)
 	{
-		WallWidget->AddToViewport();
+		//WallWidget->AddToViewport();
 	}
 }

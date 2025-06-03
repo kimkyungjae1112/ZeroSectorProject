@@ -33,4 +33,6 @@ void UBTService_RangedBehaviorChoice::TickNode(UBehaviorTreeComponent& OwnerComp
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bIsMove"), false);
 		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bIsSpawnAttack"), true);
 	}
+
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(TEXT("bIsSpawnAttack"), true);
 }
