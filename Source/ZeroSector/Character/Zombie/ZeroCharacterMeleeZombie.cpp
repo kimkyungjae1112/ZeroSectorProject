@@ -4,14 +4,15 @@
 #include "Character/Zombie/ZeroCharacterMeleeZombie.h"
 #include "Component/ZeroStatComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Game/ZeroGameModeBase.h"
-#include "Animation/AnimInstance.h"
+#include "Animation/ZeroAnimInstanceZombie.h"
 #include "Animation/AnimMontage.h"
 #include "Engine/DamageEvents.h"
 #include "Perception/AISense_Damage.h"
+#include "Game/ZeroGameModeBase.h"
 #include "Game/ZeroGameInstance.h"
 #include "Game/ZeroSoundManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "ZeroSector.h"
 
 AZeroCharacterMeleeZombie::AZeroCharacterMeleeZombie()
@@ -95,6 +96,15 @@ float AZeroCharacterMeleeZombie::TakeDamage(float Damage, FDamageEvent const& Da
 		}
 	}
 
+	int32 Probability = FMath::RandRange(1, 100);
+	if (Probability > 0 && Probability <= 10)
+	{
+		BeginStagger();
+	}
+	else
+	{
+		BeginHitReaction();
+	}
 	StatComp->ApplyDamage(Damage);
 
 	return 0.0f;
@@ -206,6 +216,40 @@ void AZeroCharacterMeleeZombie::BeginDead()
 	{
 		GameMode->PawnKilled(this);
 	}
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AZeroCharacterMeleeZombie::BeginHitReaction()
+{
+	UZeroAnimInstanceZombie* ZombieAnim = Cast<UZeroAnimInstanceZombie>(Anim);
+	if (ZombieAnim)
+	{
+		ZombieAnim->bIsHit = true;
+	}
+
+	GetCharacterMovement()->MaxWalkSpeed = 50.f;
+	Anim->Montage_Play(GetHitReactionMontage());
+
+	FOnMontageEnded MontageEnd;
+	MontageEnd.BindUObject(this, &AZeroCharacterMeleeZombie::EndHitReaction);
+	Anim->Montage_SetEndDelegate(MontageEnd, GetHitReactionMontage());
+}
+
+void AZeroCharacterMeleeZombie::EndHitReaction(UAnimMontage* Target, bool IsProperlyEnded)
+{
+	UZeroAnimInstanceZombie* ZombieAnim = Cast<UZeroAnimInstanceZombie>(Anim);
+	if (ZombieAnim)
+	{
+		ZombieAnim->bIsHit = false;
+	}
+
+	GetCharacterMovement()->MaxWalkSpeed = GetWalkSpeed();
+}
+
+void AZeroCharacterMeleeZombie::BeginStagger()
+{
+	Anim->Montage_Play(GetStaggerMontage());
 }
 
 UAnimMontage* AZeroCharacterMeleeZombie::GetAttackOneMontage() const
@@ -224,4 +268,22 @@ UAnimMontage* AZeroCharacterMeleeZombie::GetAttackTwoMontage() const
 		ZeroZombieAnimDataTable.AttackTwoMontages[AnimPoseType].AttackTwoMontage[AnimIndex].LoadSynchronous();
 	}
 	return ZeroZombieAnimDataTable.AttackTwoMontages[AnimPoseType].AttackTwoMontage[AnimIndex].Get();
+}
+
+UAnimMontage* AZeroCharacterMeleeZombie::GetHitReactionMontage() const
+{
+	if (ZeroZombieAnimDataTable.HitReactionMontages[AnimPoseType].HitReactionMontage[AnimIndex].IsPending())
+	{
+		ZeroZombieAnimDataTable.HitReactionMontages[AnimPoseType].HitReactionMontage[AnimIndex].LoadSynchronous();
+	}
+	return ZeroZombieAnimDataTable.HitReactionMontages[AnimPoseType].HitReactionMontage[AnimIndex].Get();
+}
+
+UAnimMontage* AZeroCharacterMeleeZombie::GetStaggerMontage() const
+{
+	if (ZeroZombieAnimDataTable.StaggerMontages[AnimPoseType].IsPending())
+	{
+		ZeroZombieAnimDataTable.StaggerMontages[AnimPoseType].LoadSynchronous();
+	}
+	return ZeroZombieAnimDataTable.StaggerMontages[AnimPoseType].Get();
 }

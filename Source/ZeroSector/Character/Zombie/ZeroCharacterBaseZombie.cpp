@@ -11,7 +11,7 @@ AZeroCharacterBaseZombie::AZeroCharacterBaseZombie()
     GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -85.f));
     GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 
-    GetCharacterMovement()->MaxWalkSpeed = 0.f;
+    GetCharacterMovement()->MaxWalkSpeed = 250.f;
 
     StatComp = CreateDefaultSubobject<UZeroStatComponent>(TEXT("Stat Component"));
 }
@@ -44,12 +44,12 @@ float AZeroCharacterBaseZombie::GetAITurnSpeed()
 
 float AZeroCharacterBaseZombie::GetRunSpeed()
 {
-    return 0.0f;
+    return StatComp->GetTotalStat().RunSpeed;
 }
 
 float AZeroCharacterBaseZombie::GetWalkSpeed()
 {
-    return 0.0f;
+    return StatComp->GetTotalStat().WalkSpeed;
 }
 
 void AZeroCharacterBaseZombie::SetAIAttackOneDelegate(const FOnAttackOneFinished& InOnAttackFinished)

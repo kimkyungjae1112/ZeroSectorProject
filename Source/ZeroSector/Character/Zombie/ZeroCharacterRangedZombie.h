@@ -63,6 +63,11 @@ private:
 
 	void BeginDead();
 
+	void BeginHitReaction();
+	void EndHitReaction(UAnimMontage* Target, bool IsProperlyEnded);
+
+	void BeginStagger();
+
 /* 투사체 */
 private:
 	UPROPERTY(EditAnywhere, Category = "Projectile")
@@ -74,8 +79,8 @@ private:
 
 // 애니메이션 데이터 
 private:
-	UAnimMontage* GetAttackOneMontage() const;
-	UAnimMontage* GetAttackTwoMontage() const;
+	UAnimMontage* GetHitReactionMontage() const;
+	UAnimMontage* GetStaggerMontage() const;
 
 	UPROPERTY()
 	FZeroZombieAnimDataTable ZeroZombieAnimDataTable;

@@ -49,6 +49,6 @@ void UZeroStatComponent::SetHp(float NewHp)
 	const float ActualHp = FMath::Clamp(NewHp, 0, BaseStat.MaxHp);
 	CurrentHp = NewHp;
 	OnHpChanged.Broadcast(CurrentHp);
-	ZE_LOG(LogZeroSector, Display, TEXT("Rest Health : %f"), CurrentHp);
+	//ZE_LOG(LogZeroSector, Display, TEXT("Rest Health : %f"), CurrentHp);
 }
 

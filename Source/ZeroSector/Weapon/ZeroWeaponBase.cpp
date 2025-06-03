@@ -321,7 +321,7 @@ void AZeroWeaponBase::HitCheck(const FHitResult& InHitResult, const FVector& Tra
 			FPointDamageEvent DamageEvent(Damage, InHitResult, TraceDir, nullptr);
 			AController* OwnerController = GetOwnerController();
 			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
-			ZE_LOG(LogZeroSector, Display, TEXT("Actor Name : %s"), *HitActor->GetActorNameOrLabel());
+			//ZE_LOG(LogZeroSector, Display, TEXT("Actor Name : %s"), *HitActor->GetActorNameOrLabel());
 		}
 	}
 }

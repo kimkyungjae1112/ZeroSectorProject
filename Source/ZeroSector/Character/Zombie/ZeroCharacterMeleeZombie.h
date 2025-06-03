@@ -57,6 +57,11 @@ private:
 	void EndAttackTwo(UAnimMontage* Target, bool IsProperlyEnded);
 
 	void BeginDead();
+
+	void BeginHitReaction();
+	void EndHitReaction(UAnimMontage* Target, bool IsProperlyEnded);
+
+	void BeginStagger();
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Type")
 	EZombieType CurrentType;
@@ -65,6 +70,8 @@ private:
 private:
 	UAnimMontage* GetAttackOneMontage() const;
 	UAnimMontage* GetAttackTwoMontage() const;
+	UAnimMontage* GetHitReactionMontage() const;
+	UAnimMontage* GetStaggerMontage() const;
 
 	UPROPERTY()
 	FZeroZombieAnimDataTable ZeroZombieAnimDataTable;
