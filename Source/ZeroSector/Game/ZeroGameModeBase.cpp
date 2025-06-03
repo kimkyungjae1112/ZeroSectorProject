@@ -235,8 +235,6 @@ void AZeroGameModeBase::ChangeDayToAfternoon()
 
 void AZeroGameModeBase::ChangeDayToNight()
 {
-	if (Day == 2) WallVideoPlay();
-
 	CurrentDaySequence = EDaySequence::ENight;
 	InitNight();
 
@@ -257,8 +255,18 @@ void AZeroGameModeBase::ChangeDayToNight()
 		}
 	}
 
-	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
-	if (PC) PC->NightHUD_Display();
+	if (Day == 2)
+	{
+		AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
+		if (PC) PC->AllHUD_Close();
+
+		WallVideoPlay();
+	}
+	else
+	{
+		AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
+		if (PC) PC->NightHUD_Display();
+	}
 
 	DecreaseTime();
 	OnStartNight.ExecuteIfBound(MaxWave);

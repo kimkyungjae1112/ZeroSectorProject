@@ -323,9 +323,6 @@ void AZeroCharacterPlayer::DialogueInteract()
 	if (InputComp)
 	{
 		InputComp->DialogueInteract();
-		// StatComp->UseActivePoint(-10.f);
-		// 이렇게 하면 행동력이 두번 쓰는걸로 적용되지만
-		// 일단 모르겠으니까 이렇게 둠,,,,
 	}
 }
 
@@ -343,7 +340,6 @@ void AZeroCharacterPlayer::ProvisoInteract()
 	if (InputComp)
 	{
 		InputComp->ProvisoInteract();
-		// StatComp->UseActivePoint(-10.f);
 	} 
 }
 
@@ -354,7 +350,6 @@ void AZeroCharacterPlayer::EnforceBoardInteract()
 	if (InputComp)
 	{
 		InputComp->EnforceBoardInteract();
-		// StatComp->UseActivePoint(-10.f);
 	}
 }
 

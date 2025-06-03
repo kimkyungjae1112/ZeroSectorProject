@@ -41,6 +41,7 @@ public:
 
 	void ATHUD_Display();
 	void NightHUD_Display();
+	void AllHUD_Close() const;
 
 	// 크로스 헤어
 	float GetCurrentSpread() const;

@@ -201,6 +201,18 @@ void AZeroPlayerController::NightHUD_Display()
 	}
 }
 
+void AZeroPlayerController::AllHUD_Close() const
+{
+	if (AfternoonHUDWidgetPtr && AfternoonHUDWidgetPtr->IsInViewport())
+	{
+		AfternoonHUDWidgetPtr->RemoveFromParent();
+	}
+	if (HUDWidgetPtr && HUDWidgetPtr->IsInViewport())
+	{
+		HUDWidgetPtr->RemoveFromParent();
+	}
+}
+
 float AZeroPlayerController::GetCurrentSpread() const
 {
 	return HUDWidgetPtr->GetCurrentSpread();
