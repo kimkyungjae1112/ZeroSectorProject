@@ -141,6 +141,10 @@ private:
 private:
 	void AfternoonInputDelegate();
 	
+/* Player 죽음 */
+private:
+	void SetDead();
+
 /* 무기 */
 private:
 	UFUNCTION(BlueprintCallable, meta = (AllowPrivateAccess = "true"))

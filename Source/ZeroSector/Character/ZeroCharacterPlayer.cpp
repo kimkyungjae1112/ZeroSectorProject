@@ -50,6 +50,7 @@ AZeroCharacterPlayer::AZeroCharacterPlayer()
 	UIComp = CreateDefaultSubobject<UZeroUIComponent>(TEXT("UI Component"));
 
 	StatComp = CreateDefaultSubobject<UZeroPlayerStatComponent>(TEXT("Stat Component"));
+	StatComp->OnHpZero.AddUObject(this, &AZeroCharacterPlayer::SetDead);
 
 	ChangeInputMap.Add(EDaySequence::EAfternoon, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputAfternoonMode)));
 	ChangeInputMap.Add(EDaySequence::ENight, FChangeInputWrapper(FChangeInput::CreateUObject(this, &AZeroCharacterPlayer::SetInputNightMode)));
@@ -450,4 +451,9 @@ void AZeroCharacterPlayer::AfternoonInputDelegate()
 	InputComp->OnPauseMenu.BindUObject(UIComp, &UZeroUIComponent::PauseMenuDisplay);
 	InputComp->OnExcludeResearcher.BindUObject(UIComp, &UZeroUIComponent::ExcludeResearcherDisplay);
 	InputComp->OnSelectResearcher.BindUObject(UIComp, &UZeroUIComponent::SelectResearcherDisplay);
+}
+
+void AZeroCharacterPlayer::SetDead()
+{
+	GetZeroPlayerController()->GameHasEnded(this, false);
 }
