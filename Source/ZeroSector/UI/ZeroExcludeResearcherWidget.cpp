@@ -14,7 +14,7 @@ void UZeroExcludeResearcherWidget::NativeConstruct()
 
 	GI = Cast<UZeroGameInstance>(GetGameInstance());
 
-	ResearcherNames = { TEXT("Vaccine"), TEXT("Criminal"), TEXT("Normal1"), TEXT("Normal2"), TEXT("Normal3") };
+	ResearcherNames = { TEXT("빅터 블레이크"), TEXT("마르코 크레시"), TEXT("안토니 카터"), TEXT("아이작 하워드"), TEXT("에단 브룩스") };
 
 	if (ExRes1Button) ExRes1Button->OnClicked.AddDynamic(this, &UZeroExcludeResearcherWidget::OnClickResearcher1);
 	if (ExRes2Button) ExRes2Button->OnClicked.AddDynamic(this, &UZeroExcludeResearcherWidget::OnClickResearcher2);

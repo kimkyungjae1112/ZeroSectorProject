@@ -14,7 +14,7 @@ void UZeroSelectResearcherWidget::NativeConstruct()
 
 	GI = Cast<UZeroGameInstance>(GetGameInstance());
 
-	ResearcherNames = { TEXT("Vaccine"), TEXT("Criminal"), TEXT("Normal1"), TEXT("Normal2"), TEXT("Normal3") };
+	ResearcherNames = { TEXT("빅터 블레이크"), TEXT("마르코 크레시"), TEXT("안토니 카터"), TEXT("아이작 하워드"), TEXT("에단 브룩스") };
 
 	TArray<UButton*> Buttons = { SelRes1Button, SelRes2Button, SelRes3Button, SelRes4Button, SelRes5Button };
 	for (int32 i = 0; i < ResearcherNames.Num(); ++i)
