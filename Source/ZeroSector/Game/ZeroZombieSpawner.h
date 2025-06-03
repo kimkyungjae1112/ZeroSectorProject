@@ -20,7 +20,7 @@ public:
 	AZeroZombieSpawner();
 
 	FORCEINLINE uint8 GetStartDay() const { return StartDay; }
-
+	FORCEINLINE uint8 GetWaveNum() const { return WaveNum; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -49,5 +49,8 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Start", meta = (AllowPrivateAccess = "true"))
 	uint8 StartDay;
+
+	UPROPERTY(EditAnywhere, Category = "Start", meta = (AllowPrivateAccess = "true"))
+	uint8 WaveNum;
 
 };

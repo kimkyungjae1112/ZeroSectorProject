@@ -167,15 +167,16 @@ void AZeroGameModeBase::StartWave()
 	MiniZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Mini].ZombieNum[CurrentWave];
 	TankerZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Tanker].ZombieNum[CurrentWave];
 	BossZombieNum = SpawnDataTable.ZombieNums[EZombieType::EZ_Boss].ZombieNum[CurrentWave];
-	CurrentWave++;
 
 	for (AZeroZombieSpawner* ZombieSpawner: TActorRange<AZeroZombieSpawner>(GetWorld()))
 	{
-		if (ZombieSpawner->GetStartDay() == Day)
+		if (ZombieSpawner->GetStartDay() == Day && ZombieSpawner->GetWaveNum() == CurrentWave)
 		{
 			ZombieSpawner->SpawnZombie(CommonZombieNum, RangedZombieNum, MiniZombieNum, TankerZombieNum, BossZombieNum);
 		}
 	}
+
+	CurrentWave++;
 }
 
 void AZeroGameModeBase::StartTimer()
