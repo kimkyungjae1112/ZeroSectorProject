@@ -6,6 +6,9 @@
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Interface/ZeroUIComponentInterface.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/ZeroMessageWidget.h"
 
 void UZeroGetProvisoWidget::NativeConstruct()
@@ -25,9 +28,14 @@ void UZeroGetProvisoWidget::NativeConstruct()
 
 void UZeroGetProvisoWidget::OnWriteClicked()
 {
+    UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->PencilSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->PencilSFX);
+    }
+
     if (CurrentProvisoData.ProvisoType == EZeroProvisoType::Fake)
     {
-        UE_LOG(LogTemp, Warning, TEXT("FF"));
 
         OnProvisoRejected.Broadcast(); 
 
@@ -85,6 +93,12 @@ void UZeroGetProvisoWidget::OnThrowClicked()
 		PC->SetInputMode(FInputModeGameOnly());
 		PC->bShowMouseCursor = false;
 	}
+
+    UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->UIClickSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->UIClickSFX);
+    }
 }
 
 void UZeroGetProvisoWidget::SetProvisoInfo(const FString& ProvisoName, const FString& ProvisoDescription)

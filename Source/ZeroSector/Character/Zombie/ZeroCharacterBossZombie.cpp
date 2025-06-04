@@ -11,6 +11,9 @@
 #include "Engine/DamageEvents.h"
 #include "Perception/AISense_Damage.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "ZeroSector.h"
 
 AZeroCharacterBossZombie::AZeroCharacterBossZombie()
@@ -132,6 +135,12 @@ void AZeroCharacterBossZombie::BeginRushAttack()
 {
 	Anim->Montage_Play(RushAttackMontage);
 
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->BossRushAttackSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->BossRushAttackSFX);
+	}
+
 	FOnMontageEnded MontageEnd;
 	MontageEnd.BindUObject(this, &AZeroCharacterBossZombie::EndRushAttack);
 	Anim->Montage_SetEndDelegate(MontageEnd, RushAttackMontage);
@@ -145,6 +154,12 @@ void AZeroCharacterBossZombie::EndRushAttack(UAnimMontage* Target, bool IsProper
 void AZeroCharacterBossZombie::BeginSpawnAttack()
 {
 	Anim->Montage_Play(SpawnAttackMontage);
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->BossSpawnAttackSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->BossSpawnAttackSFX);
+	}
 
 	FOnMontageEnded MontageEnd;
 	MontageEnd.BindUObject(this, &AZeroCharacterBossZombie::EndSpawnAttack);

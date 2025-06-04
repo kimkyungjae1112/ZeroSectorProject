@@ -80,5 +80,14 @@ public:
 	UPROPERTY()
 	TObjectPtr<USoundBase> LoseSFX;
 
+	UPROPERTY()
+	TObjectPtr<USoundBase> BossRushAttackSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> BossSpawnAttackSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> PencilSFX;
+
 	void Init();
 };
