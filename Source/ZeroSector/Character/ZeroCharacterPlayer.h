@@ -183,4 +183,9 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Capsule")
 	TObjectPtr<UCapsuleComponent> ProtectCapsuleComp;
+
+/* Animation */
+private:
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	TObjectPtr<class UAnimMontage> DeadMontage;
 };

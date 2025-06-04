@@ -21,6 +21,7 @@
 #include "UI/ZeroPrologVideoWidget.h"
 #include "UI/ZeroEnforceBoardWidget.h"
 #include "UI/ZeroWallVideoWidget.h"
+#include "Animation/AnimInstance.h"
 #include "ZeroSector.h"
 
 uint8 AZeroGameModeBase::Day = 1;
@@ -197,6 +198,23 @@ void AZeroGameModeBase::RestartLevel()
 		Trigger->Destroy();
 	}
 	ChangeDayToNight();
+
+	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PC)
+	{
+		ACharacter* Player= Cast<ACharacter>(PC->GetPawn());
+		if (Player)
+		{
+			UAnimInstance* Anim = Player->GetMesh()->GetAnimInstance();
+			if (Anim)
+			{
+				Anim->Montage_Stop(0.1f);
+			}
+		}
+		PC->GetPawn()->SetActorEnableCollision(true);
+		PC->InputModeGameOnly();
+		PC->EnableInput(PC);
+	}
 }
 
 void AZeroGameModeBase::EndGame(bool bIsPlayerWinner)

@@ -20,6 +20,8 @@
 #include "UI/ZeroHUDWidget.h"
 #include "UI/ZeroAfternoonHUDWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "Animation/Animinstance.h"
+#include "Animation/AnimMontage.h"
 #include "ZeroSector.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer()
@@ -455,5 +457,14 @@ void AZeroCharacterPlayer::AfternoonInputDelegate()
 
 void AZeroCharacterPlayer::SetDead()
 {
+
+	UAnimInstance* Anim = GetMesh()->GetAnimInstance();
+	if (Anim)
+	{
+		Anim->Montage_Play(DeadMontage);
+	}
+
+	SetActorEnableCollision(false);
+	GetZeroPlayerController()->InputModeUIOnly();
 	GetZeroPlayerController()->GameHasEnded(this, false);
 }
