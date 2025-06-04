@@ -76,9 +76,12 @@ void UZeroUIComponent::ToggleNoteDisplay()
 		if (!NoteWidgetPtr->IsInViewport())
 		{
 			NoteWidgetPtr->AddToViewport();
-			NoteWidgetPtr->ShowWidget();
 
-			PendingProvisoList.Empty(); 
+			NoteWidgetPtr->ClearResearcherInfo();
+			NoteWidgetPtr->SetCurrentNoteResearcher(nullptr); 
+
+			NoteWidgetPtr->ShowWidget();
+			PendingProvisoList.Empty();
 		}
 
 		bIsNoteToggle = true;
@@ -203,6 +206,8 @@ void UZeroUIComponent::ProvisoInteract()
 
 		GetProvisoWidgetInstance->OnProvisoConfirmed.AddLambda([this](const FZeroProvisoDataTable& Data)
 			{
+				if (CachedProvisoActor) CachedProvisoActor->Destroy();
+
 				if (Data.ProvisoType != EZeroProvisoType::Fake && !Data.ProvisoName.IsNone())
 				{
 					UZeroSingleton::Get().AddCollectedProviso(Data);
@@ -210,10 +215,8 @@ void UZeroUIComponent::ProvisoInteract()
 
 				if (StatComp)
 				{
-					StatComp->UseActivePoint(-10.f); 
+					StatComp->UseActivePoint(-10.f);
 				}
-
-				if (CachedProvisoActor) CachedProvisoActor->Destroy();
 			});
 
 		GetProvisoWidgetInstance->OnProvisoRejected.AddLambda([this]()

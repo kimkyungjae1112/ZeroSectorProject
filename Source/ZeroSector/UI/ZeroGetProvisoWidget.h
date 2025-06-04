@@ -8,6 +8,7 @@
 class UImage;
 class UTextBlock;
 class UButton;
+class UZeroMessageWidget;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnProvisoConfirmed, const FZeroProvisoDataTable&);
 DECLARE_MULTICAST_DELEGATE(FOnProvisoRejected);
@@ -30,6 +31,9 @@ class ZEROSECTOR_API UZeroGetProvisoWidget : public UUserWidget
 	// µ®∏Æ∞‘¿Ã∆Æ
 	FOnProvisoConfirmed OnProvisoConfirmed;
 	FOnProvisoRejected OnProvisoRejected;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UZeroMessageWidget> MessageWidgetClass;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -61,4 +65,6 @@ private:
 
 	UFUNCTION()
 	void OnThrowClicked();
+
+	
 };
