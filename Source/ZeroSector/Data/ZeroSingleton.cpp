@@ -118,5 +118,3 @@ UZeroSingleton& UZeroSingleton::Get()
 
 	return *NewObject<UZeroSingleton>();
 }
-
-

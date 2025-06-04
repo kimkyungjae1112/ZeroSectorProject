@@ -34,7 +34,7 @@ protected:
     virtual void NativeConstruct() override;
 
     UPROPERTY(meta = (BindWidget))
-    UWrapBox* ProvisoWrapBox;
+    UVerticalBox* ProvisoWrapBox;
 
     int32 CurrentProvisoCount = 0;  
 
@@ -67,6 +67,9 @@ public:
 
     UPROPERTY()
     UZeroResearcherData* CurrentNoteResearcher;
+
+    void ClearResearcherInfo();
+    void SetCurrentNoteResearcher(UZeroResearcherData* Researcher);
 
 
 private:
@@ -127,7 +130,7 @@ protected:
 
 
     UFUNCTION(BlueprintCallable, Category = "UI")
-    void ShowResearcherClues(UZeroResearcherData* ResearcherData);
+    void ShowResearcherProviso(UZeroResearcherData* ResearcherData);
 
 
 };

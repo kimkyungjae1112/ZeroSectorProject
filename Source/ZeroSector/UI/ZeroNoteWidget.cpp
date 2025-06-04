@@ -13,6 +13,8 @@
 #include "Components/WrapBox.h"
 #include "Components/WrapBoxSlot.h"
 #include "Components/SizeBox.h"
+#include "Components/VerticalBox.h"
+#include "Components/VerticalBoxSlot.h"
 #include "Components/CanvasPanel.h"
 #include "Data/ZeroResearcherData.h"
 #include "Game/ZeroGameInstance.h"
@@ -23,6 +25,7 @@
 #include "UI/ZeroAfternoonHUDWidget.h"
 #include "Game/ZeroGameModeBase.h"
 #include "Data/ZeroSingleton.h"
+#include "Data/ZeroProvisoDataTable.h"
 
 
 void UZeroNoteWidget::NativeConstruct()
@@ -58,7 +61,7 @@ void UZeroNoteWidget::ShowWidget()
 
     if (CurrentNoteResearcher)
     {
-        ShowResearcherClues(CurrentNoteResearcher);
+        ShowResearcherProviso(CurrentNoteResearcher);
     }
 }
 
@@ -155,9 +158,12 @@ void UZeroNoteWidget::PlayUIClickSound()
     }
 }
 
-void UZeroNoteWidget::ShowResearcherClues(UZeroResearcherData* ResearcherData)
+void UZeroNoteWidget::ShowResearcherProviso(UZeroResearcherData* ResearcherData)
 {
-    if (!ResearcherData || !ProvisoWrapBox) return;
+    if (!ResearcherData || !ProvisoWrapBox)
+    {
+        return;
+    }
 
     ProvisoWrapBox->ClearChildren();
 
@@ -170,7 +176,10 @@ void UZeroNoteWidget::ShowResearcherClues(UZeroResearcherData* ResearcherData)
         const FZeroProvisoDataTable& Proviso = UZeroSingleton::Get().GetProvisoData(RowName);
 
         UZeroProvisoButtonWidget* NewButton = CreateWidget<UZeroProvisoButtonWidget>(this, ProvisoButtonClass);
-        if (!NewButton) continue;
+        if (!NewButton)
+        {
+            continue;
+        }
 
         NewButton->InitProviso(Proviso);
         NewButton->OnProvisoClicked.AddDynamic(this, &UZeroNoteWidget::ShowClueDetail);
@@ -185,9 +194,35 @@ void UZeroNoteWidget::ShowResearcherClues(UZeroResearcherData* ResearcherData)
         Box->SetHeightOverride(80.f);
         Box->AddChild(NewButton);
 
-        ProvisoWrapBox->AddChildToWrapBox(Box);
+        UVerticalBoxSlot* BoxSlot = ProvisoWrapBox->AddChildToVerticalBox(Box);
+        if (BoxSlot)
+        {
+            BoxSlot->SetPadding(FMargin(5.f, 5.f));
+            BoxSlot->SetHorizontalAlignment(HAlign_Center);
+        }
     }
 }
+
+
+
+void UZeroNoteWidget::ClearResearcherInfo()
+{
+    if (ResearcherInfoBox)
+    {
+        ResearcherInfoBox->SetVisibility(ESlateVisibility::Hidden);
+    }
+
+    if (ProvisoWrapBox)
+    {
+        ProvisoWrapBox->ClearChildren(); 
+    }
+}
+
+void UZeroNoteWidget::SetCurrentNoteResearcher(UZeroResearcherData* Researcher)
+{
+    CurrentNoteResearcher = Researcher;
+}
+
 
 
 
