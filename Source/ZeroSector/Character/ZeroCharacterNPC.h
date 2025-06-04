@@ -49,6 +49,16 @@ private:
 private:
 	void DisplayName();
 
+// NPC 움직임 통제
+private:
+	void StartRandomPatrolPause();
+	void PauseMovement();
+	void ResumeMovement();
+
+	FTimerHandle PatrolPauseTimer;
+	FTimerHandle PatrolResumeTimer;
+
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
 	TObjectPtr<UZeroDialogueComponent> DialogueComp;

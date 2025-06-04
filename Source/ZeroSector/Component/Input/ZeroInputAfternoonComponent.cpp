@@ -19,6 +19,7 @@
 #include "Interface/ZeroOutlineInterface.h"
 #include "UI/ZeroPauseMenuWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/ZeroPlayerController.h"
 #include "ZeroSector.h"
 
 AActor* UZeroInputAfternoonComponent::CurrentDialogueNPC;
@@ -162,10 +163,21 @@ void UZeroInputAfternoonComponent::DialogueInteract()
 		OnFinishedDialogue.BindLambda([&]()
 			{
 				SetDefaultMovement();
+				IZeroAfternoonInputInterface* AfternoonInterface = Cast<IZeroAfternoonInputInterface>(Player);
+				if(AfternoonInterface) AfternoonInterface->EndDialogueCameraView();
+
+				AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
+				if (PC) PC->ATHUD_Display();
 			});
 		DialogueInterface->SetupFinishedDialogueDelegate(OnFinishedDialogue);
 
 		SetDialogueMovement();
+
+		IZeroAfternoonInputInterface* AfternoonInterface = Cast<IZeroAfternoonInputInterface>(Player);
+		if (AfternoonInterface) AfternoonInterface->StartDialogueCameraView();
+
+		AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
+		if (PC) PC->AllHUD_Close();
 
 		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
 		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->NPCInteractSFX)

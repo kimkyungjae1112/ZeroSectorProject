@@ -20,4 +20,7 @@ class ZEROSECTOR_API IZeroAfternoonInputInterface
 public:
 	virtual void DisplayInteractUI() = 0;
 	virtual void CloseInteractUI() = 0;
+
+	virtual void StartDialogueCameraView() = 0;
+	virtual void EndDialogueCameraView() = 0;
 };

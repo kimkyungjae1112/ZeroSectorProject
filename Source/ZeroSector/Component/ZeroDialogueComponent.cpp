@@ -232,7 +232,8 @@ void UZeroDialogueComponent::RotationToPlayer()
 	if (Character && Player)
 	{
 		FVector Dir = (Player->GetActorLocation() - Character->GetActorLocation()).GetSafeNormal();
-		// GetAIController()->SetControlRotation(Dir.Rotation());
+		GetAIController()->StopMovement();
+		Character->SetActorRotation(Dir.Rotation());
 	}
 }
 

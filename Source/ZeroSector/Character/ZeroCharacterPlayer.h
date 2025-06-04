@@ -66,6 +66,8 @@ public:
 	/* IZeroAfternoonInputInterface Implemnt */
 	virtual void DisplayInteractUI() override;
 	virtual void CloseInteractUI() override;
+	virtual void StartDialogueCameraView() override;
+	virtual void EndDialogueCameraView() override;
 
 	/* IZeroNightInputInterface Implemnt */
 	virtual UZeroHUDWidget* GetWeaponHUDWidget() const override;

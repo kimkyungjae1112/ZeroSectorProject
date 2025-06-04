@@ -67,6 +67,10 @@ void AZeroCharacterNPC::BeginPlay()
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 0.f;
 	}
+	else
+	{
+		StartRandomPatrolPause();
+	}
 }
 
 AZeroAIControllerNPC* AZeroCharacterNPC::GetAIController() const
@@ -106,4 +110,27 @@ void AZeroCharacterNPC::DisplayName()
 			}
 		}
 	}
+}
+
+void AZeroCharacterNPC::StartRandomPatrolPause()
+{
+	float PauseTime = FMath::RandRange(3.f, 5.f);
+
+	GetWorld()->GetTimerManager().SetTimer(PatrolPauseTimer, this, &AZeroCharacterNPC::PauseMovement, PauseTime, false);
+}
+
+void AZeroCharacterNPC::PauseMovement()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 0.f;
+
+	float ResumeTime = FMath::RandRange(1.5f, 3.f);
+	GetWorld()->GetTimerManager().SetTimer(PatrolResumeTimer, this, &AZeroCharacterNPC::ResumeMovement, ResumeTime, false);
+
+}
+
+void AZeroCharacterNPC::ResumeMovement()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+
+	StartRandomPatrolPause();
 }

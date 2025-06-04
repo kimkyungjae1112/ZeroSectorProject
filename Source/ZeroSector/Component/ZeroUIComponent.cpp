@@ -36,7 +36,7 @@ void UZeroUIComponent::BeginPlay()
 	Super::BeginPlay();
 
 	Player = Cast<ACharacter>(GetOwner());
-	StatComp = Player->GetComponentByClass<UZeroPlayerStatComponent>(); // ¹ÙÀÎµùÀÌ µÈ Æ÷ÀÎÅÍ °¡Á®¿À±â
+	StatComp = Player->GetComponentByClass<UZeroPlayerStatComponent>(); // ï¿½ï¿½ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 }
 
@@ -175,7 +175,7 @@ void UZeroUIComponent::ProvisoInteract()
 	AZeroProvisoActor* ProvisoActor = Cast<AZeroProvisoActor>(CurrentGimmick);
 	if (!ProvisoActor) return;
 
-	CachedProvisoActor = ProvisoActor; // ÃßÈÄ »èÁ¦¿ë ÀúÀå
+	CachedProvisoActor = ProvisoActor; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 	FZeroProvisoDataTable ProvisoData;
 	if (!ProvisoActor->RowName.IsNone())

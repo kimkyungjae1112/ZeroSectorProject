@@ -139,6 +139,16 @@ void AZeroCharacterPlayer::CloseInteractUI()
 	UIComp->InteractUIClose();
 }
 
+void AZeroCharacterPlayer::StartDialogueCameraView()
+{
+	SpringArmComp->TargetArmLength = 500.f;
+}
+
+void AZeroCharacterPlayer::EndDialogueCameraView()
+{
+	SpringArmComp->TargetArmLength = -10.f;
+}
+
 UZeroHUDWidget* AZeroCharacterPlayer::GetWeaponHUDWidget() const
 {
 	return HUDWidgetPtr;
@@ -250,7 +260,7 @@ void AZeroCharacterPlayer::MoveNightStartLoc(const FVector& InLocation)
 	GetWorld()->GetTimerManager().SetTimer(MoveNightHandle, [&]()
 		{
 			SetActorLocation(MoveLocation);
-		}, 2.5f, false);
+		}, 1.5f, false);
 }
 
 void AZeroCharacterPlayer::MoveAfternoonStartLoc(const FVector& InLocation)
@@ -260,7 +270,7 @@ void AZeroCharacterPlayer::MoveAfternoonStartLoc(const FVector& InLocation)
 	GetWorld()->GetTimerManager().SetTimer(MoveAfternoonHandle, [&]()
 		{
 			SetActorLocation(MoveLocation);
-		}, 2.5f, false);
+		}, 1.5f, false);
 }
 
 void AZeroCharacterPlayer::Move(const FInputActionValue& Value)
