@@ -177,11 +177,7 @@ void UZeroUIComponent::ProvisoInteract()
 	AZeroProvisoActor* ProvisoActor = Cast<AZeroProvisoActor>(CurrentGimmick);
 	if (!ProvisoActor) return;
 
-<<<<<<< HEAD
-	CachedProvisoActor = ProvisoActor; // ���� ������ ����
-=======
 	CachedProvisoActor = ProvisoActor; 
->>>>>>> 2a61cc29a38d07db111954586bbd138155784425
 
 	FZeroProvisoDataTable ProvisoData;
 	if (!ProvisoActor->RowName.IsNone())
