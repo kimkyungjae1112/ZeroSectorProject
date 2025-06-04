@@ -61,7 +61,7 @@ void UZeroNoteWidget::ShowWidget()
 
     if (CurrentNoteResearcher)
     {
-        ShowResearcherClues(CurrentNoteResearcher);
+        ShowResearcherProviso(CurrentNoteResearcher);
     }
 }
 
