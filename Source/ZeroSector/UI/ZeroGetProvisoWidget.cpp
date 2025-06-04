@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "UI/ZeroGetProvisoWidget.h"
@@ -40,7 +40,7 @@ void UZeroGetProvisoWidget::OnWriteClicked()
             PC->bShowMouseCursor = false;
         }
 
-        // ¾µ¸ð¾ø´Â Á¤º¸ ¸Þ½ÃÁö Ç¥½Ã
+        // ì“¸ëª¨ì—†ëŠ” ì •ë³´ ë©”ì‹œì§€ í‘œì‹œ
         if (MessageWidgetClass)
         {
             UZeroMessageWidget* MessageWidget = CreateWidget<UZeroMessageWidget>(GetWorld(), MessageWidgetClass);

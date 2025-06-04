@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Component/ZeroUIComponent.h"
@@ -36,7 +36,7 @@ void UZeroUIComponent::BeginPlay()
 	Super::BeginPlay();
 
 	Player = Cast<ACharacter>(GetOwner());
-	StatComp = Player->GetComponentByClass<UZeroPlayerStatComponent>(); // πŸ¿Œµ˘¿Ã µ» ∆˜¿Œ≈Õ ∞°¡Æø¿±‚
+	StatComp = Player->GetComponentByClass<UZeroPlayerStatComponent>(); // Î∞îÏù∏Îî©Ïù¥ Îêú Ìè¨Ïù∏ÌÑ∞ Í∞ÄÏ†∏Ïò§Í∏∞
 
 }
 
@@ -178,7 +178,7 @@ void UZeroUIComponent::ProvisoInteract()
 	AZeroProvisoActor* ProvisoActor = Cast<AZeroProvisoActor>(CurrentGimmick);
 	if (!ProvisoActor) return;
 
-	CachedProvisoActor = ProvisoActor; // √ﬂ»ƒ ªË¡¶øÎ ¿˙¿Â
+	CachedProvisoActor = ProvisoActor; 
 
 	FZeroProvisoDataTable ProvisoData;
 	if (!ProvisoActor->RowName.IsNone())

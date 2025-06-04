@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -22,13 +22,13 @@ class ZEROSECTOR_API UZeroGetProvisoWidget : public UUserWidget
 	UFUNCTION(Category = "UI")
 	void ShowWidget();
 
-	// ÅØ½ºÆ®/ÀÌ¹ÌÁö ¼³Á¤ ÇÔ¼ö
+	// í…ìŠ¤íŠ¸/ì´ë¯¸ì§€ ì„¤ì • í•¨ìˆ˜
 	void SetProvisoInfo(const FString& ProvisoName, const FString& ProvisoDescription);
 	UFUNCTION(BlueprintCallable)
 	void SetProvisoImage(UTexture2D* InImage);
 	void SetCurrentProvisoData(const FZeroProvisoDataTable& InData);
 
-	// µ¨¸®°ÔÀÌÆ®
+	// ë¸ë¦¬ê²Œì´íŠ¸
 	FOnProvisoConfirmed OnProvisoConfirmed;
 	FOnProvisoRejected OnProvisoRejected;
 
@@ -56,10 +56,10 @@ private:
 
 	FTimerHandle WidgetTimerHandle;
 
-	// ³»ºÎ¿¡ ÀúÀåµÈ ´Ü¼­ µ¥ÀÌÅÍ
+	// ë‚´ë¶€ì— ì €ì¥ëœ ë‹¨ì„œ ë°ì´í„°
 	FZeroProvisoDataTable CurrentProvisoData;
 
-	// ¹öÆ° Å¬¸¯ Ã³¸® ÇÔ¼ö
+	// ë²„íŠ¼ í´ë¦­ ì²˜ë¦¬ í•¨ìˆ˜
 	UFUNCTION()
 	void OnWriteClicked();
 
