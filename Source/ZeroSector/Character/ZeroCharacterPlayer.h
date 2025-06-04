@@ -24,6 +24,7 @@ class UZeroUIComponent;
 class UZeroPlayerStatComponent;
 class APlayerController;
 class AZeroPlayerController;
+class AZeroDialogueCamera;
 
 DECLARE_DELEGATE(FChangeInput)
 
@@ -164,6 +165,8 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Camera")
 	TObjectPtr<UCameraComponent> CameraComp;
 
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	TSubclassOf<AZeroDialogueCamera> DialogueCameraClass;
 	
 /* UI */
 private:

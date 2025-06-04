@@ -67,6 +67,8 @@ void UZeroInputAfternoonComponent::Walk()
 
 void UZeroInputAfternoonComponent::InteractBeam()
 {
+	if (bIsDialogue) return;
+
 	FVector EyeVectorStart;
 	FRotator EyeRotatorStart;
 	Player->GetController()->GetPlayerViewPoint(EyeVectorStart, EyeRotatorStart);
@@ -158,10 +160,14 @@ void UZeroInputAfternoonComponent::DialogueInteract()
 {
 	if (DialogueInterface && StatComp->GetCanInteract())
 	{
+		bIsDialogue = true;
+
 		DialogueInterface->StartDialogue();
 		FOnFinishedDialogue OnFinishedDialogue;
 		OnFinishedDialogue.BindLambda([&]()
 			{
+				bIsDialogue = false;
+
 				SetDefaultMovement();
 				IZeroAfternoonInputInterface* AfternoonInterface = Cast<IZeroAfternoonInputInterface>(Player);
 				if(AfternoonInterface) AfternoonInterface->EndDialogueCameraView();

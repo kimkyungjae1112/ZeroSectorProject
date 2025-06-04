@@ -63,6 +63,7 @@ private:
 	IZeroDialogueInterface* DialogueInterface;
 
 	bool bIsNoteToggle;
+	bool bIsDialogue{ false };
 
 	FTimerHandle FootstepTimerHandle;
 	float CurrentFootstepInterval = 0.5f;

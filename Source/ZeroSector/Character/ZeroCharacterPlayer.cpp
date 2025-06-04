@@ -3,6 +3,7 @@
 
 #include "Character/ZeroCharacterPlayer.h"
 #include "ZeroHeader/ZeroInputHeader.h"
+#include "ZeroDialogueCamera.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -22,6 +23,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Animation/Animinstance.h"
 #include "Animation/AnimMontage.h"
+#include "Kismet/GameplayStatics.h"
 #include "ZeroSector.h"
 
 AZeroCharacterPlayer::AZeroCharacterPlayer()
@@ -141,12 +143,28 @@ void AZeroCharacterPlayer::CloseInteractUI()
 
 void AZeroCharacterPlayer::StartDialogueCameraView()
 {
-	SpringArmComp->TargetArmLength = 500.f;
+	FVector OffsetLoc = GetActorLocation() + (GetActorForwardVector() * -100.f + GetActorRightVector() * 300.f + FVector(0.f, 0.f, 100.f));
+	FRotator OffSetRot = (GetActorForwardVector() + (-GetActorRightVector())).Rotation();
+
+	AZeroDialogueCamera* DialogueCamera = Cast<AZeroDialogueCamera>(UGameplayStatics::GetActorOfClass(GetWorld(), AZeroDialogueCamera::StaticClass()));
+	if (DialogueCamera)
+	{
+		DialogueCamera->SetActorLocation(OffsetLoc);
+		DialogueCamera->SetActorRotation(OffSetRot);
+	}
+	else
+	{
+		DialogueCamera = GetWorld()->SpawnActor<AZeroDialogueCamera>(DialogueCameraClass);
+		DialogueCamera->SetActorLocation(OffsetLoc);
+		DialogueCamera->SetActorRotation(OffSetRot);
+	}
+
+	GetZeroPlayerController()->SetViewTargetWithBlend(DialogueCamera, 1.f);
 }
 
 void AZeroCharacterPlayer::EndDialogueCameraView()
 {
-	SpringArmComp->TargetArmLength = -10.f;
+	GetZeroPlayerController()->SetViewTargetWithBlend(this, 1.f);
 }
 
 UZeroHUDWidget* AZeroCharacterPlayer::GetWeaponHUDWidget() const
