@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "UI/ZeroGetProvisoWidget.h"
@@ -6,6 +6,7 @@
 #include "Components/Image.h"
 #include "Components/Button.h"
 #include "Interface/ZeroUIComponentInterface.h"
+#include "UI/ZeroMessageWidget.h"
 
 void UZeroGetProvisoWidget::NativeConstruct()
 {
@@ -24,16 +25,54 @@ void UZeroGetProvisoWidget::NativeConstruct()
 
 void UZeroGetProvisoWidget::OnWriteClicked()
 {
-	OnProvisoConfirmed.Broadcast(CurrentProvisoData);
-	RemoveFromParent();
+    if (CurrentProvisoData.ProvisoType == EZeroProvisoType::Fake)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("FF"));
 
-	APlayerController* PC = GetWorld()->GetFirstPlayerController();
-	if (PC)
-	{
-		PC->SetInputMode(FInputModeGameOnly());
-		PC->bShowMouseCursor = false;
-	}
+        OnProvisoRejected.Broadcast(); 
+
+        RemoveFromParent();
+
+        APlayerController* PC = GetWorld()->GetFirstPlayerController();
+        if (PC)
+        {
+            PC->SetInputMode(FInputModeGameOnly());
+            PC->bShowMouseCursor = false;
+        }
+
+        // 쓸모없는 정보 메시지 표시
+        if (MessageWidgetClass)
+        {
+            UZeroMessageWidget* MessageWidget = CreateWidget<UZeroMessageWidget>(GetWorld(), MessageWidgetClass);
+            if (MessageWidget)
+            {
+                MessageWidget->AddToViewport();
+
+                FTimerHandle TempHandle;
+                FTimerDelegate Delegate;
+                Delegate.BindLambda([MessageWidget]()
+                    {
+                        MessageWidget->RemoveFromParent();
+                    });
+
+                GetWorld()->GetTimerManager().SetTimer(TempHandle, Delegate, 2.0f, false);
+            }
+        }
+
+        return;
+    }
+
+    OnProvisoConfirmed.Broadcast(CurrentProvisoData);
+    RemoveFromParent();
+
+    APlayerController* PC = GetWorld()->GetFirstPlayerController();
+    if (PC)
+    {
+        PC->SetInputMode(FInputModeGameOnly());
+        PC->bShowMouseCursor = false;
+    }
 }
+
 
 void UZeroGetProvisoWidget::OnThrowClicked()
 {

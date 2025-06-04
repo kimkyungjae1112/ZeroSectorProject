@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "Component/ZeroUIComponent.h"
@@ -36,8 +36,7 @@ void UZeroUIComponent::BeginPlay()
 	Super::BeginPlay();
 
 	Player = Cast<ACharacter>(GetOwner());
-	StatComp = Player->GetComponentByClass<UZeroPlayerStatComponent>(); // ���ε��� �� ������ ��������
-
+	StatComp = Player->GetComponentByClass<UZeroPlayerStatComponent>(); // 바인딩이 된 포인터 가져오기
 }
 
 void UZeroUIComponent::FadeInAndOutDisplay()
@@ -76,9 +75,12 @@ void UZeroUIComponent::ToggleNoteDisplay()
 		if (!NoteWidgetPtr->IsInViewport())
 		{
 			NoteWidgetPtr->AddToViewport();
-			NoteWidgetPtr->ShowWidget();
 
-			PendingProvisoList.Empty(); 
+			NoteWidgetPtr->ClearResearcherInfo();
+			NoteWidgetPtr->SetCurrentNoteResearcher(nullptr); 
+
+			NoteWidgetPtr->ShowWidget();
+			PendingProvisoList.Empty();
 		}
 
 		bIsNoteToggle = true;
@@ -175,7 +177,11 @@ void UZeroUIComponent::ProvisoInteract()
 	AZeroProvisoActor* ProvisoActor = Cast<AZeroProvisoActor>(CurrentGimmick);
 	if (!ProvisoActor) return;
 
+<<<<<<< HEAD
 	CachedProvisoActor = ProvisoActor; // ���� ������ ����
+=======
+	CachedProvisoActor = ProvisoActor; 
+>>>>>>> 2a61cc29a38d07db111954586bbd138155784425
 
 	FZeroProvisoDataTable ProvisoData;
 	if (!ProvisoActor->RowName.IsNone())
@@ -203,6 +209,8 @@ void UZeroUIComponent::ProvisoInteract()
 
 		GetProvisoWidgetInstance->OnProvisoConfirmed.AddLambda([this](const FZeroProvisoDataTable& Data)
 			{
+				if (CachedProvisoActor) CachedProvisoActor->Destroy();
+
 				if (Data.ProvisoType != EZeroProvisoType::Fake && !Data.ProvisoName.IsNone())
 				{
 					UZeroSingleton::Get().AddCollectedProviso(Data);
@@ -210,10 +218,8 @@ void UZeroUIComponent::ProvisoInteract()
 
 				if (StatComp)
 				{
-					StatComp->UseActivePoint(-10.f); 
+					StatComp->UseActivePoint(-10.f);
 				}
-
-				if (CachedProvisoActor) CachedProvisoActor->Destroy();
 			});
 
 		GetProvisoWidgetInstance->OnProvisoRejected.AddLambda([this]()
