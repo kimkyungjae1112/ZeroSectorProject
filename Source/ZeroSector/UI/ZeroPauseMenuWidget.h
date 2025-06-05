@@ -43,6 +43,9 @@ class ZEROSECTOR_API UZeroPauseMenuWidget : public UUserWidget
     void OnSFXChanged(float Value);
 
     UFUNCTION()
+    void OnMouseSensitiveChanged(float Value);
+
+    UFUNCTION()
     void OnResolutionChanged(FString SelectedItem, ESelectInfo::Type SelectInfo);
 
     UFUNCTION()
@@ -76,6 +79,9 @@ protected:
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<USlider> SFXSlider;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<USlider> MouseSlider;
 
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UComboBoxString> ResolutionComboBox;

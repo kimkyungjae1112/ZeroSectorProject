@@ -215,6 +215,11 @@ void AZeroCharacterPlayer::ChangeInputMode()
 	}
 }
 
+void AZeroCharacterPlayer::SetMouseSensitive(float InMouseSensitive)
+{
+	MouseSensitive = FMath::Clamp(InMouseSensitive, 0.05, 1.0);
+}
+
 float AZeroCharacterPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float SuperResult = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
@@ -303,7 +308,7 @@ void AZeroCharacterPlayer::Look(const FInputActionValue& Value)
 {
 	if (InputComp)
 	{
-		InputComp->Look(Value);
+		InputComp->Look(Value * MouseSensitive);
 	}
 }
 

@@ -10,6 +10,7 @@
 #include "Interface/ZeroAfternoonInputInterface.h"
 #include "Interface/ZeroNightInputInterface.h"
 #include "Interface/ZeroUIComponentInterface.h"
+#include "Interface/ZeroMouseSensitiveInterface.h"
 #include "ZeroCharacterPlayer.generated.h"
 
 struct FInputActionValue;
@@ -46,6 +47,7 @@ class ZEROSECTOR_API AZeroCharacterPlayer
 	, public IZeroAfternoonInputInterface
 	, public IZeroNightInputInterface
 	, public IZeroUIComponentInterface
+	, public IZeroMouseSensitiveInterface
 {
 	GENERATED_BODY()
 	
@@ -81,6 +83,10 @@ public:
 	/* IZeroUIComponentInterface Implement */
 	virtual class AZeroPlayerController* GetOwnerController() override;
 	virtual void ChangeInputMode() override;
+
+	/* IZeroMouseSensitiveInterface Implement */
+	FORCEINLINE float GetMouseSensitive() const override { return MouseSensitive; }
+	void SetMouseSensitive(float InMouseSensitive) override;
 
 	/* APawn override */
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -183,6 +189,8 @@ private:
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Stat")
 	TObjectPtr<UZeroPlayerStatComponent> StatComp;
+
+	float MouseSensitive{ 0.5f };
 
 /* Capsule */
 private:
