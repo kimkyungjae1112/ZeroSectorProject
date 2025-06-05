@@ -12,6 +12,8 @@
 #include "Game/ZeroSoundManager.h"
 #include "Player/ZeroPlayerController.h"
 #include "GameFramework/GameUserSettings.h"
+#include "Interface/ZeroMouseSensitiveInterface.h"
+#include "ZeroSector.h"
 
 void UZeroPauseMenuWidget::NativeOnInitialized()
 {
@@ -51,6 +53,11 @@ void UZeroPauseMenuWidget::NativeOnInitialized()
         SFXSlider->SetValue(SM->GetSFXVolume());
     }
 
+    if (MouseSlider && SM)
+    {
+        // 0 ~ 1 사이 값
+        MouseSlider->OnValueChanged.AddDynamic(this, &UZeroPauseMenuWidget::OnMouseSensitiveChanged);
+    }
 
     if (ResolutionComboBox && SM)
     {
@@ -159,6 +166,16 @@ void UZeroPauseMenuWidget::OnSFXChanged(float Value)
             SM->PreviewTempSFX(Value);
             ApplySettingButton->SetVisibility(ESlateVisibility::Visible);
         }
+    }
+}
+
+void UZeroPauseMenuWidget::OnMouseSensitiveChanged(float Value)
+{
+    IZeroMouseSensitiveInterface* MouseInterface = Cast<IZeroMouseSensitiveInterface>(GetOwningPlayer()->GetPawn());
+    if (MouseInterface)
+    {
+        MouseInterface->SetMouseSensitive(Value);
+        ZE_LOG(LogZeroSector, Display, TEXT("마우스 감도 : %f"), Value);
     }
 }
 
