@@ -7,6 +7,9 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SphereComponent.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/DamageEvents.h"
 #include "ZeroSector.h"
 
@@ -53,6 +56,13 @@ void AZeroRangedZombieProjectile::ProjectileOnHit(UPrimitiveComponent* HitCompon
 	if (OtherActor && OtherActor != GetOwner() && !bIsHit)
 	{
 		bIsHit = true;
+
+		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ZombieThrowSFX)
+		{
+			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ZombieThrowSFX);
+		}
+
 		if (OtherActor->ActorHasTag(TEXT("Player")))
 		{
 			// 터지는 이펙트 및 대미지 적용

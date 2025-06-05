@@ -11,6 +11,9 @@
 #include "Perception/AISense_Damage.h"
 #include "ZeroRangedZombieProjectile.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Game/ZeroGameInstance.h"
+#include "Game/ZeroSoundManager.h"
+#include "Kismet/GameplayStatics.h"
 #include "ZeroSector.h"
 
 AZeroCharacterRangedZombie::AZeroCharacterRangedZombie()
@@ -113,6 +116,8 @@ void AZeroCharacterRangedZombie::BeginPlay()
 	ZeroZombieAnimDataTable = *DataTableBuffer->FindRow<FZeroZombieAnimDataTable>(GetClassName(), FString());
 
 	Anim = GetMesh()->GetAnimInstance();
+
+	ScheduleNextMove();
 }
 
 AZeroAIControllerRangedZombie* AZeroCharacterRangedZombie::GetMyController() const
@@ -157,6 +162,12 @@ void AZeroCharacterRangedZombie::BeginDead()
 
 	DetachFromControllerPendingDestroy();
 	ZE_LOG(LogZeroSector, Display, TEXT("Zombie Dead"));
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ZombieDieSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ZombieDieSFX);
+	}
 
 	FTimerHandle DestoryTimer;
 	GetWorld()->GetTimerManager().SetTimer(DestoryTimer, [&]()
@@ -221,4 +232,30 @@ UAnimMontage* AZeroCharacterRangedZombie::GetStaggerMontage() const
 		ZeroZombieAnimDataTable.StaggerMontages[AnimPoseType].LoadSynchronous();
 	}
 	return ZeroZombieAnimDataTable.StaggerMontages[AnimPoseType].Get();
+}
+
+void AZeroCharacterRangedZombie::PlayZombieMove()
+{
+	if (GetVelocity().Size() > 3.f)
+	{
+		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ZombieMoveSFX)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, GI->GetSoundManager()->ZombieMoveSFX, GetActorLocation());
+		}
+	}
+
+	ScheduleNextMove();
+}
+
+void AZeroCharacterRangedZombie::ScheduleNextMove()
+{
+	float NextTime = FMath::RandRange(3.0f, 7.0f);
+	GetWorld()->GetTimerManager().SetTimer(
+		ZombieGrowlTimer,
+		this,
+		&AZeroCharacterRangedZombie::PlayZombieMove,
+		NextTime,
+		false
+	);
 }

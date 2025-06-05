@@ -89,5 +89,14 @@ public:
 	UPROPERTY()
 	TObjectPtr<USoundBase> PencilSFX;
 
+	UPROPERTY()
+	TObjectPtr<USoundBase> ZombieThrowSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> BossMoveSFX;
+
+	UPROPERTY()
+	TObjectPtr<USoundBase> BossDieSFX;
+
 	void Init();
 };

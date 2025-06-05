@@ -93,4 +93,11 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UAnimMontage> TempMontage;
+
+// 사운드
+	private:
+	FTimerHandle ZombieGrowlTimer;
+
+	void PlayZombieMove();
+	void ScheduleNextMove();
 };
