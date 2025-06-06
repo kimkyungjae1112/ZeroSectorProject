@@ -139,4 +139,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UZeroResearcherData> ResearcherData;
+
+	TMap<FName, FString> NameTable;
 };
