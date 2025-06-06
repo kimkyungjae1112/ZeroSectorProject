@@ -60,6 +60,7 @@ UZeroDialogueComponent::UZeroDialogueComponent()
 	ResearcherDataMap.Add(TEXT("Normal2"), N2_Researcher);
 	ResearcherDataMap.Add(TEXT("Normal3"), N3_Researcher);
 
+	NameTable.Add(TEXT("Speedwagon"), TEXT("웨건찡"));
 	NameTable.Add(TEXT("Vaccine"), TEXT("빅터 블레이크"));
 	NameTable.Add(TEXT("Criminal"), TEXT("마르코 크레시"));
 	NameTable.Add(TEXT("Normal1"), TEXT("안토니 카터"));

@@ -87,6 +87,8 @@ protected:
     UZeroGameInstance* GI;
 
     void PlayUIClickSound();
+
+    void LoadDetectiveMap();
     
 };
 
