@@ -220,6 +220,8 @@ void AZeroCharacterBossZombie::ShowDangerDecal(FVector AttackLocation, float Rad
 
 void AZeroCharacterBossZombie::PlayZombieMove()
 {
+	if (bIsDead) return;
+
 	if (GetVelocity().Size() > 3.f)
 	{
 		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());

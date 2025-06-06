@@ -98,5 +98,8 @@ public:
 	UPROPERTY()
 	TObjectPtr<USoundBase> BossDieSFX;
 
+	UPROPERTY()
+	TObjectPtr<USoundBase> StartSFX;
+
 	void Init();
 };
