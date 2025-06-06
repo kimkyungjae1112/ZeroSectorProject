@@ -84,8 +84,8 @@ void UZeroNoteWidget::DisplayResearcher(UZeroResearcherData* ResearcherData)
     if (AgeText)
         AgeText->SetText(FText::AsNumber(ResearcherData->Age));
 
-    if (TrustText)
-        TrustText->SetText(FText::AsNumber(ResearcherData->Trust));
+    if (RelLevelImage)
+        RelLevelImage->SetBrushFromTexture(ResearcherData->GetTrustLevelImage());
 
     PlayUIClickSound();
 }

@@ -133,6 +133,7 @@ void UZeroDialogueComponent::SetupFinishedDialogueDelegate(const FOnFinishedDial
 void UZeroDialogueComponent::ShutdownGame()
 {
 	ResearcherData->Trust = 0.f;
+	ResearcherData->TrustLevel = 0;
 }
 
 AZeroPlayerController* UZeroDialogueComponent::GetPlayerController() const
@@ -179,7 +180,9 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 	else if (ResearcherData->Trust >= 100.f && ResearcherData->Trust < 300.f) ReliabilityLevel = 1;
 	else if (ResearcherData->Trust >= 300.f) ReliabilityLevel = 2;
 
-	ZE_LOG(LogZeroSector, Display, TEXT("신뢰도 : %f, 신뢰 레벨 : %d"), ResearcherData->Trust, ReliabilityLevel);
+	ResearcherData->TrustLevel = ReliabilityLevel;
+
+	ZE_LOG(LogZeroSector, Display, TEXT("신뢰도 : %f, 신뢰 레벨 : %d"), ResearcherData->Trust, ResearcherData->TrustLevel);
 	DialogueWidgetPtr->GetScrollBox()->ClearChildren();
 
 	DialogueTable = InDialogueTable;

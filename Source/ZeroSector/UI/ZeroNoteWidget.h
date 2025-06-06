@@ -77,6 +77,9 @@ private:
     TObjectPtr<UImage> PortraitImage;
 
     UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UImage> RelLevelImage;
+
+    UPROPERTY(meta = (BindWidget))
     TObjectPtr<UTextBlock> NameText;
 
     UPROPERTY(meta = (BindWidget))

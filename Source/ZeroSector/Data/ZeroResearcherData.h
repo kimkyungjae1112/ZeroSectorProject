@@ -12,6 +12,8 @@ class ZEROSECTOR_API UZeroResearcherData : public UPrimaryDataAsset
 	GENERATED_BODY()
 	
 public:
+    FORCEINLINE UTexture2D* GetTrustLevelImage() const { return TrustLevelImage[TrustLevel]; }
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FString Name;
 
@@ -22,7 +24,10 @@ public:
     float Trust;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    UTexture2D* Portrait;
+    int32 TrustLevel;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TObjectPtr<UTexture2D> Portrait;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     int32 ProvisoStart;  
@@ -30,4 +35,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     int32 ProvisoNum;       
 	
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    TMap<int32, UTexture2D*> TrustLevelImage;
 };
