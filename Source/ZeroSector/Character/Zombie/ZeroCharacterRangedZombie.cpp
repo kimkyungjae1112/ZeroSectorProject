@@ -236,6 +236,8 @@ UAnimMontage* AZeroCharacterRangedZombie::GetStaggerMontage() const
 
 void AZeroCharacterRangedZombie::PlayZombieMove()
 {
+	if (bIsDead) return;
+
 	if (GetVelocity().Size() > 3.f)
 	{
 		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());

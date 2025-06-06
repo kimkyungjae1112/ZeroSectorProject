@@ -75,9 +75,24 @@ void UZeroMainMenuWidget::NativeConstruct()
 
 void UZeroMainMenuWidget::OnStartButtonClicked()
 {
-    PlayUIClickSound();
+    if (GI && GI->GetSoundManager() && GI->GetSoundManager()->StartSFX)
+    {
+        UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->StartSFX);
+    }
 
-    UGameplayStatics::OpenLevel(this, "KJMap");
+    FTimerHandle TimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(
+        TimerHandle,
+        this,
+        &UZeroMainMenuWidget::LoadDetectiveMap,
+        0.5f,
+        false
+    );
+}
+
+void UZeroMainMenuWidget::LoadDetectiveMap()
+{
+    UGameplayStatics::OpenLevel(this, "DetectiveMap");
 }
 
 void UZeroMainMenuWidget::OnQuitButtonClicked()

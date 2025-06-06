@@ -34,5 +34,6 @@ void UZeroSoundManager::Init()
 	BossSpawnAttackSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/BossSpawnAttack.BossSpawnAttack"));
 	PencilSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Pencil.Pencil"));
 	BossMoveSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/BossMove.BossMove"));
-	BossDieSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/BossDieSFX.BossDieSFX"));
+	BossDieSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/BossDie.BossDie"));
+	StartSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Start.Start"));
 }
