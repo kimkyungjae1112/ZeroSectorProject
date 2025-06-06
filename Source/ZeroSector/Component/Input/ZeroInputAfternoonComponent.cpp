@@ -107,6 +107,8 @@ void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult
 		IZeroOutlineInterface* OutlineInterface = Cast<IZeroOutlineInterface>(HitActor);
 		if (OutlineInterface) OutlineInterface->SetOverlayMaterial();
 
+		DisplayFKey();
+
 		for (UActorComponent* ActorComp : InHitResult.GetActor()->GetComponentsByInterface(UZeroDialogueInterface::StaticClass()))
 		{
 			DialogueInterface = Cast<IZeroDialogueInterface>(ActorComp);
@@ -122,7 +124,8 @@ void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult
 				UIComp->CurrentGimmick = HitActor;
 			}
 
-			InteractBeamReachedProviso(HitActor);
+			InteractedGimmick = Cast<AZeroProvisoActor>(HitActor);
+
 		}
 		else if (HitActor->ActorHasTag(TEXT("OperationBoard")))
 		{
@@ -143,10 +146,9 @@ void UZeroInputAfternoonComponent::InteractProcess(const FHitResult& InHitResult
 	}
 }
 
-void UZeroInputAfternoonComponent::InteractBeamReachedProviso(AActor* InHitActor)
+void UZeroInputAfternoonComponent::DisplayFKey()
 {
-	InteractedGimmick = Cast<AZeroProvisoActor>(InHitActor);
-	if (InteractedGimmick && InteractedGimmick->ActorHasTag(TEXT("Proviso")))
+	if (InteractedGimmick || DialogueInterface)
 	{
 		IZeroAfternoonInputInterface* Interface = Cast<IZeroAfternoonInputInterface>(Player);
 		if (Interface)
@@ -155,6 +157,7 @@ void UZeroInputAfternoonComponent::InteractBeamReachedProviso(AActor* InHitActor
 		}
 	}
 }
+
 
 void UZeroInputAfternoonComponent::DialogueInteract()
 {
@@ -299,3 +302,4 @@ void UZeroInputAfternoonComponent::SetFootstepInterval(float NewInterval)
 	GetWorld()->GetTimerManager().ClearTimer(FootstepTimerHandle);
 	GetWorld()->GetTimerManager().SetTimer(FootstepTimerHandle, this, &UZeroInputAfternoonComponent::TryPlayFootstepSound, NewInterval, true);
 }
+

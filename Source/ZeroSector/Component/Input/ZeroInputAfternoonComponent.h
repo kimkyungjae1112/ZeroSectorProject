@@ -25,7 +25,6 @@ public:
 
 	virtual void InteractBeam() override;
 	virtual void InteractProcess(const FHitResult& InHitResult, bool bIsHit) override;
-	virtual void InteractBeamReachedProviso(AActor* InHitActor) override;
 	virtual void DialogueInteract() override;
 	virtual void OperationBoardInteract() override;
 	virtual void ProvisoInteract() override;
@@ -46,6 +45,8 @@ private:
 	
 	void TryPlayFootstepSound();
 	void SetFootstepInterval(float NewInterval);
+
+	void DisplayFKey();
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Interact")
