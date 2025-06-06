@@ -8,7 +8,7 @@ FOnZeroActivePoint UZeroPlayerStatComponent::OnZeroActivePoint;
 
 UZeroPlayerStatComponent::UZeroPlayerStatComponent()
 {
-	MaxActivePoint = 10.f;
+	MaxActivePoint = 100.f;
 	CurrentActivePoint = MaxActivePoint;
 }
 
