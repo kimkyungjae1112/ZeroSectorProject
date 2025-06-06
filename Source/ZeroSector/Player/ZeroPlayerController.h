@@ -14,6 +14,8 @@ class UZeroEndingVideoWidget;
 
 DECLARE_MULTICAST_DELEGATE(FOnClearZombie)
 DECLARE_MULTICAST_DELEGATE(FOnNonClearZombie)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnStartInterview, FString)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnEndInterview, FString)
 
 UCLASS()
 class ZEROSECTOR_API AZeroPlayerController : public APlayerController
@@ -32,6 +34,9 @@ public:
 	FOnClearZombie OnClearZombie;
 	FOnNonClearZombie OnNonClearZmobie;
 
+	FOnStartInterview OnStartInterview;
+	FOnEndInterview OnEndInterview;
+
 	void InputModeGameOnly();
 	void InputModeUIOnly();
 	void InputModeGameAndUI();
@@ -49,7 +54,11 @@ public:
 	void HitCrosshair() const;
 	void UnHitCrosshair() const;
 
+	void StartInterview() const;
+	void EndInterview() const;
 
+	// 데이터를 public 으로 꺼내놓고 개발을 진행하니까 이제 바꿀 수가 없음;
+	// private으로 넣으라니까 캡슐화좀 ㅜㅜㅜ
 	UPROPERTY()
 	FString SelectedInterviewName;
 

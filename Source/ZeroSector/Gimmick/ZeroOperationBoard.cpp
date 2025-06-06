@@ -10,6 +10,8 @@
 
 AZeroOperationBoard::AZeroOperationBoard()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshRef(TEXT("/Script/Engine.StaticMesh'/Game/FC_MilitaryCamp/Models/MilitaryModels/SM_GeneratorPanel.SM_GeneratorPanel'"));
 	if (MeshRef.Object)
 	{
@@ -18,18 +20,37 @@ AZeroOperationBoard::AZeroOperationBoard()
 
 	WidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget Component"));
 	WidgetComp->SetupAttachment(MeshComp);
-	WidgetComp->SetRelativeLocation(FVector(0.f, 0.f, 100.f));
+	WidgetComp->SetRelativeLocation(FVector(35.f, 20.f, 100.f));
+	WidgetComp->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
 	static ConstructorHelpers::FClassFinder<UUserWidget> OpBoardLocRef(TEXT("/Game/Blueprints/UI/WBP_OpBoardLoc.WBP_OpBoardLoc_C"));
 	if (OpBoardLocRef.Class)
 	{
 		WidgetComp->SetWidgetClass(OpBoardLocRef.Class);
-		WidgetComp->SetWidgetSpace(EWidgetSpace::Screen);
-		WidgetComp->SetDrawSize(FVector2D(150.f, 100.f));
+		WidgetComp->SetWidgetSpace(EWidgetSpace::World);
+		WidgetComp->SetDrawSize(FVector2D(100.f, 100.f));
+		WidgetComp->SetPivot(FVector2D(0.5f, 0.5f));
+		WidgetComp->SetTwoSided(true);
 		WidgetComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		WidgetComp->SetVisibility(false);
 	}
 
 	Tags.Add(TEXT("OperationBoard"));
+}
+
+void AZeroOperationBoard::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (WidgetComp->IsVisible())
+	{
+		WidgetYawRotation += 150.0f * DeltaTime;
+
+		if (WidgetYawRotation > 360.0f)
+			WidgetYawRotation -= 360.0f;
+
+		FRotator NewRotation(0.f, WidgetYawRotation, 0.f);
+		WidgetComp->SetRelativeRotation(NewRotation);
+	}
 }
 
 void AZeroOperationBoard::BeginPlay()

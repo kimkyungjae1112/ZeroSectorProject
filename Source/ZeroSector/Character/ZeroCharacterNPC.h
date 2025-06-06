@@ -33,6 +33,10 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	void DisplayInterviewMark(FString Name);
+	void UnDisplayInterviewMark(FString Name);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -71,4 +75,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Name")
 	FName DisplayNPCName;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TObjectPtr<class UWidgetComponent> InterviewWidgetComp;
+
+	float WidgetYawRotation{ 0.0f };
 };

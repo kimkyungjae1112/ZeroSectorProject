@@ -47,6 +47,8 @@ public:
     UFUNCTION()
     void OnInterviewButtonClicked();
 
+    void NextDayInterviewInit(uint8) const;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Researchers")
     UZeroResearcherData* Researcher1;
 

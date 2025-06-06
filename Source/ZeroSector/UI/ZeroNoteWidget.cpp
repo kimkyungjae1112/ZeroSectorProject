@@ -26,7 +26,7 @@
 #include "Game/ZeroGameModeBase.h"
 #include "Data/ZeroSingleton.h"
 #include "Data/ZeroProvisoDataTable.h"
-
+#include "Character/ZeroCharacterNPC.h"
 
 void UZeroNoteWidget::NativeConstruct()
 {
@@ -46,6 +46,11 @@ void UZeroNoteWidget::NativeConstruct()
         InterviewButton->OnClicked.AddDynamic(this, &UZeroNoteWidget::OnInterviewButtonClicked);
     }
 
+    AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
+    if(GameMode)
+    {
+        GameMode->OnStartAfternoon.AddUObject(this, &UZeroNoteWidget::NextDayInterviewInit);
+    }
 }
 
 
@@ -99,10 +104,17 @@ void UZeroNoteWidget::OnInterviewButtonClicked()
         {
             PC->GetAfternoonHUDWidget()->ShowInterviewText(CurrentInterviewResearcher->Name);
             PC->SelectedInterviewName = CurrentInterviewResearcher->Name; 
+            PC->StartInterview();
+            InterviewButton->SetIsEnabled(false);
         }
     }
 
     PlayUIClickSound();
+}
+
+void UZeroNoteWidget::NextDayInterviewInit(uint8) const
+{
+    InterviewButton->SetIsEnabled(true);
 }
 
 void UZeroNoteWidget::ShowClueDetail(const FZeroProvisoDataTable& ProvisoData)

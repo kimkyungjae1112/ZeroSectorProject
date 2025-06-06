@@ -15,6 +15,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AI/Controller/ZeroAIControllerNPC.h"
+#include "Character/ZeroCharacterNPC.h"
 #include "ZeroSector.h"
 
 UZeroDialogueComponent::UZeroDialogueComponent()
@@ -223,9 +224,8 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 		
 		bIsTalking = false;
 		bIsInterview = false;
+		GetPlayerController()->EndInterview();
 		GetPlayerController()->SelectedInterviewName = "";
-
-		
 	}
 	else
 	{
@@ -305,6 +305,7 @@ void UZeroDialogueComponent::InProgressDialogue()
 
 		bIsTalking = false;
 		bIsInterview = false;
+		GetPlayerController()->EndInterview();
 		GetPlayerController()->SelectedInterviewName = "";
 	}
 

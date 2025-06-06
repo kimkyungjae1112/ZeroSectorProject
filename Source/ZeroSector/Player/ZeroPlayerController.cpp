@@ -233,6 +233,16 @@ void AZeroPlayerController::UnHitCrosshair() const
 	HUDWidgetPtr->UnHitCrosshair();
 }
 
+void AZeroPlayerController::StartInterview() const
+{
+	OnStartInterview.Broadcast(SelectedInterviewName);
+}
+
+void AZeroPlayerController::EndInterview() const
+{
+	OnEndInterview.Broadcast(SelectedInterviewName);
+}
+
 void AZeroPlayerController::BeginPlay()
 {
 	Super::BeginPlay();

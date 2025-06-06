@@ -11,6 +11,7 @@
 #include "Engine/OverlapResult.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AI/Controller/ZeroAIControllerNPC.h"
+#include "Player/ZeroPlayerController.h"
 #include "ZeroSector.h"
 
 AZeroCharacterNPC::AZeroCharacterNPC()
@@ -38,6 +39,21 @@ AZeroCharacterNPC::AZeroCharacterNPC()
 		WidgetComp->SetVisibility(false);
 	}
 
+	InterviewWidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("Interview Widget Component"));
+	InterviewWidgetComp->SetupAttachment(GetMesh());
+	InterviewWidgetComp->SetRelativeLocation(FVector(0.f, 0.f, 250.f));
+	static ConstructorHelpers::FClassFinder<UUserWidget> InterviewNPCLocRef(TEXT("/Game/Blueprints/UI/WBP_OpBoardLoc.WBP_OpBoardLoc_C"));
+	if (InterviewNPCLocRef.Class)
+	{
+		InterviewWidgetComp->SetWidgetClass(InterviewNPCLocRef.Class);
+		InterviewWidgetComp->SetWidgetSpace(EWidgetSpace::World);
+		InterviewWidgetComp->SetDrawSize(FVector2D(100.f, 100.f));
+		InterviewWidgetComp->SetPivot(FVector2D(0.5f, 0.5f));
+		InterviewWidgetComp->SetTwoSided(true);
+		InterviewWidgetComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		InterviewWidgetComp->SetVisibility(false);
+	}
+
 	TeamId = FGenericTeamId(0);
 	ClassName = TEXT("NPC");
 }
@@ -46,10 +62,41 @@ void AZeroCharacterNPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
-	if (GameMode->GetDaySequence() == EDaySequence::EAfternoon)
+	if (InterviewWidgetComp->IsVisible())
 	{
-		DisplayName();
+		WidgetYawRotation += 150.0f * DeltaTime;
+
+		if (WidgetYawRotation > 360.0f)
+			WidgetYawRotation -= 360.0f;
+
+		FRotator NewRotation(0.f, WidgetYawRotation, 0.f);
+		InterviewWidgetComp->SetRelativeRotation(NewRotation);
+	}
+	else
+	{
+		AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
+		if (GameMode->GetDaySequence() == EDaySequence::EAfternoon)
+		{
+			DisplayName();
+		}
+	}
+}
+
+void AZeroCharacterNPC::DisplayInterviewMark(FString Name)
+{
+	if (Name == DisplayNPCName)
+	{
+		ZE_LOG(LogZeroSector, Display, TEXT("Display interview Mark"));
+		InterviewWidgetComp->SetVisibility(true);
+	}
+}
+
+void AZeroCharacterNPC::UnDisplayInterviewMark(FString Name)
+{
+	if (Name == DisplayNPCName)
+	{
+		ZE_LOG(LogZeroSector, Display, TEXT("Display interview UnMark"));
+		InterviewWidgetComp->SetVisibility(false);
 	}
 }
 
@@ -70,6 +117,13 @@ void AZeroCharacterNPC::BeginPlay()
 	else
 	{
 		StartRandomPatrolPause();
+	}
+
+	AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PC)
+	{
+		PC->OnStartInterview.AddUObject(this, &AZeroCharacterNPC::DisplayInterviewMark);
+		PC->OnEndInterview.AddUObject(this, &AZeroCharacterNPC::UnDisplayInterviewMark);
 	}
 }
 

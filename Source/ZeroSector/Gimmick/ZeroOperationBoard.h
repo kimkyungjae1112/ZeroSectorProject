@@ -17,6 +17,8 @@ class ZEROSECTOR_API AZeroOperationBoard : public AZeroGimmick
 public:	
 	AZeroOperationBoard();
 
+	virtual void Tick(float DeltaTime) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -31,4 +33,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Start")
 	uint8 StartDay;
+
+	float WidgetYawRotation{ 0.0f };
 };
