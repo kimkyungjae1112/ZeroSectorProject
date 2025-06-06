@@ -59,6 +59,12 @@ UZeroDialogueComponent::UZeroDialogueComponent()
 	ResearcherDataMap.Add(TEXT("Normal2"), N2_Researcher);
 	ResearcherDataMap.Add(TEXT("Normal3"), N3_Researcher);
 
+	NameTable.Add(TEXT("Vaccine"), TEXT("빅터 블레이크"));
+	NameTable.Add(TEXT("Criminal"), TEXT("마르코 크레시"));
+	NameTable.Add(TEXT("Normal1"), TEXT("안토니 카터"));
+	NameTable.Add(TEXT("Normal2"), TEXT("아이작 하워드"));
+	NameTable.Add(TEXT("Normal3"), TEXT("에단 브룩스"));
+
 	PrevIndex = TEXT("1");
 }
 
@@ -86,14 +92,14 @@ void UZeroDialogueComponent::StartDialogue()
 	RotationToPlayer();
 	Character->GetCharacterMovement()->MaxWalkSpeed = 0;
 
-	FString CurrentActorClassName;
+	FName CurrentActorClassName;
 	if (IZeroClassIdentifierInterface* CII = Cast<IZeroClassIdentifierInterface>(GetOwner()))
 	{
-		CurrentActorClassName = CII->GetClassName().ToString();
+		CurrentActorClassName = CII->GetClassName();
 	}
 
 	AZeroPlayerController* PC = GetPlayerController();
-	if (PC && PC->SelectedInterviewName == CurrentActorClassName && PC->GetAfternoonHUDWidget())
+	if (PC && PC->SelectedInterviewName == NameTable[CurrentActorClassName] && PC->GetAfternoonHUDWidget())
 	{
 		bIsInterview = true;
 		PC->GetAfternoonHUDWidget()->HideInterviewText();
