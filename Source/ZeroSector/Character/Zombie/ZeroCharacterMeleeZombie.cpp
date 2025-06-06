@@ -151,11 +151,19 @@ void AZeroCharacterMeleeZombie::BeginPlay()
 	ZeroZombieAnimDataTable = *DataTableBuffer->FindRow<FZeroZombieAnimDataTable>(GetClassName(), FString());
 	
 	Anim = GetMesh()->GetAnimInstance();
+
+	ScheduleNextMove();
 }
 
 void AZeroCharacterMeleeZombie::BeginAttackOne()
 {
 	Anim->Montage_Play(GetAttackOneMontage());
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetWorld()->GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ZombieBiteSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->ZombieBiteSFX);
+	}
 
 	FOnMontageEnded MontageEnd;
 	MontageEnd.BindUObject(this, &AZeroCharacterMeleeZombie::EndAttackOne);
@@ -286,4 +294,30 @@ UAnimMontage* AZeroCharacterMeleeZombie::GetStaggerMontage() const
 		ZeroZombieAnimDataTable.StaggerMontages[AnimPoseType].LoadSynchronous();
 	}
 	return ZeroZombieAnimDataTable.StaggerMontages[AnimPoseType].Get();
+}
+
+void AZeroCharacterMeleeZombie::PlayZombieMove()
+{
+	if (GetVelocity().Size() > 3.f)
+	{
+		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ZombieMoveSFX)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, GI->GetSoundManager()->ZombieMoveSFX, GetActorLocation());
+		}
+	}
+
+	ScheduleNextMove();
+}
+
+void AZeroCharacterMeleeZombie::ScheduleNextMove()
+{
+	float NextTime = FMath::RandRange(3.0f, 7.0f); 
+	GetWorld()->GetTimerManager().SetTimer(
+		ZombieGrowlTimer,
+		this,
+		&AZeroCharacterMeleeZombie::PlayZombieMove,
+		NextTime,
+		false
+	);
 }

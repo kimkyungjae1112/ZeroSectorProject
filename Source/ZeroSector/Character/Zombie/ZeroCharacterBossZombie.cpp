@@ -115,6 +115,8 @@ void AZeroCharacterBossZombie::BeginPlay()
 
 	Anim = GetMesh()->GetAnimInstance();
 	ensure(Anim);
+
+	ScheduleNextMove();
 }
 
 void AZeroCharacterBossZombie::BeginAttackOne()
@@ -181,6 +183,12 @@ void AZeroCharacterBossZombie::BeginDead()
 	DetachFromControllerPendingDestroy();
 	ZE_LOG(LogZeroSector, Display, TEXT("Zombie Dead"));
 
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+	if (GI && GI->GetSoundManager() && GI->GetSoundManager()->BossDieSFX)
+	{
+		UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->BossDieSFX);
+	}
+
 	FTimerHandle DestoryTimer;
 	GetWorld()->GetTimerManager().SetTimer(DestoryTimer, [&]()
 		{
@@ -208,4 +216,30 @@ void AZeroCharacterBossZombie::ShowDangerDecal(FVector AttackLocation, float Rad
 
 	// 페이드 아웃 (디칼 제거)
 	DangerDecal->SetFadeOut(Duration, 1.0f, false); // (지속 시간, 페이드시간, 동기화 여부)
+}
+
+void AZeroCharacterBossZombie::PlayZombieMove()
+{
+	if (GetVelocity().Size() > 3.f)
+	{
+		UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+		if (GI && GI->GetSoundManager() && GI->GetSoundManager()->ZombieMoveSFX)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, GI->GetSoundManager()->ZombieMoveSFX, GetActorLocation());
+		}
+	}
+
+	ScheduleNextMove();
+}
+
+void AZeroCharacterBossZombie::ScheduleNextMove()
+{
+	float NextTime = FMath::RandRange(3.0f, 7.0f);
+	GetWorld()->GetTimerManager().SetTimer(
+		ZombieGrowlTimer,
+		this,
+		&AZeroCharacterBossZombie::PlayZombieMove,
+		NextTime,
+		false
+	);
 }

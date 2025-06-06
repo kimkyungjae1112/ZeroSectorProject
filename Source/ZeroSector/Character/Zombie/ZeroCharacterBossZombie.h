@@ -85,4 +85,11 @@ private:
 
 private:
 	FOnSpawnAttackFinished OnSpawnAttackFinished;
+
+// 사운드
+	private:
+	FTimerHandle ZombieGrowlTimer;
+
+	void PlayZombieMove();
+	void ScheduleNextMove();
 };

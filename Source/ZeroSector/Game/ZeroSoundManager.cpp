@@ -26,10 +26,13 @@ void UZeroSoundManager::Init()
 	ZombieBiteSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/ZombieBite.ZombieBite"));
 	ZombieMoveSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/ZombieMove.ZombieMove"));
 	ZombieDieSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/ZombieDie.ZombieDie"));
+	ZombieThrowSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/ZombieThrow.ZombieThrow"));
 	NPCInteractSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/NPCInteract.NPCInteract"));
 	WinSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Win.Win"));
 	LoseSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Lose.Lose"));
 	BossRushAttackSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/BossRushAttack.BossRushAttack"));
 	BossSpawnAttackSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/BossSpawnAttack.BossSpawnAttack"));
 	PencilSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Pencil.Pencil"));
+	BossMoveSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/BossMove.BossMove"));
+	BossDieSFX = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/BossDieSFX.BossDieSFX"));
 }
