@@ -5,6 +5,7 @@
 #include "ZeroSector.h"
 
 FOnZeroActivePoint UZeroPlayerStatComponent::OnZeroActivePoint;
+float UZeroPlayerStatComponent::CurrentActivePoint;
 
 UZeroPlayerStatComponent::UZeroPlayerStatComponent()
 {
@@ -22,6 +23,7 @@ void UZeroPlayerStatComponent::InitActivePoint()
 {
 	CurrentActivePoint = MaxActivePoint;
 	bCanInteract = true;
+	OnChangedActivePoint.ExecuteIfBound(CurrentActivePoint);
 }
 
 void UZeroPlayerStatComponent::InitHealth()

@@ -164,6 +164,7 @@ void UZeroInputAfternoonComponent::DialogueInteract()
 	if (DialogueInterface && StatComp->GetCanInteract())
 	{
 		bIsDialogue = true;
+		StatComp->UseActivePoint(-10.f);
 
 		DialogueInterface->StartDialogue();
 		FOnFinishedDialogue OnFinishedDialogue;
@@ -193,8 +194,6 @@ void UZeroInputAfternoonComponent::DialogueInteract()
 		{
 			UGameplayStatics::PlaySound2D(this, GI->GetSoundManager()->NPCInteractSFX);
 		}
-
-		StatComp->UseActivePoint(-10.f);
 	}
 }
 

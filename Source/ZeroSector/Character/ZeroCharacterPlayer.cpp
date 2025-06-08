@@ -127,7 +127,7 @@ void AZeroCharacterPlayer::SetAfternoonHUDWidget(UZeroAfternoonHUDWidget* InHUDW
 	{
 		AfternoonHUDWidgetPtr->SetMaxActivePoint(StatComp->GetMaxActivePoint());
 		StatComp->OnChangedActivePoint.BindUObject(AfternoonHUDWidgetPtr, &UZeroAfternoonHUDWidget::UpdateAPBar);
-		AfternoonHUDWidgetPtr->UpdateAPBar(StatComp->GetMaxActivePoint());
+		AfternoonHUDWidgetPtr->UpdateAPBar(StatComp->GetCurrentActivePoint());
 	}
 }
 

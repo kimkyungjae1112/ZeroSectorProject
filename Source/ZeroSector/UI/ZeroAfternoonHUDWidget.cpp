@@ -4,8 +4,8 @@
 #include "UI/ZeroAfternoonHUDWidget.h"
 #include "Components/ProgressBar.h"
 #include "Interface/ZeroHUDInterface.h"
-#include "ZeroSector.h"
 #include "Components/TextBlock.h"
+#include "ZeroSector.h"
 
 UZeroAfternoonHUDWidget::UZeroAfternoonHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -32,6 +32,7 @@ void UZeroAfternoonHUDWidget::SetMaxActivePoint(float InMaxActivePoint)
 void UZeroAfternoonHUDWidget::UpdateAPBar(float InActivePoint)
 {
 	ActivePointBar->SetPercent(InActivePoint / MaxActivePoint);
+	ZE_LOG(LogZeroSector, Display, TEXT("AP : %f"), InActivePoint);
 }
 
 void UZeroAfternoonHUDWidget::ShowInterviewText(const FString& ResearcherName)

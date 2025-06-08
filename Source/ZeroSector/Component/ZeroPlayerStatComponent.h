@@ -22,6 +22,7 @@ protected:
 
 public:
 	FORCEINLINE float GetMaxActivePoint() const { return MaxActivePoint; }
+	FORCEINLINE float GetCurrentActivePoint() const { return CurrentActivePoint; }
 	FORCEINLINE bool GetCanInteract() const { return bCanInteract; }
 
 	FOnChangedActivePoint OnChangedActivePoint;
@@ -35,8 +36,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "ActivePoint")
 	float MaxActivePoint;
 
-	UPROPERTY(VisibleAnywhere, Category = "ActivePoint")
-	float CurrentActivePoint;
+	static float CurrentActivePoint;
 
 	bool bCanInteract{ true };
 };
