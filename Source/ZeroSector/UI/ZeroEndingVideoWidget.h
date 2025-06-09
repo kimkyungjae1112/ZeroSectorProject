@@ -8,6 +8,7 @@
 
 class UMediaPlayer;
 class UMediaSource;
+class UZeroEndingWidget;
 
 UCLASS()
 class ZEROSECTOR_API UZeroEndingVideoWidget : public UUserWidget
@@ -16,6 +17,12 @@ class ZEROSECTOR_API UZeroEndingVideoWidget : public UUserWidget
 	
 public:
 	UZeroEndingVideoWidget(const FObjectInitializer& ObjectInitializer);
+
+	FORCEINLINE void SetEndingIndex(int32 Index) { EndingIndex = Index; }
+
+	void HappyEndingDisplay() const;
+	void NormalEndingDisplay() const;
+	void BadEndingDisplay() const;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -30,4 +37,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMediaSource> EndingMediaSource;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI")
+	TSubclassOf<UZeroEndingWidget> EndingWidgetClass;
+
+	int32 EndingIndex{ 0 };
 };

@@ -2,6 +2,8 @@
 
 
 #include "AI/Controller/ZeroAIControllerBase.h"
+#include "AI/Controller/ZeroAIControllerBoss.h"
+#include "AI/Controller/ZeroAIControllerRangedZombie.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
@@ -10,6 +12,7 @@
 #include "Perception/AISenseConfig_Damage.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/ZeroCharacterPlayer.h"
+#include "EngineUtils.h"
 #include "ZeroSector.h"
 
 AZeroAIControllerBase::AZeroAIControllerBase()
@@ -18,8 +21,8 @@ AZeroAIControllerBase::AZeroAIControllerBase()
 
 	// Base Sight 설정
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
-	SightConfig->SightRadius = 50000.f;
-	SightConfig->LoseSightRadius = 50000.f;
+	SightConfig->SightRadius = 150000.f;
+	SightConfig->LoseSightRadius = 150000.f;
 	SightConfig->PeripheralVisionAngleDegrees = 360.f;
 	SightConfig->SetMaxAge(5.f);
 	SightConfig->DetectionByAffiliation.bDetectEnemies = true;
@@ -153,6 +156,18 @@ void AZeroAIControllerBase::HandleSenseSight(AActor* Actor, const FAIStimulus& A
 	if (AIStimulus.WasSuccessfullySensed())
 	{
 		GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), Actor);
+		for (auto AI : TActorRange<AZeroAIControllerBase>(GetWorld()))
+		{
+			AI->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), Actor);
+		}
+		for (auto AI : TActorRange<AZeroAIControllerBoss>(GetWorld()))
+		{
+			AI->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), Actor);
+		}
+		for (auto AI : TActorRange<AZeroAIControllerRangedZombie>(GetWorld()))
+		{
+			AI->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), Actor);
+		}
 	}
 	else
 	{

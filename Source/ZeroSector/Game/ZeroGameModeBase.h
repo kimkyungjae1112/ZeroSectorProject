@@ -59,6 +59,10 @@ public:
 	void StartTimer();
 	void RestartLevel();
 
+	// 사운드
+	void PlayCinematicSound(int32 Index);
+	void PlayNightBGM();
+
 private:
 	void EndGame(bool bIsPlayerWinner);
 	
@@ -69,7 +73,6 @@ private:
 // 사운드
 private:
 	void PlayAfternoonBGM();
-	void PlayNightBGM();
 	void StopBGM();
 
 // 좀비 스폰 데이터 및 전투 스테이지 데이터

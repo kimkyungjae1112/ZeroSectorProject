@@ -43,7 +43,7 @@ void AZeroZombieSpawner::SpawnZombie(uint8 CommonZombieNum, uint8 RangedZombieNu
         }
         else if (Index < CommonZombieNum + RangedZombieNum)
         {
-            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(RangedZombieClass, Location, Rotation);
+            GetWorld()->SpawnActor<AZeroCharacterRangedZombie>(RangedZombieClass, Location, Rotation);
         }
         else if (Index < CommonZombieNum + RangedZombieNum + MiniZombieNum)
         {
@@ -56,7 +56,7 @@ void AZeroZombieSpawner::SpawnZombie(uint8 CommonZombieNum, uint8 RangedZombieNu
         }
         else
         {
-            GetWorld()->SpawnActor<AZeroCharacterMeleeZombie>(BossZombieClass, Location, Rotation);
+            GetWorld()->SpawnActor<AZeroCharacterBossZombie>(BossZombieClass, Location, Rotation);
         }
     }
 }

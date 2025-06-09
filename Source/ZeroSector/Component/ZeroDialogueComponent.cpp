@@ -225,8 +225,14 @@ void UZeroDialogueComponent::OnClickedOption(FZeroDialogueDataTable InDialogueTa
 		
 		bIsTalking = false;
 		bIsInterview = false;
-		GetPlayerController()->EndInterview();
-		GetPlayerController()->SelectedInterviewName = "";
+		if (IZeroClassIdentifierInterface* CII = Cast<IZeroClassIdentifierInterface>(Character))
+		{
+			if (NameTable[CII->GetClassName()] == GetPlayerController()->SelectedInterviewName)
+			{
+				GetPlayerController()->EndInterview();
+				GetPlayerController()->SelectedInterviewName = "";
+			}
+		}
 	}
 	else
 	{
@@ -306,8 +312,14 @@ void UZeroDialogueComponent::InProgressDialogue()
 
 		bIsTalking = false;
 		bIsInterview = false;
-		GetPlayerController()->EndInterview();
-		GetPlayerController()->SelectedInterviewName = "";
+		if (IZeroClassIdentifierInterface* CII = Cast<IZeroClassIdentifierInterface>(Character))
+		{
+			if (NameTable[CII->GetClassName()] == GetPlayerController()->SelectedInterviewName)
+			{
+				GetPlayerController()->EndInterview();
+				GetPlayerController()->SelectedInterviewName = "";
+			}
+		}
 	}
 
 	DialogueDataInit();

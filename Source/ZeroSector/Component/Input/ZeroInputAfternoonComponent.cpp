@@ -184,8 +184,11 @@ void UZeroInputAfternoonComponent::DialogueInteract()
 		SetDialogueMovement();
 
 		IZeroAfternoonInputInterface* AfternoonInterface = Cast<IZeroAfternoonInputInterface>(Player);
-		if (AfternoonInterface) AfternoonInterface->StartDialogueCameraView();
-
+		if (AfternoonInterface)
+		{
+			AfternoonInterface->StartDialogueCameraView();
+			AfternoonInterface->CloseInteractUI();
+		}
 		AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());
 		if (PC) PC->AllHUD_Close();
 

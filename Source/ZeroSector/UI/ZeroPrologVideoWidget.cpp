@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "MediaPlayer.h"
 #include "MediaSource.h"
+#include "Game/ZeroGameModeBase.h"
 
 UZeroPrologVideoWidget::UZeroPrologVideoWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -35,6 +36,12 @@ void UZeroPrologVideoWidget::NativeConstruct()
 	PrologMediaPlayer->Rewind();
 	PrologMediaPlayer->Play();
 	PrologMediaPlayer->OnEndReached.AddDynamic(this, &UZeroPrologVideoWidget::VideoFinished);
+
+	AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
+	{
+		GameMode->PlayCinematicSound(1);
+	}
 }
 
 void UZeroPrologVideoWidget::VideoFinished()
@@ -45,5 +52,11 @@ void UZeroPrologVideoWidget::VideoFinished()
 	{
 		PC->SetPause(false);
 		PC->NightHUD_Display();
+	}
+
+	AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
+	{
+		GameMode->PlayNightBGM();
 	}
 }

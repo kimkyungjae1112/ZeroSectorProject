@@ -55,8 +55,8 @@ void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 		{
 			// 시네마틱 재생
 			// 메인 메뉴로 이동
-			if (UZeroSingleton::Get().SelectedResearcherName == TEXT("Vaccine"))
-			{
+			if (UZeroSingleton::Get().SelectedResearcherName == TEXT("빅터 블레이크"))
+			{ 
 				// 해피 엔딩
 				FTimerHandle EndingTimer;
 				GetWorld()->GetTimerManager().SetTimer(EndingTimer, [&]()
@@ -65,10 +65,11 @@ void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 						if (EndingWidget)
 						{
 							EndingWidget->AddToViewport();
+							EndingWidget->SetEndingIndex(1);
 						}
 					}, 2.5f, false);
 			}
-			else if (UZeroSingleton::Get().SelectedResearcherName == TEXT("Criminal"))
+			else if (UZeroSingleton::Get().SelectedResearcherName == TEXT("마르코 크레시"))
 			{
 				// 배드 엔딩
 				FTimerHandle EndingTimer;
@@ -78,6 +79,7 @@ void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 						if (EndingWidget)
 						{
 							EndingWidget->AddToViewport();
+							EndingWidget->SetEndingIndex(3);
 						}
 					}, 2.5f, false);
 			}
@@ -91,6 +93,7 @@ void AZeroPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 						if (EndingWidget)
 						{
 							EndingWidget->AddToViewport();
+							EndingWidget->SetEndingIndex(2);
 						}
 					}, 2.5f, false);
 			}

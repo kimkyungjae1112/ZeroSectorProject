@@ -43,7 +43,7 @@ AZeroGameModeBase::AZeroGameModeBase()
 	{
 		WaveTriggerClass = WaveTriggerClassRef.Class;
 	}
-	static ConstructorHelpers::FClassFinder<UZeroPrologVideoWidget> PrologWidgetClassRef(TEXT("/Game/Cinematic/Prolog/WBP_PrologWidget.WBP_PrologWidget_C"));
+	static ConstructorHelpers::FClassFinder<UZeroPrologVideoWidget> PrologWidgetClassRef(TEXT("/Game/Cinematic/Prolog/WBP_PrologVideo.WBP_PrologVideo_C"));
 	if (PrologWidgetClassRef.Class)
 	{
 		PrologWidgetClass = PrologWidgetClassRef.Class;
@@ -81,7 +81,7 @@ void AZeroGameModeBase::BeginPlay()
 	UZeroSingleton::Get().ExcludedResearcherName = TEXT("");
 	UZeroSingleton::Get().ResetCollectedProvisos();
 
-	PlayNightBGM();
+	//PlayNightBGM();
 }
 
 void AZeroGameModeBase::InitNight()
@@ -217,6 +217,40 @@ void AZeroGameModeBase::RestartLevel()
 	}
 }
 
+void AZeroGameModeBase::PlayCinematicSound(int32 Index) 
+{
+	ZE_LOG(LogZeroSector, Display, TEXT("Cinematic Sound Play"));
+	StopBGM(); // 기존 BGM 끄기
+
+	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
+	UZeroGameSettingManager* SM = GI ? GI->SettingManager : nullptr;
+	USoundBase* CinematicBGM = nullptr;
+
+	switch (Index)
+	{
+	case 1:
+		CinematicBGM = LoadObject<USoundBase>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/Cinematic/PrologVideoSound.PrologVideoSound'"));
+		break;
+	case 2:
+		CinematicBGM = LoadObject<USoundBase>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/Cinematic/WallVideoSound.WallVideoSound'"));
+		break;
+	case 3:
+		CinematicBGM = LoadObject<USoundBase>(nullptr, TEXT("/Script/Engine.SoundWave'/Game/Cinematic/EndingVideoSound.EndingVideoSound'"));
+		break;
+	default:
+		break;
+	}
+
+	if (CinematicBGM && SM)
+	{
+		BGMAudioComponent = UGameplayStatics::SpawnSound2D(this, CinematicBGM);
+		if (BGMAudioComponent)
+		{
+			BGMAudioComponent->SetVolumeMultiplier(SM->GetVolume());
+		}
+	}
+}
+
 void AZeroGameModeBase::EndGame(bool bIsPlayerWinner)
 {
 	GetWorld()->GetTimerManager().ClearTimer(TimeTimerHandle);
@@ -256,6 +290,7 @@ void AZeroGameModeBase::ChangeDayToNight()
 {
 	CurrentDaySequence = EDaySequence::ENight;
 	InitNight();
+	PlayNightBGM();
 
 	// 밤 전투맵 위치를 Player 클래스에 전달
 	for (AZeroNightPlayerStart* NightPlayerStart : TActorRange<AZeroNightPlayerStart>(GetWorld()))
@@ -289,8 +324,6 @@ void AZeroGameModeBase::ChangeDayToNight()
 
 	DecreaseTime();
 	OnStartNight.ExecuteIfBound(MaxWave);
-
-	PlayNightBGM();
 }
 
 void AZeroGameModeBase::DecreaseTime()
@@ -337,6 +370,7 @@ void AZeroGameModeBase::PlayAfternoonBGM()
 
 void AZeroGameModeBase::PlayNightBGM()
 {
+	ZE_LOG(LogZeroSector, Display, TEXT("Night Sound Play"));
 	StopBGM(); // 기존 BGM 끄기
 
 	UZeroGameInstance* GI = Cast<UZeroGameInstance>(GetGameInstance());
@@ -358,7 +392,7 @@ void AZeroGameModeBase::WallVideoPlay() const
 	UZeroWallVideoWidget* WallWidget = CreateWidget<UZeroWallVideoWidget>(GetWorld(), WallWidgetClass);
 	if (WallWidget)
 	{
-		//WallWidget->AddToViewport();
+		WallWidget->AddToViewport();
 		if (!WallWidget->IsInViewport())
 		{
 			AZeroPlayerController* PC = Cast<AZeroPlayerController>(GetWorld()->GetFirstPlayerController());

@@ -175,8 +175,9 @@ UZeroHUDWidget* AZeroCharacterPlayer::GetWeaponHUDWidget() const
 #if WITH_EDITOR
 void AZeroCharacterPlayer::NightToAfternoon()
 {
-	ChangeInputMode();
-	StatComp->InitActivePoint();
+	/*ChangeInputMode();
+	StatComp->InitActivePoint();*/
+	GetZeroPlayerController()->GameHasEnded(this, true);
 }
 void AZeroCharacterPlayer::NightToFiveDay()
 {
@@ -278,6 +279,7 @@ AZeroPlayerController* AZeroCharacterPlayer::GetZeroPlayerController() const
 
 void AZeroCharacterPlayer::MoveNightStartLoc(const FVector& InLocation)
 {
+	CloseInteractUI();
 	MoveLocation = InLocation;
 	FTimerHandle MoveNightHandle;
 	GetWorld()->GetTimerManager().SetTimer(MoveNightHandle, [&]()
