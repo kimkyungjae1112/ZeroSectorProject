@@ -199,7 +199,12 @@ void UZeroUIComponent::ProvisoInteract()
 			Interface->GetOwnerController()->InputModeUIOnly();
 		}
 
+		UE_LOG(LogTemp, Warning, TEXT("RowName: %s, Image: %s"), *ProvisoActor->RowName.ToString(), *ProvisoData.ProvisoImage.ToString());
+
+
+
 		GetProvisoWidgetInstance->SetProvisoImage(ProvisoData.ProvisoImage.LoadSynchronous());
+		UE_LOG(LogTemp, Warning, TEXT("Image Path: %s"), *ProvisoData.ProvisoImage.ToString());
 		GetProvisoWidgetInstance->SetProvisoInfo(ProvisoData.ProvisoName.ToString(), ProvisoData.Description);
 		GetProvisoWidgetInstance->SetCurrentProvisoData(ProvisoData);
 

@@ -103,6 +103,20 @@ void UZeroSingleton::ResetCollectedProvisos()
 }
 
 
+FZeroProvisoDataTable UZeroSingleton::GetProvisoData(FName RowName)
+{
+	static const FString Context(TEXT("ProvisoContext"));
+	if (ProvisoDataTable)
+	{
+		if (const FZeroProvisoDataTable* Row = ProvisoDataTable->FindRow<FZeroProvisoDataTable>(RowName, Context))
+		{
+			return *Row;
+		}
+	}
+	return FZeroProvisoDataTable();
+}
+
+
 TArray<FZeroProvisoDataTable> UZeroSingleton::GetCollectedProvisos() const
 {
 	return CollectedProvisos;
