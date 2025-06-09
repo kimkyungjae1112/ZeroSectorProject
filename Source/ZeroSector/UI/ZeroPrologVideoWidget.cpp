@@ -7,6 +7,7 @@
 #include "MediaPlayer.h"
 #include "MediaSource.h"
 #include "Game/ZeroGameModeBase.h"
+#include "Interface/ZeroStartSetInterface.h"
 
 UZeroPrologVideoWidget::UZeroPrologVideoWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -52,6 +53,9 @@ void UZeroPrologVideoWidget::VideoFinished()
 	{
 		PC->SetPause(false);
 		PC->NightHUD_Display();
+
+		IZeroStartSetInterface* SSI = Cast<IZeroStartSetInterface>(PC->GetPawn());
+		if (SSI) SSI->StartSet();
 	}
 
 	AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());

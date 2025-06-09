@@ -172,6 +172,14 @@ UZeroHUDWidget* AZeroCharacterPlayer::GetWeaponHUDWidget() const
 	return HUDWidgetPtr;
 }
 
+void AZeroCharacterPlayer::StartSet()
+{
+	Walk();
+	SetInputNightMode();
+	InputComp->SetupWeapon(EWeaponType::ERifle);
+	CurrentWeaponType = InputComp->GetWeaponType();
+}
+
 #if WITH_EDITOR
 void AZeroCharacterPlayer::NightToAfternoon()
 {
@@ -251,10 +259,6 @@ void AZeroCharacterPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Walk();
-	SetInputNightMode();
-	InputComp->SetupWeapon(EWeaponType::ERifle);
-	CurrentWeaponType = InputComp->GetWeaponType();
 	GetZeroPlayerController()->OnClearZombie.AddUObject(this, &AZeroCharacterPlayer::ChangeInputMode);
 	GetZeroPlayerController()->OnClearZombie.AddUObject(StatComp, &UZeroPlayerStatComponent::InitActivePoint);
 	GetZeroPlayerController()->OnNonClearZmobie.AddUObject(StatComp, &UZeroPlayerStatComponent::InitHealth);

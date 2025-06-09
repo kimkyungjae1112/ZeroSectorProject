@@ -11,6 +11,7 @@
 #include "Interface/ZeroNightInputInterface.h"
 #include "Interface/ZeroUIComponentInterface.h"
 #include "Interface/ZeroMouseSensitiveInterface.h"
+#include "Interface/ZeroStartSetInterface.h"
 #include "ZeroCharacterPlayer.generated.h"
 
 struct FInputActionValue;
@@ -48,6 +49,7 @@ class ZEROSECTOR_API AZeroCharacterPlayer
 	, public IZeroNightInputInterface
 	, public IZeroUIComponentInterface
 	, public IZeroMouseSensitiveInterface
+	, public IZeroStartSetInterface
 {
 	GENERATED_BODY()
 	
@@ -74,6 +76,9 @@ public:
 
 	/* IZeroNightInputInterface Implemnt */
 	virtual UZeroHUDWidget* GetWeaponHUDWidget() const override;
+
+	/* IZeroStartSetInterface Implement */
+	virtual void StartSet() override;
 
 #if WITH_EDITOR
 	void NightToAfternoon();
