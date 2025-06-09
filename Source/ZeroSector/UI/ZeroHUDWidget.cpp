@@ -70,7 +70,6 @@ void UZeroHUDWidget::SetMaxHp(float InMaxHp)
 void UZeroHUDWidget::UpdateHpBar(float InHp)
 {
 	HpBar->SetPercent(InHp / MaxHp);
-	ZE_LOG(LogZeroSector, Display, TEXT("체력 : %f"), InHp / MaxHp);
 }
 
 float UZeroHUDWidget::GetCurrentSpread() const
@@ -145,8 +144,11 @@ void UZeroHUDWidget::NativeConstruct()
 	CurrentWeaponImage->SetBrushFromTexture(PistolImage);
 
 	IZeroHUDInterface* Interface = Cast<IZeroHUDInterface>(GetOwningPlayerPawn());
-	if (Interface)	Interface->SetHUDWidget(this);
-
+	if (Interface)
+	{
+		ZE_LOG(LogZeroSector, Display, TEXT("Set HUD"));
+		Interface->SetHUDWidget(this);
+	}
 	AZeroGameModeBase* GameMode = Cast<AZeroGameModeBase>(GetWorld()->GetAuthGameMode());
 	if (GameMode)
 	{
