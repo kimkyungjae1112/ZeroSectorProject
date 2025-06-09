@@ -24,15 +24,7 @@ public:
         return SpawnDataTable[Row];
     }
         
-    FORCEINLINE FZeroProvisoDataTable GetProvisoData(FName RowName) const
-    {
-        if (const FZeroProvisoDataTable* Found = ProvisoDataMap.Find(RowName))
-        {
-            return *Found;
-        }
-        return FZeroProvisoDataTable();
-    }
-
+    FZeroProvisoDataTable GetProvisoData(FName RowName);
 
 	/* 단서 데이터 */
 	TArray<FZeroProvisoDataTable> GetCollectedProvisos() const;
